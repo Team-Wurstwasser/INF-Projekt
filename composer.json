@@ -1,7 +1,6 @@
 {
     "require": {
         "phpmailer/phpmailer": "^7.0",
-<<<<<<< HEAD
         "picqer/php-barcode-generator": "^3.2",
         "vlucas/phpdotenv": "^5.6"
     },
@@ -9,8 +8,5 @@
         "psr-4": {
             "Backend\\": "Backend/"
         }
-=======
-        "picqer/php-barcode-generator": "^3.2"
->>>>>>> 3a0b36faa338ae32738ae90e09d5a803de6819b6
     }
 }
