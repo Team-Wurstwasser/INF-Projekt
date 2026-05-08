@@ -4,7 +4,6 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
     "content-hash": "71429677dc4229056c69bd174262aa49",
     "packages": [
         {
@@ -70,11 +69,6 @@
             "time": "2025-12-27T19:43:20+00:00"
         },
         {
-=======
-    "content-hash": "4cb65a7c64e0d1520fc96a04ed0b6011",
-    "packages": [
-        {
->>>>>>> 3a0b36faa338ae32738ae90e09d5a803de6819b6
             "name": "phpmailer/phpmailer",
             "version": "v7.0.2",
             "source": {
@@ -157,7 +151,6 @@
             "time": "2026-01-09T18:02:33+00:00"
         },
         {
-<<<<<<< HEAD
             "name": "phpoption/phpoption",
             "version": "1.9.5",
             "source": {
@@ -233,8 +226,6 @@
             "time": "2025-12-27T19:41:33+00:00"
         },
         {
-=======
->>>>>>> 3a0b36faa338ae32738ae90e09d5a803de6819b6
             "name": "picqer/php-barcode-generator",
             "version": "v3.2.4",
             "source": {
@@ -314,7 +305,6 @@
                 "source": "https://github.com/picqer/php-barcode-generator/tree/v3.2.4"
             },
             "time": "2026-01-08T08:57:40+00:00"
-<<<<<<< HEAD
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -651,8 +641,6 @@
                 }
             ],
             "time": "2025-12-27T19:49:13+00:00"
-=======
->>>>>>> 3a0b36faa338ae32738ae90e09d5a803de6819b6
         }
     ],
     "packages-dev": [],
