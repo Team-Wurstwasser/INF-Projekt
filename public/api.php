@@ -13,7 +13,7 @@ error_reporting(E_ALL);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *'); 
-header('Access-Control-Allow-Methods: GET, POST, PATCH, OPTIONS');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -28,24 +28,26 @@ function json_response(array $payload, int $statusCode = 200): void
     exit;
 }
 
+function get_json_input(): array
+{
+    $input = file_get_contents('php://input');
+    $data = json_decode($input, true);
+    return $data ?? [];
+}
+
+
 try {
     $dsn = "mysql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']};charset=utf8mb4";
     
-    $pdo = new PDO(
-        $dsn,
-        $_ENV['DB_USER'],
-        $_ENV['DB_PASSWORD'],
-        [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES => false
-        ]
-    );
+    $pdo = new PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD'], [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false
+    ]);
 
     $dbHandler = new DatabaseHandler($pdo);
-
-    $method = $_SERVER['REQUEST_METHOD'];
     $resource = $_GET['resource'] ?? '';
+    $method = $_SERVER['REQUEST_METHOD'];
 
     switch ($resource) {
         case 'werkzeuge':
@@ -53,33 +55,12 @@ try {
                 json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
             } 
             elseif ($method === 'POST') {
-                $data = json_decode(file_get_contents('php://input'), true);
-                $barcode = 'BAR-' . strtoupper(bin2hex(random_bytes(4)));
-                
-                $dbHandler->createWerkzeug(
-                    $barcode,
-                    $data['bezeichnung'],
-                    $data['datum'] ?? date('Y-m-d'),
-                    (int)($data['status_id'] ?? 1),
-                    (int)$data['typ_id']
-                );
-                json_response(['success' => true, 'barcode' => $barcode], 201);
-            }
-            break;
-
-        case 'ausleihe':
-            if ($method === 'PATCH') {
-                $data = json_decode(file_get_contents('php://input'), true);
-                $dbHandler->checkoutWerkzeug($data['barcode'], (int)$data['mitarbeiter_id']);
-                json_response(['success' => true, 'message' => 'Werkzeug ausgecheckt.']);
-            }
-            break;
-
-        case 'rueckgabe':
-            if ($method === 'PATCH') {
-                $data = json_decode(file_get_contents('php://input'), true);
-                $dbHandler->checkinWerkzeug($data['barcode'], $data['zustand'] ?? 'OK');
-                json_response(['success' => true, 'message' => 'Werkzeug zurückgegeben.']);
+                $data = get_json_input();
+                if (!isset($data['barcode'], $data['bezeichnung'], $data['datum'], $data['statusId'], $data['typId'])) {
+                    json_response(['success' => false, 'error' => 'Anfrage unvollständig.'], 400);
+                }
+                $res = $dbHandler->createWerkzeug($data['barcode'], $data['bezeichnung'], $data['datum'], (int)$data['statusId'], (int)$data['typId']);
+                json_response(['success' => $res]);
             }
             break;
 
@@ -89,11 +70,33 @@ try {
             }
             break;
 
+        case 'checkout':
+            if ($method === 'POST') {
+                $data = get_json_input();
+                if (!isset($data['barcode'], $data['mitarbeiterId'])) {
+                    json_response(['success' => false, 'error' => 'Daten unvollständig.'], 400);
+                }
+                $res = $dbHandler->checkoutWerkzeug($data['barcode'], (int)$data['mitarbeiterId']);
+                json_response(['success' => $res]);
+            }
+            break;
+
+        case 'checkin':
+            if ($method === 'POST') {
+                $data = get_json_input();
+                if (!isset($data['barcode'], $data['zustand'])) {
+                    json_response(['success' => false, 'error' => 'Daten unvollständig.'], 400);
+                }
+                $res = $dbHandler->checkinWerkzeug($data['barcode'], $data['zustand']);
+                json_response(['success' => $res]);
+            }
+            break;
+
         default:
-            json_response(['success' => false, 'error' => 'Ressource nicht gefunden.'], 404);
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 404);
     }
 
 } catch (Throwable $throwable) {  
-    error_log($throwable->getMessage());
-    json_response(['success' => false, 'error' => $throwable->getMessage()], 500);
+    error_log("API Error: " . $throwable->getMessage() . " in " . $throwable->getFile() . ":" . $throwable->getLine());
+    json_response(['success' => false, 'error' => 'Interner Serverfehler.'], 500);
 }
