@@ -2,6 +2,8 @@
 
 namespace Backend\Email;
 
+use Exception;
+
 class ReminderEmail
 {
     private $emailService;
@@ -20,9 +22,9 @@ class ReminderEmail
 
             return $this->emailService->sendEmail($toEmail, $toName, $subject, $body);
         } 
-        catch (\Exception $exception) {
+        catch (Exception $exception) {
             error_log("E-Mail Sende-Fehler an " . $toEmail . ": " . $exception->getMessage());
-            throw new \Exception("E-Mail konnte nicht versendet werden.");
+            throw new Exception("E-Mail konnte nicht versendet werden.");
         }
     }
 
