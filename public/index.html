@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basisseite</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+
+<body>
+    <header class="header">
+        <img src="pics/logo.png">
+        <h1 id="title" >Werkzeuginventarisierung</h1>
+        <button class = "MenuButton"><img  src="pics/menu.png" ></button>
+    </header>
+    
+    <div class="icon-header">
+        <h1 class = "HeaderIconÜbersicht">Übersicht Objekte</h1>
+        <div class="ImpExpButtons">
+            <button>
+                Objekt anlegen
+                <img src="pics/plus.png" />
+            </button>
+            <button>
+                Import
+                <img src="pics/import.png" />
+            </button>
+            <button>
+                Export
+                <img src="pics/export.png" />
+            </button>
+        </div>
+    </div>
+    <div class= ="ObjektAuswahl">
+        <button id="changeTitleButton">Alle Objekte</button>
+        <button id="changeTitleButton">Funktionsfähig</button>
+        <button id="changeTitleButton">In Wartung</button>
+        <button id="changeTitleButton">Defekt</button>
+    </div>
+<style>
+   table {
+       border-collapse: collapse;
+       width: 50%;
+   }
+ 
+   th, td {
+       border: 1px solid black;
+       padding: 8px;
+       text-align: center;
+   }
+ 
+   button {
+       margin: 5px;
+   }
+</style>
+</head>
+ 
+<body>
+ 
+<h2>Dynamische Tabelle</h2>
+ 
+<table id="meineTabelle">
+   <tr>
+		<th>Auswählen</th>
+       <th>Objekt</th>
+       <th>Inventorio ID</th>
+		<th>Modell</th>
+		<th>Hersteller</th>
+		<th>Raum</th>
+		<th>Anzahl Tickets</th>
+		<th>Objektstatus</th>
+       <th>Löschen</th>
+   </tr>
+</table>
+ 
+<button onclick="zeileHinzufuegen()">
+   Zeile hinzufügen
+</button>
+ 
+<script>
+function zeileHinzufuegen() {
+ 
+   let tabelle = document.getElementById("meineTabelle");
+ 
+   let neueZeile = tabelle.insertRow();
+ 
+   let zelle1 = neueZeile.insertCell(0);
+   let zelle2 = neueZeile.insertCell(1);
+   let zelle3 = neueZeile.insertCell(2);
+	let zelle4 = neueZeile.insertCell(3);
+	let zelle5 = neueZeile.insertCell(4);
+	let zelle6 = neueZeile.insertCell(5);
+	let zelle7 = neueZeile.insertCell(6);
+	let zelle8 = neueZeile.insertCell(7);
+	let zelle9 = neueZeile.insertCell(8);
+ 
+	zelle1.innerHTML = '<input type="checkbox">';
+	zelle2.innerHTML = '<input type="Objekt" placeholder="Objekt">';
+   zelle3.innerHTML = '<input type="number" placeholder="ID">';
+   zelle4.innerHTML = '<input type="text" placeholder="Modell">';
+	zelle5.innerHTML = '<input type="text" placeholder="Hersteller">';
+	zelle6.innerHTML = '<input type="number" placeholder="Raum">';
+	zelle7.innerHTML = '<input type="number" placeholder="Anzahl">';
+	zelle8.innerHTML = '<input type="number" placeholder="Status">';
+ 
+   zelle9.innerHTML =
+       '<button onclick="dieseZeileLoeschen(this)">Löschen</button>';
+}
+ 
+function dieseZeileLoeschen(button) {
+ 
+   let zeile = button.parentNode.parentNode;
+ 
+   zeile.remove();
+}
+</script>
+ 
+           <div>
+   </main>
+  
+ 
+    <script src="scripts/scripts.js"></script>
+</body>
+
+</html>

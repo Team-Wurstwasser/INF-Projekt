@@ -1,0 +1,105 @@
+<?php
+
+namespace Backend\Email;
+
+class ReminderEmail
+{
+    private $emailService;
+    
+    public function __construct()
+    {
+        $this->emailService = new EmailService();
+    }
+    
+    public function sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $reminderDate = '')
+    {
+        try {
+            $subject = "Erinnerung: " . $reminderTitle;
+        
+            $body = $this->generateEmailTemplate($toName, $reminderTitle, $reminderMessage, $reminderDate);
+
+            return $this->emailService->sendEmail($toEmail, $toName, $subject, $body);
+        } 
+        catch (\Exception $e) {
+            throw new \Exception("E-Mail konnte nicht versendet werden: " . $e->getMessage());
+        }
+    }
+
+    private function generateEmailTemplate($toName, $reminderTitle, $reminderMessage, $reminderDate)
+    {
+        $dateRow = '';
+        if ($reminderDate) {
+            $dateRow = '
+                <tr>
+                    <td style="padding-top: 10px; color: #e74c3c;">
+                        <strong>Datum:</strong> ' . htmlspecialchars($reminderDate) . '
+                    </td>
+                </tr>';
+        }
+
+        $template = '
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; background-color: #f8f9fa; font-family: Arial, sans-serif; }
+        .container { width: 100%; max-width: 600px; margin: 0 auto; }
+        .deadline-badge { background-color: #e74c3c; color: #ffffff; padding: 5px 15px; border-radius: 20px; display: inline-block; font-weight: bold; font-size: 14px; }
+        .device-info { background-color: #ffffff; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .button { background-color: #2c3e50; color: #ffffff !important; padding: 14px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center" style="padding: 30px 0;">
+                <table border="0" cellpadding="0" cellspacing="0" width="600" class="container" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e1e1e1;">
+                    <tr>
+                        <td align="center" style="background-color: #2c3e50; padding: 30px 20px; color: #ffffff;">
+                            <h2 style="margin: 0; letter-spacing: 1px;">WARENBESTAND-PORTAL</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 40px; color: #333333; line-height: 1.6;">
+                            <div align="right">
+                                <span class="deadline-badge">Update</span>
+                            </div>
+                            <h2 style="margin-top: 10px; color: #2c3e50;">' . htmlspecialchars($reminderTitle) . '</h2>
+                            <p>Hallo ' . htmlspecialchars($toName) . ',</p>
+                            <p>' . nl2br(htmlspecialchars($reminderMessage)) . '</p>
+                            
+                            <div class="device-info">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td style="padding-bottom: 10px; border-bottom: 1px solid #f1f1f1;">
+                                            <strong>Info:</strong> ' . htmlspecialchars($reminderTitle) . '
+                                        </td>
+                                    </tr>
+                                    ' . $dateRow . '
+                                </table>
+                            </div>
+                            <p>Bitte bearbeite diesen Vorgang zeitnah im Portal.</p>
+                            <br>
+                            <table border="0" cellspacing="0" cellpadding="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <a href="https://pelican.hallo123wert.de/" class="button">Status prüfen</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>';
+
+        return $template;
+    }
+}

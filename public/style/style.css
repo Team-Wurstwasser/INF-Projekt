@@ -1,0 +1,95 @@
+body {
+    margin:0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    
+    position: sticky;
+    top: 0; 
+    z-index: 1000;
+    background: linear-gradient(to left, #000080, #0000cd);
+    padding: 33px 32px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+header img {
+    height: 37px;
+    filter: brightness(0) invert(1);
+    margin-right: 30px;
+    margin-top: 5px;
+}
+
+header h1 {
+    margin: 0;
+    color: white;
+    font-size: 30px;
+    flex-grow: 1; 
+}
+
+.MenuButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.MenuButton img {
+    height: 45px; 
+    margin: 0;   
+}
+.MenuButton :hover{
+      filter: brightness(0.9);
+}
+
+.ImpExpButtons { 
+    padding: 30px;
+
+}
+.ImpExpButtons button { 
+      
+    padding: 10px;
+    margin-right: 10px;
+    height: 50px;
+   font-size: 20px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    background: blue;
+    color: white;
+
+}
+.ImpExpButtons  :hover{ 
+    background-color: rgb(52, 52, 163);
+
+}
+
+
+.ImpExpButtons img {
+    background-color: transparent !important;
+    background: none !important;
+    height: 18px;
+    width: auto;
+    margin: -3px;
+    padding-left: 6px;
+    filter: brightness(0) invert(1); /*Da Icons PNGs sind kann man sie nur mit filter färben, da CSS kein zugriff auf PNGs hat  */
+
+}
+.icon-header{
+    display: flex;
+    justify-content: space-between;
+    font-family: Opensans;
+}
+
+.HeaderIconÜbersicht{
+    font-size: 35px;
+    margin-left: 20px;
+    margin-top: 36px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #383846;
+}
+
+
+
