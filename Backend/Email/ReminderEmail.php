@@ -20,8 +20,9 @@ class ReminderEmail
 
             return $this->emailService->sendEmail($toEmail, $toName, $subject, $body);
         } 
-        catch (\Exception $e) {
-            throw new \Exception("E-Mail konnte nicht versendet werden: " . $e->getMessage());
+        catch (\Exception $exception) {
+            error_log("E-Mail Sende-Fehler an " . $toEmail . ": " . $exception->getMessage());
+            throw new \Exception("E-Mail konnte nicht versendet werden.");
         }
     }
 

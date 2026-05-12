@@ -27,8 +27,9 @@ class EmailService
             $this->mail->Port = $_ENV['SMTP_PORT'];
             
             $this->mail->CharSet = 'UTF-8';
-        } catch (Exception $e) {
-            throw new Exception("SMTP-Konfiguration fehler: " . $e->getMessage());
+        } catch (Exception $exception) {
+            error_log("SMTP-Konfigurationsfehler: " . $exception->getMessage());
+            throw new Exception("Interner Konfigurationsfehler.");
         }
     }
     
@@ -46,7 +47,8 @@ class EmailService
             
             return $this->mail->send();
         } catch (Exception $e) {
-            throw new Exception("E-Mail konnte nicht versendet werden: " . $e->getMessage());
+            error_log("E-Mail Sende-Fehler an " . $toEmail . ": " . $e->getMessage());
+            throw new Exception("E-Mail konnte nicht versendet werden.");
         } finally {
             $this->mail->clearAddresses();
         }
