@@ -2,7 +2,7 @@
 
 namespace Backend\Email;
 
-class TestEmail
+class ReminderEmail
 {
     private $emailService;
     
@@ -11,18 +11,18 @@ class TestEmail
         $this->emailService = new EmailService();
     }
     
-public function sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $reminderDate = '')
-{
-    try {
-        $subject = "Test-Erinnerung: " . $reminderTitle;
-        $body = "<h2>Hallo " . $toName . "</h2>" .
-                "<p>" . $reminderMessage . "</p>" .
-                ($reminderDate ? "<p>Datum: " . $reminderDate . "</p>" : "");
+    public function sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $reminderDate = '')
+    {
+        try {
+            $subject = "Erinnerung: " . $reminderTitle;
+            $body = "<h2>Hallo " . $toName . "</h2>" .
+                    "<p>" . $reminderMessage . "</p>" .
+                    ($reminderDate ? "<p>Datum: " . $reminderDate . "</p>" : "");
 
-        return $this->emailService->sendEmail($toEmail, $toName, $subject, $body);
+            return $this->emailService->sendEmail($toEmail, $toName, $subject, $body);
         
-    } catch (\Exception $e) {
-        throw new \Exception("Test-E-Mail konnte nicht versendet werden: " . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new \Exception("E-Mail konnte nicht versendet werden: " . $e->getMessage());
+        }
     }
-}
 }

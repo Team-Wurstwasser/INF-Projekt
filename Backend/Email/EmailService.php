@@ -37,7 +37,7 @@ class EmailService
         try {
             $this->mail->addAddress($toEmail, $toName);
             
-            $this->mail->setFrom($_ENV['SMTP_USER'], $_ENV['Email_Name']);
+            $this->mail->setFrom($_ENV['SMTP_USER'], $_ENV['Email_AnzeigeName']);
             
             $this->mail->Subject = $subject;
             $this->mail->isHTML(true);
