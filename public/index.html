@@ -18,7 +18,7 @@
     <div class="icon-header">
         <h1 class="HeaderIconÜbersicht">Übersicht Objekte</h1>
         <div class="ImpExpButtons">
-            <button onclick="zeileHinzufuegen()">
+            <button onclick="objectCreateDialog()">
                 Objekt anlegen
                 <img src="pics/plus.png" />
             </button>
@@ -38,25 +38,6 @@
         <button id="changeTitleButton">In Wartung</button>
         <button id="changeTitleButton">Defekt</button>
     </div>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 50%;
-        }
-
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: center;
-        }
-
-        button {
-            margin: 5px;
-        }
-    </style>
-
-
-
     <h2>Dynamische Tabelle</h2>
 
     <table id="objektTabelle">
@@ -72,9 +53,34 @@
         </tr>
     </table>
 
-    <button onclick="registerDialog()">
-       TestDialog öffnen
+    <button  onclick="zeileHinzufuegen()">
+        Zeile hinzufügen
     </button>
+
+
+<dialog id="objectCreateDialog">
+    <h2>Neues Objekt anlegen</h2>
+    <h2>Bitte den Barcode scannen.</h2>
+    <button id="manualBarcodeBtn">Manuelle Barcode Eingabe</button>
+    <button id="closeBtn">Schließen</button>
+</dialog>
+
+<dialog id="objectCreateDialogManualBarcode">
+    <h2>Neues Objekt anlegen</h2>
+    <h2>Bitte den Barcode eingeben.</h2>
+    <input type="number" id="manualBarcodeInput" placeholder="Barcode eingeben" autocomplete="off" required>
+    <button id="objectManualProceed">Weiter</button>
+</dialog>
+
+<dialog id="objectConfigDialog">
+    <h2>Objekt konfigurieren</h2>
+    <h2>Bitte folgende Informationen eingeben:</h2>
+    <input type="number" id="objectID" placeholder="Objekt ID" autocomplete="off">
+    <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off">
+    <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off">
+    <button id="objectSubmitBtn">Bestätigen</button>
+</dialog>
+
 
 
     <script src="scripts/scripts.js"></script>

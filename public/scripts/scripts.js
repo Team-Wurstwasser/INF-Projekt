@@ -34,20 +34,78 @@ function dieseZeileLoeschen(button) {
 	zeile.remove();
 }
 
-function objectCreatePopup() {
+//barcode variable
+let scannedBarcode = "";
+
+// event listener für barcode eingabe
+window.addEventListener("keydown", (e) => {
+	const modal = document.getElementById("objectCreateDialog");
+
 	
+	if (modal && modal.open) {
+		if (e.key === "Enter") {
+			if (scannedBarcode.length > 0) {
+				// Wert übertragen
+				document.getElementById("objectID").value = scannedBarcode;
+				scannedBarcode = "";
 
+				// Dialog-Wechsel
+				modal.close();
+				objectConfigDialog();
+			}
+		}
+	}
+});
 
-	// mitarbeiternr aktuwelles , datum , rückgabedatum, 
+function objectCreateDialog() {
+	const modal = document.getElementById("objectCreateDialog");
+	const closeBtn = document.getElementById("closeBtn");
+	const manualBtn = document.getElementById("manualBarcodeBtn");
+
+	scannedBarcode = ""; // Reset barcode beim Öffnen
+	modal.showModal();
+
+	
+	closeBtn.onclick = () => { 
+		modal.close(); 
+	};
+
+	manualBtn.onclick = () => {
+		modal.close();
+		manualBarcodeDialog();
+	};
 }
 
-//abfragen sortieren : abgabeDatum , suchfeld
+//manuelle eingabe des barcodes / erstellung eines neues 
+function manualBarcodeDialog() {
+	const modal = document.getElementById("objectCreateDialogManualBarcode");
+	const proceed = document.getElementById("objectManualProceed");
 
-function registerDialog() {
-	let dialog = document.getElementById('');
-	let closebtn = document.getElementById('');
-	let openbtn = document.getElementById('');
+	document.getElementById('manualBarcodeInput').value = ''; //clear bei widereingabe
+	modal.showModal();
 
+	proceed.onclick = () => {
+		// barcode ins config feld rein
+		const barcodeID = document.getElementById('manualBarcodeInput').value; //erstellung eines barcodes dafür die ID
+		document.getElementById("objectID").value = barcodeID;
 
+		modal.close();
+		objectConfigDialog();
+	};
+}
 
+//letztes fenster Objekt config
+function objectConfigDialog() {
+	const modal = document.getElementById("objectConfigDialog");
+	const submit = document.getElementById("objectSubmitBtn");
+
+	// Felder leeren
+	document.getElementById('objectName').value = '';
+	document.getElementById('objectPurchaseDate').value = '';
+
+	modal.showModal();
+
+	submit.onclick = () => {
+		modal.close();
+	};
 }
