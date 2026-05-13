@@ -2,6 +2,7 @@
 
 namespace Backend\Database;
 
+use Exception;
 use PDO;
 
 class DatabaseHandler
@@ -45,5 +46,50 @@ class DatabaseHandler
         $sql = "SELECT m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, m.username as Username, m.Abteilung as Abteilung
                 FROM Mitarbeiter m";
         return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function leiheWerkzeug(string $barcode, int $mitarbeiterId): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $sqlAusleihe = "INSERT INTO Ausleihe (Ausleihdatum, Mitarbeiter_ID, Barcode, EmailVersendet) 
+                            VALUES (CURDATE(), ?, ?, 0)";
+            $stmt1 = $this->pdo->prepare($sqlAusleihe);
+            $stmt1->execute([$mitarbeiterId, $barcode]);
+
+            $sqlStatus = "UPDATE Werkzeuge SET Status_ID = 2 WHERE Barcode = ?";
+            $stmt2 = $this->pdo->prepare($sqlStatus);
+            $stmt2->execute([$barcode]);
+
+            return $this->pdo->commit();
+        } catch (Exception $eception) {
+            error_log("Fehler in leiheWerkzeug: " . $eception->getMessage());
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    public function gebeWerkzeugZurueck(string $barcode, string $zustand): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+
+            $sqlAusleihe = "UPDATE Ausleihe 
+                            SET Rückgabedatum = CURDATE(), ZustandBeiRückgabe = ? 
+                            WHERE Barcode = ? AND Rückgabedatum IS NULL";
+            $stmt1 = $this->pdo->prepare($sqlAusleihe);
+            $stmt1->execute([$zustand, $barcode]);
+
+        
+            $sqlStatus = "UPDATE Werkzeuge SET Status_ID = 1 WHERE Barcode = ?";
+            $stmt2 = $this->pdo->prepare($sqlStatus);
+            $stmt2->execute([$barcode]);
+
+            return $this->pdo->commit();
+        } catch (Exception $eception) {
+            error_log("Fehler in gebeWerkzeugZurueck: " . $eception->getMessage());
+            $this->pdo->rollBack();
+            return false;
+        }
     }
 }

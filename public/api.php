@@ -42,14 +42,47 @@ try {
 
     switch ($resource) {
         case 'werkzeuge':
-                json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
+            json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
             break;
+
         case 'werkzeug_typen':
-                json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
+            json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
             break;
 
         case 'mitarbeiter':
-                json_response(['success' => true, 'data' => $dbHandler->getAllMitarbeiter()]);
+            json_response(['success' => true, 'data' => $dbHandler->getAllMitarbeiter()]);
+            break;
+
+        case 'ausleihen':
+            $barcode = $_GET['barcode'] ?? null;
+            $mitarbeiter_id = $_GET['mitarbeiter_id'] ?? null;
+
+            if ($barcode && $mitarbeiter_id) {
+                $res = $dbHandler->leiheWerkzeug($barcode, (int)$mitarbeiter_id);
+        
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Erfolgreich ausgeliehen']);
+                } else {
+                    json_response(['success' => false, 'error' => 'Fehler beim Ausleihen in der Datenbank.'], 500);
+                }
+            }
+            json_response(['success' => false, 'error' => 'Parameter barcode und mitarbeiter_id fehlen.'], 400);
+            break;
+
+        case 'abgeben':
+            $barcode = $_GET['barcode'] ?? null;
+            $zustand = $_GET['zustand'] ?? 'OK';
+
+            if ($barcode) {
+                $res = $dbHandler->gebeWerkzeugZurueck($barcode, $zustand);
+        
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Erfolgreich abgegeben']);
+                } else {
+                    json_response(['success' => false, 'error' => 'Fehler bei der Rückgabe in der Datenbank.'], 500);
+                }
+            }
+            json_response(['success' => false, 'error' => 'Parameter barcode fehlt.'], 400);
             break;
 
         default:
