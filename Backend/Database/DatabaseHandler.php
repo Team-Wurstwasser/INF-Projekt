@@ -3,7 +3,6 @@
 namespace Backend\Database;
 
 use PDO;
-use Exception;
 
 class DatabaseHandler
 {
