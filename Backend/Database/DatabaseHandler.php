@@ -27,7 +27,7 @@ class DatabaseHandler
     {
         $sql = "SELECT t.Art as Typ 
                 FROM Werkzeugtyp t";
-        return $this->pdo->query($sql)->fetchAll();
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
     }
 
     public function getAllMitarbeiter(): array
