@@ -45,6 +45,11 @@ try {
                 json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
             }
             break;
+        case 'werkzeug_typen':
+            if ($method === 'GET') {
+                json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
+            }
+            break;
 
         case 'mitarbeiter':
             if ($method === 'GET') {
