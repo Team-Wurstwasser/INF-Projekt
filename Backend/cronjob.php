@@ -4,7 +4,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Backend\Database\DatabaseHandler;
 use Dotenv\Dotenv;
-use PDO;
 use Backend\Email\ReminderEmail;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
