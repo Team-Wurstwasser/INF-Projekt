@@ -46,7 +46,7 @@ let scannedBarcode = "";
 
 // Hilfsfunktion zur UI-Aktualisierung
 function updateOverviewUI() {
-	const idDisplay = document.getElementById("objectID");
+	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
 	if (idDisplay) idDisplay.value = currentObject.id;
 
 	document.getElementById("objectOverviewID").innerHTML = "ID: " + currentObject.id;

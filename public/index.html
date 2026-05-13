@@ -39,17 +39,19 @@
     </div>
     <h2>Dynamische Tabelle</h2>
 
+    <label for="typeSelect">Kategorie:</label>
+    <select id="typeSelect">
+        <option value="werkzeuge">Werkzeuge</option>
+        <option value="mitarbeiter">Mitarbeiter</option>
+        <option value="werkzeug_typen">Werkzeugtypen</option>
+    </select>
+    <button id="loadButton">Daten laden</button>
+
     <table id="objektTabelle">
-        <tr>
-            <th>Objekt</th>
-            <th>Inventorio ID</th>
-            <th>Modell</th>
-            <th>Hersteller</th>
-            <th>Raum</th>
-            <th>Anzahl Tickets</th>
-            <th>Objektstatus</th>
-            <th>Löschen</th>
-        </tr>
+        <thead>
+            <tr id="headerRow"></tr>
+        </thead>
+        <tbody id="tableData"></tbody>
     </table>
 
     <button  onclick="zeileHinzufuegen()">
@@ -58,10 +60,15 @@
 
 
 <dialog id="objectCreationMethodSelectionDialog">
-    <h2>Wie möchten Sie ein neues Objekt anlegen?</h2>
-    <button id="scannerMode">Barcode scannen</button>
-    <button id="manualMode">Barcode Erstellen</button>
-    <button id="closeBtn">Schließen</button>
+    <h2>Wie möchten Sie ein neues Objekt anlegen ?</h2>
+    <button id="scannerMode">Barcode scannen
+        <img src="pics/scanBarcode.png" alt="">
+    </button>
+    <button id="manualMode">Barcode Erstellen
+                <img src="pics/createBarcode.png" alt="">
+
+    </button>
+    <button class="closeBtn" id="closeBtn"> <img src="pics/close.png" alt="X"></button>
 </dialog>
 
 <dialog id="objectCreateScanBarcodeDialog">
