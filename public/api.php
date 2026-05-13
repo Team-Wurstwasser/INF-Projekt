@@ -52,16 +52,6 @@ try {
             }
             break;
 
-        case 'checkout':
-            if ($method === 'POST') {
-            }
-            break;
-
-        case 'checkin':
-            if ($method === 'POST') {
-            }
-            break;
-
         default:
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 404);
     }
