@@ -39,46 +39,76 @@ let scannedBarcode = "";
 
 // event listener für barcode eingabe
 window.addEventListener("keydown", (e) => {
-	const modal = document.getElementById("objectCreateDialog");
+	const modal = document.getElementById("objectCreateScanBarcodeDialog");
 
-	
 	if (modal && modal.open) {
 		if (e.key === "Enter") {
 			if (scannedBarcode.length > 0) {
 				// Wert übertragen
 				document.getElementById("objectID").value = scannedBarcode;
+				document.getElementById("objectOverviewID").innerHTML = "ID: " + scannedBarcode; //übersichtsfeld ID
 				scannedBarcode = "";
 
 				// Dialog-Wechsel
 				modal.close();
 				objectConfigDialog();
 			}
+		} else {
+			// Dies hat in deinem Code gefehlt:
+			// Nur Zeichen der Länge 1 hinzufügen (verhindert 'Shift', 'Control' etc.)
+			if (e.key.length === 1) {
+				scannedBarcode += e.key;
+			}
 		}
 	}
 });
 
-function objectCreateDialog() {
-	const modal = document.getElementById("objectCreateDialog");
-	const closeBtn = document.getElementById("closeBtn");
-	const manualBtn = document.getElementById("manualBarcodeBtn");
 
+
+//funktionen Dialoge
+
+//1. Selection zwischen scan barcode und manuelle eingabe
+
+function objectCreationMethodSelectionDialog() {
+	const modal = document.getElementById("objectCreationMethodSelectionDialog");
+	const scannerModeBtn = document.getElementById("scannerMode");
+	const manualModeBtn = document.getElementById("manualMode");
+	const closeBtn = document.getElementById("closeBtn");
+	modal.showModal();
+
+	closeBtn.onclick = () => {
+		modal.close();
+	};
+
+	scannerModeBtn.onclick = () => {
+		modal.close();
+		objectCreateScanBarcodeDialog();
+	};
+
+	manualModeBtn.onclick = () => {
+		modal.close();
+		barcodeCreateDialog();
+	};
+
+}
+// Scan Option 
+function objectCreateScanBarcodeDialog() {
+	const modal = document.getElementById("objectCreateScanBarcodeDialog");
+	const closeBtn1 = document.getElementById("closeBtn1");
+	console.log("Scanned Barcode: " + scannedBarcode); // Debug-Ausgabe
 	scannedBarcode = ""; // Reset barcode beim Öffnen
 	modal.showModal();
 
-	
-	closeBtn.onclick = () => { 
-		modal.close(); 
+
+	closeBtn1.onclick = () => {
+		modal.close();
 	};
 
-	manualBtn.onclick = () => {
-		modal.close();
-		manualBarcodeDialog();
-	};
 }
 
-//manuelle eingabe des barcodes / erstellung eines neues 
-function manualBarcodeDialog() {
-	const modal = document.getElementById("objectCreateDialogManualBarcode");
+// manuelle erstellung eines barcodes option
+function barcodeCreateDialog() {
+	const modal = document.getElementById("objectCreateBarcodeCreationDialog");
 	const proceed = document.getElementById("objectManualProceed");
 
 	document.getElementById('manualBarcodeInput').value = ''; //clear bei widereingabe
@@ -88,24 +118,49 @@ function manualBarcodeDialog() {
 		// barcode ins config feld rein
 		const barcodeID = document.getElementById('manualBarcodeInput').value; //erstellung eines barcodes dafür die ID
 		document.getElementById("objectID").value = barcodeID;
+		document.getElementById("objectOverviewID").innerHTML = "ID: " + barcodeID; //übersichtsfeld ID
 
 		modal.close();
 		objectConfigDialog();
 	};
 }
 
-//letztes fenster Objekt config
+// Objekt Configuration Dialog
 function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
 	const submit = document.getElementById("objectSubmitBtn");
 
+		
 	// Felder leeren
-	document.getElementById('objectName').value = '';
-	document.getElementById('objectPurchaseDate').value = '';
-
+	const name = document.getElementById('objectName').value = '';
+	const date = document.getElementById('objectPurchaseDate').value = '';
+	
 	modal.showModal();
 
 	submit.onclick = () => {
+		//aktielle werte 
+		const aktuellerName = document.getElementById('objectName').value;
+		const aktuellesDatum = document.getElementById('objectPurchaseDate').value;
+
+	// zu overview hinzufügen
+		document.getElementById("objectOverviewName").innerHTML = "Name: " + aktuellerName;
+		document.getElementById("objectOverviewPurchaseDate").innerHTML = "Anschaffungsdatum: " + aktuellesDatum;
+		modal.close();
+		createdObjectOverviewDialog();
+	};
+}
+// Zusammenfassung des erstellten Objekts
+function createdObjectOverviewDialog() { 
+	const modal = document.getElementById("createdObjectOverviewDialog");
+	const closeBtn = document.getElementById("closeCreatedObjectOverviewBtn");
+	
+	modal.showModal();
+
+
+
+
+	closeBtn.onclick = () => {
 		modal.close();
 	};
 }
+
