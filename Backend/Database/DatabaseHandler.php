@@ -2,6 +2,8 @@
 
 namespace Backend\Database;
 
+use Exception;
+
 class DatabaseHandler
 {
     private PDO $pdo;
