@@ -34,8 +34,25 @@ function dieseZeileLoeschen(button) {
 	zeile.remove();
 }
 
+// Zentrale Datenstruktur für die Erstellung
+let currentObject = {
+	id: "",
+	name: "",
+	date: ""
+};
+
 //barcode variable
 let scannedBarcode = "";
+
+// Hilfsfunktion zur UI-Aktualisierung
+function updateOverviewUI() {
+	const idDisplay = document.getElementById("objectID");
+	if (idDisplay) idDisplay.value = currentObject.id;
+
+	document.getElementById("objectOverviewID").innerHTML = "ID: " + currentObject.id;
+	document.getElementById("objectOverviewName").innerHTML = "Name: " + currentObject.name;
+	document.getElementById("objectOverviewPurchaseDate").innerHTML = "Anschaffungsdatum: " + currentObject.date;
+}
 
 // event listener für barcode eingabe
 window.addEventListener("keydown", (e) => {
@@ -45,12 +62,12 @@ window.addEventListener("keydown", (e) => {
 		if (e.key === "Enter") {
 			if (scannedBarcode.length > 0) {
 				// Wert übertragen
-				document.getElementById("objectID").value = scannedBarcode;
-				document.getElementById("objectOverviewID").innerHTML = "ID: " + scannedBarcode; //übersichtsfeld ID
+				currentObject.id = scannedBarcode;
 				scannedBarcode = "";
 
 				// Dialog-Wechsel
 				modal.close();
+				updateOverviewUI();
 				objectConfigDialog();
 			}
 		} else {
@@ -62,8 +79,6 @@ window.addEventListener("keydown", (e) => {
 		}
 	}
 });
-
-
 
 //funktionen Dialoge
 
@@ -116,11 +131,10 @@ function barcodeCreateDialog() {
 
 	proceed.onclick = () => {
 		// barcode ins config feld rein
-		const barcodeID = document.getElementById('manualBarcodeInput').value; //erstellung eines barcodes dafür die ID
-		document.getElementById("objectID").value = barcodeID;
-		document.getElementById("objectOverviewID").innerHTML = "ID: " + barcodeID; //übersichtsfeld ID
+		currentObject.id = document.getElementById('manualBarcodeInput').value; //erstellung eines barcodes dafür die ID
 
 		modal.close();
+		updateOverviewUI();
 		objectConfigDialog();
 	};
 }
@@ -130,37 +144,31 @@ function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
 	const submit = document.getElementById("objectSubmitBtn");
 
-		
 	// Felder leeren
-	const name = document.getElementById('objectName').value = '';
-	const date = document.getElementById('objectPurchaseDate').value = '';
-	
+	document.getElementById('objectName').value = '';
+	document.getElementById('objectPurchaseDate').value = '';
+
 	modal.showModal();
 
 	submit.onclick = () => {
 		//aktielle werte 
-		const aktuellerName = document.getElementById('objectName').value;
-		const aktuellesDatum = document.getElementById('objectPurchaseDate').value;
+		currentObject.name = document.getElementById('objectName').value;
+		currentObject.date = document.getElementById('objectPurchaseDate').value;
 
-	// zu overview hinzufügen
-		document.getElementById("objectOverviewName").innerHTML = "Name: " + aktuellerName;
-		document.getElementById("objectOverviewPurchaseDate").innerHTML = "Anschaffungsdatum: " + aktuellesDatum;
+		// zu overview hinzufügen
 		modal.close();
+		updateOverviewUI();
 		createdObjectOverviewDialog();
 	};
 }
 // Zusammenfassung des erstellten Objekts
-function createdObjectOverviewDialog() { 
+function createdObjectOverviewDialog() {
 	const modal = document.getElementById("createdObjectOverviewDialog");
 	const closeBtn = document.getElementById("closeCreatedObjectOverviewBtn");
-	
+
 	modal.showModal();
-
-
-
 
 	closeBtn.onclick = () => {
 		modal.close();
 	};
 }
-
