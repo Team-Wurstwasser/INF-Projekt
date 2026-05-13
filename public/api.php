@@ -34,24 +34,22 @@ try {
 
     $dbHandler = new DatabaseHandler($pdo);
     $resource = $_GET['resource'] ?? '';
+    
     $method = $_SERVER['REQUEST_METHOD'];
+    if ($method !== 'GET') {
+        json_response(['success' => false, 'error' => 'Methode nicht erlaubt.'], 405);
+    }
 
     switch ($resource) {
         case 'werkzeuge':
-            if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
-            }
             break;
         case 'werkzeug_typen':
-            if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
-            }
             break;
 
         case 'mitarbeiter':
-            if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllMitarbeiter()]);
-            }
             break;
 
         default:
