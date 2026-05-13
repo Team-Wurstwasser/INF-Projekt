@@ -28,13 +28,6 @@ function json_response(array $payload, int $statusCode = 200): void
     exit;
 }
 
-function get_json_input(): array
-{
-    $input = file_get_contents('php://input');
-    $data = json_decode($input, true);
-    return $data ?? [];
-}
-
 
 try {
     $dsn = "mysql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']};charset=utf8mb4";
@@ -53,14 +46,6 @@ try {
         case 'werkzeuge':
             if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
-            } 
-            elseif ($method === 'POST') {
-                $data = get_json_input();
-                if (!isset($data['barcode'], $data['bezeichnung'], $data['datum'], $data['statusId'], $data['typId'])) {
-                    json_response(['success' => false, 'error' => 'Anfrage unvollständig.'], 400);
-                }
-                $res = $dbHandler->createWerkzeug($data['barcode'], $data['bezeichnung'], $data['datum'], (int)$data['statusId'], (int)$data['typId']);
-                json_response(['success' => $res]);
             }
             break;
 
@@ -72,23 +57,11 @@ try {
 
         case 'checkout':
             if ($method === 'POST') {
-                $data = get_json_input();
-                if (!isset($data['barcode'], $data['mitarbeiterId'])) {
-                    json_response(['success' => false, 'error' => 'Daten unvollständig.'], 400);
-                }
-                $res = $dbHandler->checkoutWerkzeug($data['barcode'], (int)$data['mitarbeiterId']);
-                json_response(['success' => $res]);
             }
             break;
 
         case 'checkin':
             if ($method === 'POST') {
-                $data = get_json_input();
-                if (!isset($data['barcode'], $data['zustand'])) {
-                    json_response(['success' => false, 'error' => 'Daten unvollständig.'], 400);
-                }
-                $res = $dbHandler->checkinWerkzeug($data['barcode'], $data['zustand']);
-                json_response(['success' => $res]);
             }
             break;
 
