@@ -4,6 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Backend\Database\DatabaseHandler;
 use Dotenv\Dotenv;
+use PDO;
 use Throwable;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
