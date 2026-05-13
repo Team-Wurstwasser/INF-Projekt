@@ -2,4 +2,4 @@
     http_response_code(404);
 ?>
 
-test
+Du hast pech
