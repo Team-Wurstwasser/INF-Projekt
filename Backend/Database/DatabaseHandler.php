@@ -19,7 +19,8 @@ class DatabaseHandler
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
-                WHERE a.Rückgabedatum >= NOW() - INTERVAL 48 HOUR";
+                WHERE a.Rückgabedatum >= NOW() - INTERVAL 48 HOUR
+                AND (a.EmailVersendet IS NULL OR a.EmailVersendet = 0)";
         return $this->pdo->query($sql)->fetchAll();
     }
 
@@ -41,7 +42,7 @@ class DatabaseHandler
 
     public function getAllMitarbeiter(): array
     {
-        $sql = "SELECT m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, m.Abteilung as Abteilung
+        $sql = "SELECT m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, m.username as Username, m.Abteilung as Abteilung
                 FROM Mitarbeiter m";
         return $this->pdo->query($sql)->fetchAll();
     }

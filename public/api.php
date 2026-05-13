@@ -5,7 +5,6 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Backend\Database\DatabaseHandler;
 use Dotenv\Dotenv;
 use PDO;
-use Throwable;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->safeLoad();
@@ -24,7 +23,6 @@ function json_response(array $payload, int $statusCode = 200): void
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
-
 
 try {
     $dsn = "mysql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']};charset=utf8mb4";
