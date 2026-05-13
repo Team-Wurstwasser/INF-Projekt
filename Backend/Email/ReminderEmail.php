@@ -2,8 +2,6 @@
 
 namespace Backend\Email;
 
-use Exception;
-
 class ReminderEmail
 {
     private $emailService;
