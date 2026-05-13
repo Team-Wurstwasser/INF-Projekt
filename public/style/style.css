@@ -90,6 +90,25 @@ header h1 {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #383846;
 }
+table {
+    border-collapse: collapse;
+    width: 50%;
+}
 
+th,
+td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
 
+button {
+    margin: 5px;
+}
 
+dialog {
+    margin: auto;
+    /* Optional: prevents the dialog from spanning full-width on tiny screens */
+    max-width: calc(100% - 2rem);
+    max-height: calc(100% - 2rem);
+}
