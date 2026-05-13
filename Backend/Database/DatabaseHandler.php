@@ -13,6 +13,16 @@ class DatabaseHandler
         $this->pdo = $pdo;
     }
 
+    public function getAllAbgabenin48h(): array
+    {
+        $sql = "SELECT a.Rückgabedatum as Rückgabedatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email
+                FROM Ausleihe a
+                JOIN Werkzeuge w ON a.Barcode = w.Barcode
+                JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
+                WHERE a.Rückgabedatum >= NOW() - INTERVAL 48 HOUR";
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
     public function getAllWerkzeuge(): array
     {
         $sql = "SELECT w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, t.Art as Typ, w.Anschaffungsdatum as Anschaffungsdatum, s.Bezeichnung as Status

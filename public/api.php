@@ -63,5 +63,10 @@ try {
 
 } catch (Throwable $throwable) {  
     error_log("API Error: " . $throwable->getMessage() . " in " . $throwable->getFile() . ":" . $throwable->getLine());
-    json_response(['success' => false, 'error' => 'Interner Serverfehler.'], 500);
+    json_response([
+        'success' => false, 
+        'debug_error' => $throwable->getMessage(),
+        'file' => $throwable->getFile(),
+        'line' => $throwable->getLine()
+    ], 500);
 }
