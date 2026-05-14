@@ -26,26 +26,22 @@ try {
     foreach ($abgabenIn48h as $abgabe) {
         $toEmail = $abgabe['Email'];
         $toName = $abgabe['Vorname'] . ' ' . $abgabe['Nachname'];
-        
+    
         $reminderTitle = "Rückgabe fällig: " . $abgabe['Bezeichnung'];
-        $reminderMessage = "Dies ist eine automatische Erinnerung, dass das Werkzeug " . $abgabe['Bezeichnung'] . " (Barcode: " . $abgabe['Barcode'] . ") zur Rückgabe gebracht werden muss.";
-        $reminderDate = $abgabe['Rückgabedatum'];
+        $reminderMessage = "Dies ist eine automatische Erinnerung für " . $abgabe['Bezeichnung'] . " (Barcode: " . $abgabe['Barcode'] . ").";
+    
+        $reminderDate = $abgabe['Faelligkeitsdatum']; 
 
         try {
             $success = $reminderEmail->sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $reminderDate);
-            
+        
             if ($success) {
-                $updateSql = "UPDATE Ausleihe SET EmailVersendet = 1 WHERE Barcode = :barcode AND Rückgabedatum = :datum";
-                $stmt = $pdo->prepare($updateSql);
-                $stmt->execute([
-                    ':barcode' => $abgabe['Barcode'],
-                    ':datum'   => $abgabe['Rückgabedatum']
-                ]);
+                $databaseHandler->setEmailSent($abgabe['Ausleih_ID']);
             }
-        } catch (Exception $e) {
-            error_log("E-Mail Versand fehlgeschlagen für $toEmail. Fehler: " . $e->getMessage());
+        } catch (Exception $eception) {
+            error_log("E-Mail Versand fehlgeschlagen für $toEmail: " . $eception->getMessage());
         }
     }
-} catch (Exception $e) {
-    error_log("Allgemeiner Fehler " . $e->getMessage());
+} catch (Exception $eception) {
+    error_log("Allgemeiner Fehler " . $eception->getMessage());
 }

@@ -16,13 +16,28 @@ class DatabaseHandler
 
     public function getAllAbgabenin48h(): array
     {
-        $sql = "SELECT a.Rückgabedatum as Rückgabedatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Faelligkeitsdatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
-                WHERE a.Rückgabedatum >= NOW() - INTERVAL 48 HOUR
-                AND (a.EmailVersendet IS NULL OR a.EmailVersendet = 0)";
+                WHERE a.Rückgabedatum IS NULL
+                AND (a.EmailVersendet IS NULL OR a.EmailVersendet = 0)
+                AND DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) <= (NOW() + INTERVAL 48 HOUR)
+                AND DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) >= NOW()";
+
         return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function setEmailSent(int $ausleiId): bool
+    {
+        try {
+            $sql = "UPDATE Ausleihe SET EmailVersendet = 1 WHERE Auslei_ID = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$ausleiId]);
+        } catch (Exception $eception) {
+            error_log("Fehler in setEmailSent: " . $eception->getMessage());
+            return false;
+    }
     }
 
     public function getAllWerkzeuge(): array
@@ -175,14 +190,14 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
-    public function leiheWerkzeug(string $barcode, int $mitarbeiterId): bool
+    public function leiheWerkzeug(string $barcode, int $mitarbeiterId, int $ausleihdauer): bool
     {
         $this->pdo->beginTransaction();
         try {
-            $sqlAusleihe = "INSERT INTO Ausleihe (Ausleihdatum, Mitarbeiter_ID, Barcode, EmailVersendet) 
-                            VALUES (CURDATE(), ?, ?, 0)";
+            $sqlAusleihe = "INSERT INTO Ausleihe (Ausleihdatum, Ausleihdauer, Mitarbeiter_ID, Barcode, EmailVersendet) 
+                            VALUES (CURDATE(), ?, ?, ?, 0)";
             $stmt1 = $this->pdo->prepare($sqlAusleihe);
-            $stmt1->execute([$mitarbeiterId, $barcode]);
+            $stmt1->execute([$ausleihdauer, $mitarbeiterId, $barcode]);
 
             $sqlStatus = "UPDATE Werkzeuge SET Status_ID = 2 WHERE Barcode = ?";
             $stmt2 = $this->pdo->prepare($sqlStatus);

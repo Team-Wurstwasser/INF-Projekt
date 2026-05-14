@@ -190,17 +190,18 @@ try {
             if ($method == 'POST') {
                 $barcode = trim((string)($data['barcode'] ?? ''));
                 $mitarbeiter_id = (int)($data['mitarbeiter_id'] ?? 0);
+                $ausleihdauer = (int)($data['ausleihdauer'] ?? 0);
 
-                if ($barcode !== '' && $mitarbeiter_id > 0) {
-                    $res = $dbHandler->leiheWerkzeug($barcode, $mitarbeiter_id);
-        
+                if ($barcode !== '' && $mitarbeiter_id > 0 && $ausleihdauer > 0) {
+                    $res = $dbHandler->leiheWerkzeug($barcode, $mitarbeiter_id, $ausleihdauer);
+
                     if ($res) {
                         json_response(['success' => true, 'message' => 'Erfolgreich ausgeliehen']);
                     } else {
-                        json_response(['success' => false, 'error' => 'Fehler beim Ausleihen in der Datenbank.'], 500);
+                        json_response(['success' => false, 'error' => 'Fehler beim Ausleihen'], 500);
                     }
                 }
-                json_response(['success' => false, 'error' => 'Parameter barcode und mitarbeiter_id fehlen.'], 400);
+                json_response(['success' => false, 'error' => 'Parameter barcode, mitarbeiter_id oder ausleihdauer fehlen.'], 400);
             }
 
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
