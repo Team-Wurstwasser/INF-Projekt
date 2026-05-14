@@ -1,0 +1,184 @@
+body {
+    margin:0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    
+    position: sticky;
+    top: 0; 
+    z-index: 1000;
+    background: linear-gradient(to left, #000080, #0000cd);
+    padding: 33px 32px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+header img {
+    height: 37px;
+    filter: brightness(0) invert(1);
+    margin-right: 30px;
+    margin-top: 5px;
+}
+
+header h1 {
+    margin: 0;
+    color: white;
+    font-size: 30px;
+    flex-grow: 1; 
+}
+
+.MenuButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.MenuButton img {
+    height: 45px; 
+    margin: 0;   
+}
+.MenuButton :hover{
+      filter: brightness(0.9);
+}
+
+.ImpExpButtons { 
+    padding: 30px;
+
+}
+.ImpExpButtons button { 
+      
+    padding: 10px;
+    margin-right: 10px;
+    height: 50px;
+   font-size: 20px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    background: blue;
+    color: white;
+
+}
+.ImpExpButtons  :hover{ 
+    background-color: rgb(52, 52, 163);
+
+}
+
+
+.ImpExpButtons img {
+    background-color: transparent !important;
+    background: none !important;
+    height: 18px;
+    width: auto;
+    margin: -3px;
+    padding-left: 6px;
+    filter: brightness(0) invert(1); /*Da Icons PNGs sind kann man sie nur mit filter färben, da CSS kein zugriff auf PNGs hat  */
+
+}
+.icon-header{
+    display: flex;
+    justify-content: space-between;
+    font-family: Opensans;
+}
+
+.HeaderIconÜbersicht{
+    font-size: 35px;
+    margin-left: 20px;
+    margin-top: 36px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #383846;
+}
+table {
+    border-collapse: collapse;
+    width: 50%;
+}
+
+th,
+td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+}
+
+button {
+    margin: 5px;
+}
+
+dialog {
+    margin: auto;
+    /* Optional: prevents the dialog from spanning full-width on tiny screens */
+    max-width: calc(100% - 2rem);
+    max-height: calc(100% - 2rem);
+    border-radius: 10px;
+    border-width: 3px;
+    
+}
+
+dialog img {
+    background-color: transparent !important;
+    background: none !important;
+    height: 40px;
+    width: auto;
+    margin: -3px;
+    padding-left: 6px;
+}
+dialog button {
+            font-size: large;
+
+            display: inline-flex;
+            /* Aktiviert Flexbox und hält den Button im Textfluss */
+            align-items: center;
+            /* Zentriert Text und Bild perfekt auf einer Höhe (vertikal) */
+            justify-content: center;
+            /* Zentriert den gesamten Inhalt horizontal im Button */
+            gap: 8px;
+            /* Erzeugt einen sauberen Abstand zwischen Text und Bild */
+    
+            /* Optionale Design-Optimierungen (nach Bedarf anpassen) */
+            padding: 10px 20px;
+            /* Schafft Platz um den Inhalt */
+            cursor: pointer;
+            /* Zeigt die Klick-Hand beim Drüberfahren */
+        border-radius: 10px;
+        transition: transform 0.3s ease; 
+    }
+    dialog button:hover {
+         transform: scale(1.05);
+         
+        }
+
+
+        .closeBtn {
+            background-color: transparent;
+            border: none;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            border-radius: 100%;
+            height: 30px;
+            width: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 0;
+        }
+    
+        .closeBtn img {
+            /* Scale the image down relative to the button */
+            width: 60%;
+            height: auto;
+            /* Smooth transition for the rotation */
+            transition: transform 0.3s ease;
+        }
+    
+        .closeBtn:hover img {
+            transform: scale(1.2);
+        }
+dialog h2 {
+    font-family:  Arial, Helvetica, sans-serif;
+    word-spacing: -1px;
+
+}
