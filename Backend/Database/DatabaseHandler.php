@@ -49,10 +49,18 @@ class DatabaseHandler
 
         while ($attempts < $maxAttempts) {
             $randomDigits = mt_rand(0, 999999999);
-            $barcode = '200' . str_pad($randomDigits, 9, '0', STR_PAD_LEFT);
+            $baseCode = '200' . str_pad($randomDigits, 9, '0', STR_PAD_LEFT);
 
-            if (!$this->barcodeExists($barcode)) {
-                return $barcode;
+            $sum = 0;
+            for ($i = 0; $i < 12; $i++) {
+                $sum += (int)$baseCode[$i] * ($i % 2 === 0 ? 1 : 3);
+            }
+            $checkDigit = (10 - ($sum % 10)) % 10;
+        
+            $fullBarcode = $baseCode . $checkDigit;
+
+            if (!$this->barcodeExists($fullBarcode)) {
+                return $fullBarcode;
             }
 
             $attempts++;
