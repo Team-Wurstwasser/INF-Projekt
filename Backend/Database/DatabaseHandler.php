@@ -31,7 +31,7 @@ class DatabaseHandler
     public function setEmailSent(int $ausleiId): bool
     {
         try {
-            $sql = "UPDATE Ausleihe SET EmailVersendet = 1 WHERE Auslei_ID = ?";
+            $sql = "UPDATE Ausleihe SET EmailVersendet = 1 WHERE Ausleih_ID = ?";
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([$ausleiId]);
         } catch (Exception $eception) {
