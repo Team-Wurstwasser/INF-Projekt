@@ -127,6 +127,10 @@ try {
                     json_response(['success' => false, 'error' => 'Barcode muss ein gültiger EAN-13-Code sein.'], 400);
                 }
 
+                if ($dbHandler->barcodeExists($barcode)) {
+                    json_response(['success' => false, 'error' => 'Barcode existiert bereits.'], 409);
+                }
+
                 $res = $dbHandler->addWerkzeug($barcode, $bezeichnung, $typId, $anschaffungsdatum, $statusId);
                 if ($res) {
                     json_response(['success' => true, 'message' => 'Werkzeug erfolgreich hinzugefügt']);
