@@ -29,15 +29,19 @@ function request_data(): array
 {
     $contentType = $_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '';
     $rawInput = file_get_contents('php://input');
+    $bodyData = [];
 
     if (stripos($contentType, 'application/json') !== false && $rawInput !== '') {
         $decoded = json_decode($rawInput, true);
         if (is_array($decoded)) {
-            return $decoded;
+            $bodyData = $decoded;
         }
+    } 
+    else {
+        $bodyData = $_POST;
     }
 
-    return array_merge($_GET, $_POST);
+    return array_merge($_GET, $bodyData);
 }
 
 try {
@@ -68,8 +72,8 @@ try {
         case 'barcode':
             if ($method == 'GET') {
          
-                $hasCode = isset($_GET['code']) && $_GET['code'] !== '';
-                $customCode = trim((string)($_GET['code'] ?? ''));
+                $hasCode = isset($data['code']) && trim((string)$data['code']) !== '';
+                $customCode = trim((string)($data['code'] ?? ''));
             
                 if (!$hasCode) {
                     $customCode = $dbHandler->generateUniqueBarcode();
