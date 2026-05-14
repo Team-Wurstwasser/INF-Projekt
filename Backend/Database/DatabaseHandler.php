@@ -185,8 +185,9 @@ class DatabaseHandler
 
     public function getAllMitarbeiter(): array
     {
-        $sql = "SELECT m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, m.username as Username, m.Abteilung as Abteilung
-                FROM Mitarbeiter m";
+        $sql = "SELECT m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, m.username as Username, ab.Name as Abteilung
+                FROM Mitarbeiter m
+                JOIN Abteilung ab ON m.Abteilung_ID = ab.Abteilung_ID";
         return $this->pdo->query($sql)->fetchAll();
     }
 
