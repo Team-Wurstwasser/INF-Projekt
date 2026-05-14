@@ -69,6 +69,23 @@ class DatabaseHandler
         return (int)$stmt->fetchColumn() > 0;
     }
 
+    public function isValidEan13Barcode(string $barcode): bool
+    {
+        if (!preg_match('/^\d{13}$/', $barcode)) {
+            return false;
+        }
+
+        $sum = 0;
+        for ($i = 0; $i < 12; $i++) {
+            $digit = (int)$barcode[$i];
+            $sum += $digit * (($i % 2 === 0) ? 1 : 3);
+        }
+
+        $checkDigit = (10 - ($sum % 10)) % 10;
+
+        return $checkDigit === (int)$barcode[12];
+    }
+
     public function generateUniqueBarcode(int $maxAttempts = 100): ?string
     {
         $attempts = 0;
@@ -119,6 +136,11 @@ class DatabaseHandler
     public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = '', int $statusId = 1): bool
     {
         try {
+            if (!$this->isValidEan13Barcode($barcode)) {
+                error_log("Fehler in addWerkzeug: Barcode ist kein gültiger EAN-13-Code.");
+                return false;
+            }
+
             if ($this->barcodeExists($barcode)) {
                 error_log("Fehler in addWerkzeug: Barcode existiert bereits.");
                 return false;
@@ -137,6 +159,28 @@ class DatabaseHandler
             return $stmt->execute([$barcode, $bezeichnung, $typId, $statusId]);
         } catch (Exception $exception) {
             error_log("Fehler in addWerkzeug: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function updateWerkzeug(string $barcode, string $bezeichnung, int $typId, int $statusId, string $anschaffungsdatum = ''): bool
+    {
+        try {
+            if ($anschaffungsdatum !== '') {
+                $sql = "UPDATE Werkzeuge
+                        SET Bezeichnung = ?, Typ_ID = ?, Status_ID = ?, Anschaffungsdatum = ?
+                        WHERE Barcode = ?";
+                $stmt = $this->pdo->prepare($sql);
+                return $stmt->execute([$bezeichnung, $typId, $statusId, $anschaffungsdatum, $barcode]);
+            }
+
+            $sql = "UPDATE Werkzeuge
+                    SET Bezeichnung = ?, Typ_ID = ?, Status_ID = ?
+                    WHERE Barcode = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$bezeichnung, $typId, $statusId, $barcode]);
+        } catch (Exception $exception) {
+            error_log("Fehler in updateWerkzeug: " . $exception->getMessage());
             return false;
         }
     }

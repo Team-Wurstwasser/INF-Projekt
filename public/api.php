@@ -76,23 +76,27 @@ try {
             if ($method == 'GET') {
          
                 $hasCode = isset($data['code']) && trim((string)$data['code']) !== '';
-                $customCode = trim((string)($data['code'] ?? ''));
+                $barcode = trim((string)($data['code'] ?? ''));
             
                 if (!$hasCode) {
-                    $customCode = $dbHandler->generateUniqueBarcode();
+                    $barcode = $dbHandler->generateUniqueBarcode();
 
-                    if ($customCode === null) {
+                    if ($barcode === null) {
                         json_response(['success' => false, 'error' => 'Konnte keinen eindeutigen Barcode generieren'], 500);
                     }
                     
-                    json_response(['success' => true, 'barcode' => $customCode]);
+                    json_response(['success' => true, 'barcode' => $barcode]);
                 }
             
+                if (!$dbHandler->isValidEan13Barcode($barcode)) {
+                    json_response(['success' => false, 'error' => 'Barcode muss ein gültiger EAN-13-Code sein.'], 400);
+                }
+
                 $barcodeGenerator = new TypeEan13();
                 $renderer = new PngRenderer();
 
-                $barcode = $barcodeGenerator->getBarcode($customCode);
-                $imageData = $renderer->render($barcode, max($barcode->getWidth() * 2, 100), 50);
+                $barcodeforimage = $barcodeGenerator->getBarcode($barcode);
+                $imageData = $renderer->render($barcodeforimage, max($barcodeforimage->getWidth() * 2, 100), 50);
             
                 header('Content-Type: image/png');
                 header('Content-Length: ' . strlen($imageData));
@@ -119,12 +123,35 @@ try {
                     json_response(['success' => false, 'error' => 'Parameter barcode, bezeichnung und typ_id fehlen.'], 400);
                 }
 
+                if (!$dbHandler->isValidEan13Barcode($barcode)) {
+                    json_response(['success' => false, 'error' => 'Barcode muss ein gültiger EAN-13-Code sein.'], 400);
+                }
+
                 $res = $dbHandler->addWerkzeug($barcode, $bezeichnung, $typId, $anschaffungsdatum, $statusId);
                 if ($res) {
                     json_response(['success' => true, 'message' => 'Werkzeug erfolgreich hinzugefügt']);
                 }
 
                 json_response(['success' => false, 'error' => 'Werkzeug konnte nicht hinzugefügt werden.'], 500);
+            }
+
+            if ($method === 'PUT') {
+                $barcode = trim((string)($data['barcode'] ?? ''));
+                $bezeichnung = trim((string)($data['bezeichnung'] ?? ''));
+                $typId = (int)($data['typ_id'] ?? 0);
+                $anschaffungsdatum = trim((string)($data['anschaffungsdatum'] ?? ''));
+                $statusId = (int)($data['status_id'] ?? 0);
+
+                if ($barcode === '' || $bezeichnung === '' || $typId <= 0 || $statusId <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter barcode, bezeichnung, typ_id und status_id fehlen.'], 400);
+                }
+
+                $res = $dbHandler->updateWerkzeug($barcode, $bezeichnung, $typId, $statusId, $anschaffungsdatum);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Werkzeug erfolgreich aktualisiert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Werkzeug konnte nicht aktualisiert werden.'], 500);
             }
 
             if ($method === 'DELETE') {
