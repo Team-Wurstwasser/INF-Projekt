@@ -45,7 +45,7 @@
         <option value="mitarbeiter">Mitarbeiter</option>
         <option value="werkzeug_typen">Werkzeugtypen</option>
     </select>
-    <button id="loadButton">Daten laden</button>
+    <button id="loadButton" onclick="showTable()">Daten laden</button>
 
     <table id="objektTabelle">
         <thead>
@@ -53,11 +53,6 @@
         </thead>
         <tbody id="tableData"></tbody>
     </table>
-
-    <button  onclick="zeileHinzufuegen()">
-        Zeile hinzufügen
-    </button>
-
 
 <dialog id="objectCreationMethodSelectionDialog">
     <h2>Wie möchten Sie ein neues Objekt anlegen ?</h2>

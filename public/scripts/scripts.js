@@ -1,39 +1,3 @@
-function zeileHinzufuegen() {
-
-	let tabelle = document.getElementById("objektTabelle");
-
-	let neueZeile = tabelle.insertRow();
-
-	let zelle1 = neueZeile.insertCell(0);
-	let zelle2 = neueZeile.insertCell(1);
-	let zelle3 = neueZeile.insertCell(2);
-	let zelle4 = neueZeile.insertCell(3);
-	let zelle5 = neueZeile.insertCell(4);
-	let zelle6 = neueZeile.insertCell(5);
-	let zelle7 = neueZeile.insertCell(6);
-	let zelle8 = neueZeile.insertCell(7);
-	let zelle9 = neueZeile.insertCell(8);
-
-	zelle1.innerHTML = 'object';
-	zelle2.innerHTML = '<input type="Objekt" placeholder="Name">';
-	zelle3.innerHTML = '<input type="number" placeholder="ID">';
-	zelle4.innerHTML = '<input type="text" placeholder="Modell">';
-	zelle5.innerHTML = '<input type="text" placeholder="Hersteller">';
-	zelle6.innerHTML = '<input type="number" placeholder="Raum">';
-	zelle7.innerHTML = '<input type="number" placeholder="Anzahl">';
-	zelle8.innerHTML = '<input type="number" placeholder="Status">';
-
-	zelle9.innerHTML =
-		'<button onclick="dieseZeileLoeschen(this)">Löschen</button>';
-}
-
-function dieseZeileLoeschen(button) {
-
-	let zeile = button.parentNode.parentNode;
-
-	zeile.remove();
-}
-
 // Zentrale Datenstruktur für die Erstellung
 let currentObject = {
 	id: "",
@@ -171,4 +135,49 @@ function createdObjectOverviewDialog() {
 	closeBtn.onclick = () => {
 		modal.close();
 	};
+}
+
+
+async function showTable() {
+    const select = document.getElementById("typeSelect").value;
+    const tableHead = document.getElementById("headerRow");
+    const tableData = document.getElementById("tableData");
+    
+    // Tabelle leeren
+    tableHead.innerHTML = "";
+    tableData.innerHTML = "";
+    
+	// aufrufen der API
+	const answer = await fetch(`https://pelican.hallo123wert.de/api.php?resource=${select}`);
+	//Antowrt für json lesbar machen
+	const jsonData = await answer.json();
+	// nur daten werden benötigt
+	const dataArray = jsonData.data; 
+
+	// erstellt die Spalten
+	function generateColumn(key) {
+		const th = document.createElement('th');
+		th.innerText = key;
+		tableHead.appendChild(th);
+	}
+	// Erstellt die Zellen
+	function generateCell(key, entry, tr) {
+		const td = document.createElement('td');
+		td.innerHTML = entry[key];
+		tr.appendChild(td);
+	}
+	// Spaltenname aus erstem datan array holen
+	const columnName = Object.keys(dataArray[0]);
+	
+	//kopfzeile
+	columnName.forEach(generateColumn);
+	
+	// datennzeile
+	dataArray.forEach(function(entry) {
+		const tr = document.createElement('tr');
+		columnName.forEach(function(key) {
+			generateCell(key, entry, tr);
+		});
+		tableData.appendChild(tr);
+	});
 }
