@@ -34,6 +34,33 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    public function barcodeExists(string $barcode): bool
+    {
+        $sql = "SELECT COUNT(*) FROM Werkzeuge WHERE Barcode = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$barcode]);
+
+        return (int)$stmt->fetchColumn() > 0;
+    }
+
+    public function generateUniqueBarcode(int $maxAttempts = 100): ?string
+    {
+        $attempts = 0;
+
+        while ($attempts < $maxAttempts) {
+            $randomDigits = mt_rand(0, 999999999);
+            $barcode = '200' . str_pad($randomDigits, 9, '0', STR_PAD_LEFT);
+
+            if (!$this->barcodeExists($barcode)) {
+                return $barcode;
+            }
+
+            $attempts++;
+        }
+
+        return null;
+    }
+
     public function getAllWerkzeugeTypen(): array
     {
         $sql = "SELECT t.Art as Typ 
@@ -44,6 +71,11 @@ class DatabaseHandler
     public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = '', int $statusId = 1): bool
     {
         try {
+            if ($this->barcodeExists($barcode)) {
+                error_log("Fehler in addWerkzeug: Barcode existiert bereits.");
+                return false;
+            }
+
             if ($anschaffungsdatum !== '') {
                 $sql = "INSERT INTO Werkzeuge (Barcode, Bezeichnung, Typ_ID, Anschaffungsdatum, Status_ID)
                         VALUES (?, ?, ?, ?, ?)";

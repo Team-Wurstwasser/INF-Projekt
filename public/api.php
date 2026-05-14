@@ -4,6 +4,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Backend\Database\DatabaseHandler;
 use Dotenv\Dotenv;
+use Picqer\Barcode\Types\TypeEan13;
+use Picqer\Barcode\Renderers\PngRenderer;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->safeLoad();
@@ -11,13 +13,13 @@ $dotenv->safeLoad();
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
-header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *'); 
 header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 function json_response(array $payload, int $statusCode = 200): void
 {
+    header('Content-Type: application/json; charset=utf-8');
     http_response_code($statusCode);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
@@ -63,6 +65,37 @@ try {
     $data = request_data();
 
     switch ($resource) {
+        case 'barcode':
+            if ($method == 'GET') {
+         
+                $hasCode = isset($_GET['code']) && $_GET['code'] !== '';
+                $customCode = trim((string)($_GET['code'] ?? ''));
+            
+                if (!$hasCode) {
+                    $customCode = $dbHandler->generateUniqueBarcode();
+
+                    if ($customCode === null) {
+                        json_response(['success' => false, 'error' => 'Konnte keinen eindeutigen Barcode generieren'], 500);
+                    }
+                    
+                    json_response(['success' => true, 'barcode' => $customCode]);
+                }
+            
+                $barcodeGenerator = new TypeEan13();
+                $renderer = new PngRenderer();
+
+                $barcode = $barcodeGenerator->getBarcode($customCode);
+                $imageData = $renderer->render($barcode, max($barcode->getWidth() * 2, 100), 50);
+            
+                header('Content-Type: image/png');
+                header('Content-Length: ' . strlen($imageData));
+                echo $imageData;
+                exit;
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
         case 'werkzeuge':
             if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
