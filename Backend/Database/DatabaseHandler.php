@@ -28,6 +28,17 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    public function getAllAusgelieheneSachen(): array
+    {
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Faelligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
+                FROM Ausleihe a
+                JOIN Werkzeuge w ON a.Barcode = w.Barcode
+                JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
+                WHERE a.Rückgabedatum IS NULL";
+
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
     public function setEmailSent(int $ausleiId): bool
     {
         try {
@@ -86,9 +97,23 @@ class DatabaseHandler
 
     public function getAllWerkzeugeTypen(): array
     {
-        $sql = "SELECT t.Art as Typ 
+        $sql = "SELECT t.Typ_ID as Typ_ID, t.Art as Typ 
                 FROM Werkzeugtyp t";
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_COLUMN);
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function getAllStatus(): array
+    {
+        $sql = "SELECT s.Status_ID as Status_ID, s.Bezeichnung as Bezeichnung
+                FROM Status s";
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function getAllAbteilungen(): array
+    {
+        $sql = "SELECT a.Abteilung_ID as Abteilung_ID, a.Name as Name
+                FROM Abteilung a";
+        return $this->pdo->query($sql)->fetchAll();
     }
 
     public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = '', int $statusId = 1): bool
@@ -148,6 +173,66 @@ class DatabaseHandler
         }
     }
 
+    public function addStatus(string $bezeichnung): bool
+    {
+        try {
+            $sql = "INSERT INTO Status (Bezeichnung) VALUES (?)";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$bezeichnung]);
+        } catch (Exception $exception) {
+            error_log("Fehler in addStatus: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function addAbteilung(string $name): bool
+    {
+        try {
+            $sql = "INSERT INTO Abteilung (Name) VALUES (?)";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$name]);
+        } catch (Exception $exception) {
+            error_log("Fehler in addAbteilung: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function updateWerkzeugTyp(int $typId, string $art): bool
+    {
+        try {
+            $sql = "UPDATE Werkzeugtyp SET Art = ? WHERE Typ_ID = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$art, $typId]);
+        } catch (Exception $exception) {
+            error_log("Fehler in updateWerkzeugTyp: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function updateStatus(int $statusId, string $bezeichnung): bool
+    {
+        try {
+            $sql = "UPDATE Status SET Bezeichnung = ? WHERE Status_ID = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$bezeichnung, $statusId]);
+        } catch (Exception $exception) {
+            error_log("Fehler in updateStatus: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function updateAbteilung(int $abteilungId, string $name): bool
+    {
+        try {
+            $sql = "UPDATE Abteilung SET Name = ? WHERE Abteilung_ID = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$name, $abteilungId]);
+        } catch (Exception $exception) {
+            error_log("Fehler in updateAbteilung: " . $exception->getMessage());
+            return false;
+        }
+    }
+
     public function deleteWerkzeugTyp(string $art): bool
     {
         $this->pdo->beginTransaction();
@@ -178,6 +263,56 @@ class DatabaseHandler
             return $this->pdo->commit();
         } catch (Exception $exception) {
             error_log("Fehler in deleteWerkzeugTyp: " . $exception->getMessage());
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteStatus(int $statusId): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $sqlCount = "SELECT COUNT(*) FROM Werkzeuge WHERE Status_ID = ?";
+            $stmtCount = $this->pdo->prepare($sqlCount);
+            $stmtCount->execute([$statusId]);
+
+            if ((int)$stmtCount->fetchColumn() > 0) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
+            $sqlDelete = "DELETE FROM Status WHERE Status_ID = ?";
+            $stmtDelete = $this->pdo->prepare($sqlDelete);
+            $stmtDelete->execute([$statusId]);
+
+            return $this->pdo->commit();
+        } catch (Exception $exception) {
+            error_log("Fehler in deleteStatus: " . $exception->getMessage());
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    public function deleteAbteilung(int $abteilungId): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $sqlCount = "SELECT COUNT(*) FROM Mitarbeiter WHERE Abteilung_ID = ?";
+            $stmtCount = $this->pdo->prepare($sqlCount);
+            $stmtCount->execute([$abteilungId]);
+
+            if ((int)$stmtCount->fetchColumn() > 0) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
+            $sqlDelete = "DELETE FROM Abteilung WHERE Abteilung_ID = ?";
+            $stmtDelete = $this->pdo->prepare($sqlDelete);
+            $stmtDelete->execute([$abteilungId]);
+
+            return $this->pdo->commit();
+        } catch (Exception $exception) {
+            error_log("Fehler in deleteAbteilung: " . $exception->getMessage());
             $this->pdo->rollBack();
             return false;
         }

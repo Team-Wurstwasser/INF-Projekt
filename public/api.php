@@ -14,7 +14,7 @@ ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
 header('Access-Control-Allow-Origin: *'); 
-header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 function json_response(array $payload, int $statusCode = 200): void
@@ -36,7 +36,10 @@ function request_data(): array
         if (is_array($decoded)) {
             $bodyData = $decoded;
         }
-    } 
+    }
+    else if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        parse_str($rawInput, $bodyData);
+    }
     else {
         $bodyData = $_POST;
     }
@@ -62,7 +65,7 @@ try {
         exit;
     }
 
-    if (!in_array($method, ['GET', 'POST', 'DELETE'], true)) {
+    if (!in_array($method, ['GET', 'POST', 'DELETE', 'PUT'], true)) {
         json_response(['success' => false, 'error' => 'Methode nicht erlaubt.'], 405);
     }
 
@@ -179,6 +182,131 @@ try {
                 json_response(['success' => false, 'error' => 'Art konnte nicht gelöscht werden oder wird noch verwendet.'], 409);
             }
 
+            if ($method === 'PUT') {
+                $typId = (int)($data['typ_id'] ?? 0);
+                $art = trim((string)($data['art'] ?? ''));
+
+                if ($typId <= 0 || $art === '') {
+                    json_response(['success' => false, 'error' => 'Parameter typ_id und art müssen gesetzt sein.'], 400);
+                }
+
+                $res = $dbHandler->updateWerkzeugTyp($typId, $art);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Art erfolgreich aktualisiert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Art konnte nicht aktualisiert werden.'], 500);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
+        case 'status':
+            if ($method === 'GET') {
+                json_response(['success' => true, 'data' => $dbHandler->getAllStatus()]);
+            }
+
+            if ($method === 'POST') {
+                $bezeichnung = trim((string)($data['bezeichnung'] ?? ''));
+
+                if ($bezeichnung === '') {
+                    json_response(['success' => false, 'error' => 'Parameter bezeichnung fehlt.'], 400);
+                }
+
+                $res = $dbHandler->addStatus($bezeichnung);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Status erfolgreich hinzugefügt']);
+                }
+
+                json_response(['success' => false, 'error' => 'Status konnte nicht hinzugefügt werden.'], 500);
+            }
+
+            if ($method === 'PUT') {
+                $statusId = (int)($data['status_id'] ?? 0);
+                $bezeichnung = trim((string)($data['bezeichnung'] ?? ''));
+
+                if ($statusId <= 0 || $bezeichnung === '') {
+                    json_response(['success' => false, 'error' => 'Parameter status_id und bezeichnung müssen gesetzt sein.'], 400);
+                }
+
+                $res = $dbHandler->updateStatus($statusId, $bezeichnung);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Status erfolgreich aktualisiert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Status konnte nicht aktualisiert werden.'], 500);
+            }
+
+            if ($method === 'DELETE') {
+                $statusId = (int)($data['status_id'] ?? 0);
+
+                if ($statusId <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter status_id fehlt.'], 400);
+                }
+
+                $res = $dbHandler->deleteStatus($statusId);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Status erfolgreich gelöscht']);
+                }
+
+                json_response(['success' => false, 'error' => 'Status konnte nicht gelöscht werden oder wird noch verwendet.'], 409);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
+        case 'abteilung':
+        case 'abteilungen':
+            if ($method === 'GET') {
+                json_response(['success' => true, 'data' => $dbHandler->getAllAbteilungen()]);
+            }
+
+            if ($method === 'POST') {
+                $name = trim((string)($data['name'] ?? ''));
+
+                if ($name === '') {
+                    json_response(['success' => false, 'error' => 'Parameter name fehlt.'], 400);
+                }
+
+                $res = $dbHandler->addAbteilung($name);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Abteilung erfolgreich hinzugefügt']);
+                }
+
+                json_response(['success' => false, 'error' => 'Abteilung konnte nicht hinzugefügt werden.'], 500);
+            }
+
+            if ($method === 'PUT') {
+                $abteilungId = (int)($data['abteilung_id'] ?? 0);
+                $name = trim((string)($data['name'] ?? ''));
+
+                if ($abteilungId <= 0 || $name === '') {
+                    json_response(['success' => false, 'error' => 'Parameter abteilung_id und name müssen gesetzt sein.'], 400);
+                }
+
+                $res = $dbHandler->updateAbteilung($abteilungId, $name);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Abteilung erfolgreich aktualisiert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Abteilung konnte nicht aktualisiert werden.'], 500);
+            }
+
+            if ($method === 'DELETE') {
+                $abteilungId = (int)($data['abteilung_id'] ?? 0);
+
+                if ($abteilungId <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter abteilung_id fehlt.'], 400);
+                }
+
+                $res = $dbHandler->deleteAbteilung($abteilungId);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Abteilung erfolgreich gelöscht']);
+                }
+
+                json_response(['success' => false, 'error' => 'Abteilung konnte nicht gelöscht werden oder wird noch verwendet.'], 409);
+            }
+
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
 
@@ -222,6 +350,15 @@ try {
                     }
                 }
                 json_response(['success' => false, 'error' => 'Parameter barcode fehlt.'], 400);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
+        case 'ausgeliehene_sachen':
+        case 'ausgeliehen':
+            if ($method === 'GET') {
+                json_response(['success' => true, 'data' => $dbHandler->getAllAusgelieheneSachen()]);
             }
 
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
