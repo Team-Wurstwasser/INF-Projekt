@@ -16,6 +16,8 @@ error_reporting(E_ALL);
 header('Access-Control-Allow-Origin: *'); 
 header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 
 function json_response(array $payload, int $statusCode = 200): void
 {
@@ -98,6 +100,7 @@ try {
                 $barcodeforimage = $barcodeGenerator->getBarcode($barcode);
                 $imageData = $renderer->render($barcodeforimage, max($barcodeforimage->getWidth() * 2, 100), 50);
             
+                header('Cache-Control: public, max-age=31536000, immutable');
                 header('Content-Type: image/png');
                 header('Content-Length: ' . strlen($imageData));
                 echo $imageData;
