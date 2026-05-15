@@ -28,7 +28,7 @@ try {
         $toName = $abgabe['Vorname'] . ' ' . $abgabe['Nachname'];
     
         $reminderTitle = "Rückgabe fällig: " . $abgabe['Bezeichnung'];
-        $reminderMessage = "Dies ist eine automatische Erinnerung für " . $abgabe['Bezeichnung'] . " (Barcode: " . $abgabe['Barcode'] . ").";
+        $reminderMessage = "Dies ist eine automatische Erinnerung für " . $abgabe['Bezeichnung'] . ".";
     
         $rückgabeTermin = $abgabe['Fälligkeitsdatum'];
         $gegenstand = $abgabe['Bezeichnung'];
