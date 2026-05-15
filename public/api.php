@@ -16,6 +16,8 @@ error_reporting(E_ALL);
 header('Access-Control-Allow-Origin: *'); 
 header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 
 function json_response(array $payload, int $statusCode = 200): void
 {
@@ -98,6 +100,7 @@ try {
                 $barcodeforimage = $barcodeGenerator->getBarcode($barcode);
                 $imageData = $renderer->render($barcodeforimage, max($barcodeforimage->getWidth() * 2, 100), 50);
             
+                header('Cache-Control: public, max-age=31536000, immutable');
                 header('Content-Type: image/png');
                 header('Content-Length: ' . strlen($imageData));
                 echo $imageData;
@@ -176,9 +179,27 @@ try {
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
 
+        case 'werkzeug_status':
+            if ($method === 'PUT') {
+                $barcode = trim((string)($data['barcode'] ?? ''));
+                $statusId = (int)($data['status_id'] ?? 0);
+
+                if ($barcode === '' || $statusId <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter barcode und status_id müssen gesetzt sein.'], 400);
+                }
+
+                $res = $dbHandler->updateWerkzeugStatus($barcode, $statusId);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Status des Werkzeugs erfolgreich aktualisiert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Werkzeug konnte nicht gefunden oder aktualisiert werden.'], 404);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
         case 'werkzeug_typen':
-        case 'typen':
-        case 'art':
             if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
             }
@@ -351,16 +372,16 @@ try {
                 $mitarbeiter_id = (int)($data['mitarbeiter_id'] ?? 0);
                 $ausleihdauer = (int)($data['ausleihdauer'] ?? 0);
 
-                if ($barcode !== '' && $mitarbeiter_id > 0 && $ausleihdauer > 0) {
-                    $res = $dbHandler->leiheWerkzeug($barcode, $mitarbeiter_id, $ausleihdauer);
-
-                    if ($res) {
-                        json_response(['success' => true, 'message' => 'Erfolgreich ausgeliehen']);
-                    } else {
-                        json_response(['success' => false, 'error' => 'Fehler beim Ausleihen'], 500);
-                    }
+                if ($barcode == '' || $mitarbeiter_id <= 0 || $ausleihdauer <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter barcode, mitarbeiter_id oder ausleihdauer fehlen.'], 400);
                 }
-                json_response(['success' => false, 'error' => 'Parameter barcode, mitarbeiter_id oder ausleihdauer fehlen.'], 400);
+
+                $res = $dbHandler->leiheWerkzeug($barcode, $mitarbeiter_id, $ausleihdauer);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Erfolgreich ausgeliehen']);
+                }
+
+                json_response(['success' => false, 'error' => 'Fehler beim Ausleihen'], 500);
             }
 
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
@@ -371,25 +392,52 @@ try {
                 $barcode = trim((string)($data['barcode'] ?? ''));
                 $zustand = trim((string)($data['zustand'] ?? 'OK'));
 
-                if ($barcode !== '') {
-                    $res = $dbHandler->gebeWerkzeugZurueck($barcode, $zustand);
-        
-                    if ($res) {
-                        json_response(['success' => true, 'message' => 'Erfolgreich abgegeben']);
-                    } else {
-                        json_response(['success' => false, 'error' => 'Fehler bei der Rückgabe in der Datenbank.'], 500);
-                    }
+                if ($barcode == '') {
+                    json_response(['success' => false, 'error' => 'Parameter barcode fehlt.'], 400);
                 }
-                json_response(['success' => false, 'error' => 'Parameter barcode fehlt.'], 400);
+
+                $res = $dbHandler->gebeWerkzeugZurueck($barcode, $zustand);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Erfolgreich abgegeben']);
+                }
+
+                json_response(['success' => false, 'error' => 'Fehler bei der Rückgabe in der Datenbank.'], 500);
             }
 
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
 
-        case 'ausgeliehene_sachen':
         case 'ausgeliehen':
             if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllAusgelieheneSachen()]);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
+        case 'ausgeliehen_historie':
+            if ($method === 'GET') {
+                json_response(['success' => true, 'data' => $dbHandler->getAusgeliehenHistorie()]);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
+        case 'verlängern':
+            if ($method === 'PUT' || $method === 'POST') {
+                $ausleihId = (int)($data['ausleih_id'] ?? 0);
+                $zusatzTage = (int)($data['zusatz_tage'] ?? 0);
+
+                if ($ausleihId <= 0 || $zusatzTage <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter ausleih_id und zusatz_tage müssen gesetzt sein und größer als 0 sein.'], 400);
+                }
+
+                $res = $dbHandler->extendAusleihen($ausleihId, $zusatzTage);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Ausleihe erfolgreich verlängert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Ausleihe konnte nicht verlängert werden.'], 404);
             }
 
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);

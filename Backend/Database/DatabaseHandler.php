@@ -16,12 +16,12 @@ class DatabaseHandler
 
     public function getAllAbgabenin48h(): array
     {
-        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Faelligkeitsdatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
                 WHERE a.Rückgabedatum IS NULL
-                AND (a.EmailVersendet IS NULL OR a.EmailVersendet = 0)
+                AND a.EmailVersendet = 0
                 AND DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) <= (NOW() + INTERVAL 48 HOUR)
                 AND DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) >= NOW()";
 
@@ -30,11 +30,21 @@ class DatabaseHandler
 
     public function getAllAusgelieheneSachen(): array
     {
-        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Faelligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
                 WHERE a.Rückgabedatum IS NULL";
+
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function getAusgeliehenHistorie(): array
+    {
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Rückgabedatum as Rückgabedatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email, a.ZustandBeiRückgabe as ZustandBeiRückgabe
+                FROM Ausleihe a
+                JOIN Werkzeuge w ON a.Barcode = w.Barcode
+                JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID";
 
         return $this->pdo->query($sql)->fetchAll();
     }
@@ -44,9 +54,10 @@ class DatabaseHandler
         try {
             $sql = "UPDATE Ausleihe SET EmailVersendet = 1 WHERE Ausleih_ID = ?";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$ausleiId]);
-        } catch (Exception $eception) {
-            error_log("Fehler in setEmailSent: " . $eception->getMessage());
+            $stmt->execute([$ausleiId]);
+            return $stmt->rowCount() > 0;
+        } catch (Exception $exception) {
+            error_log("Fehler in setEmailSent: " . $exception->getMessage());
             return false;
     }
     }
@@ -65,7 +76,6 @@ class DatabaseHandler
         $sql = "SELECT COUNT(*) FROM Werkzeuge WHERE Barcode = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$barcode]);
-
         return (int)$stmt->fetchColumn() > 0;
     }
 
@@ -172,15 +182,29 @@ class DatabaseHandler
                         WHERE Barcode = ?";
                 $stmt = $this->pdo->prepare($sql);
                 return $stmt->execute([$bezeichnung, $typId, $statusId, $anschaffungsdatum, $barcode]);
+            }else {
+                $sql = "UPDATE Werkzeuge
+                        SET Bezeichnung = ?, Typ_ID = ?, Status_ID = ?
+                        WHERE Barcode = ?";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute([$bezeichnung, $typId, $statusId, $barcode]);
             }
-
-            $sql = "UPDATE Werkzeuge
-                    SET Bezeichnung = ?, Typ_ID = ?, Status_ID = ?
-                    WHERE Barcode = ?";
-            $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$bezeichnung, $typId, $statusId, $barcode]);
+            return $stmt->rowCount() > 0;
         } catch (Exception $exception) {
             error_log("Fehler in updateWerkzeug: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function updateWerkzeugStatus(string $barcode, int $statusId): bool
+    {
+        try {
+            $sql = "UPDATE Werkzeuge SET Status_ID = ? WHERE Barcode = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$statusId, $barcode]);
+            return $stmt->rowCount() > 0;
+        } catch (Exception $exception) {
+            error_log("Fehler in updateWerkzeugStatus: " . $exception->getMessage());
             return false;
         }
     }
@@ -246,7 +270,8 @@ class DatabaseHandler
         try {
             $sql = "UPDATE Werkzeugtyp SET Art = ? WHERE Typ_ID = ?";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$art, $typId]);
+            $stmt->execute([$art, $typId]);
+            return $stmt->rowCount() > 0;
         } catch (Exception $exception) {
             error_log("Fehler in updateWerkzeugTyp: " . $exception->getMessage());
             return false;
@@ -258,7 +283,8 @@ class DatabaseHandler
         try {
             $sql = "UPDATE Status SET Bezeichnung = ? WHERE Status_ID = ?";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$bezeichnung, $statusId]);
+            $stmt->execute([$bezeichnung, $statusId]);
+            return $stmt->rowCount() > 0;
         } catch (Exception $exception) {
             error_log("Fehler in updateStatus: " . $exception->getMessage());
             return false;
@@ -270,7 +296,8 @@ class DatabaseHandler
         try {
             $sql = "UPDATE Abteilung SET Name = ? WHERE Abteilung_ID = ?";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$name, $abteilungId]);
+            $stmt->execute([$name, $abteilungId]);
+            return $stmt->rowCount() > 0;
         } catch (Exception $exception) {
             error_log("Fehler in updateAbteilung: " . $exception->getMessage());
             return false;
@@ -384,8 +411,8 @@ class DatabaseHandler
             $stmt2->execute([$barcode]);
 
             return $this->pdo->commit();
-        } catch (Exception $eception) {
-            error_log("Fehler in leiheWerkzeug: " . $eception->getMessage());
+        } catch (Exception $exception) {
+            error_log("Fehler in leiheWerkzeug: " . $exception->getMessage());
             $this->pdo->rollBack();
             return false;
         }
@@ -397,20 +424,37 @@ class DatabaseHandler
         try {
 
             $sqlAusleihe = "UPDATE Ausleihe 
-                            SET ZustandBeiRückgabe = ? 
+                            SET ZustandBeiRückgabe = ?, Rückgabedatum = CURDATE()
                             WHERE Barcode = ? AND Rückgabedatum IS NULL";
             $stmt1 = $this->pdo->prepare($sqlAusleihe);
             $stmt1->execute([$zustand, $barcode]);
 
-        
+            if ($stmt1->rowCount() === 0) {
+                $this->pdo->rollBack();
+                return false;
+            }
+
             $sqlStatus = "UPDATE Werkzeuge SET Status_ID = 1 WHERE Barcode = ?";
             $stmt2 = $this->pdo->prepare($sqlStatus);
             $stmt2->execute([$barcode]);
 
             return $this->pdo->commit();
-        } catch (Exception $eception) {
-            error_log("Fehler in gebeWerkzeugZurueck: " . $eception->getMessage());
+        } catch (Exception $exception) {
+            error_log("Fehler in gebeWerkzeugZurueck: " . $exception->getMessage());
             $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    public function extendAusleihen(int $ausleihId, int $zusatzTage): bool
+    {
+        try {
+            $sql = "UPDATE Ausleihe SET Ausleihdauer = Ausleihdauer + ?, EmailVersendet = 0 WHERE Ausleih_ID = ? AND Rückgabedatum IS NULL";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$zusatzTage, $ausleihId]);
+            return $stmt->rowCount() > 0;
+        } catch (Exception $exception) {
+            error_log("Fehler in extendAusleihen: " . $exception->getMessage());
             return false;
         }
     }

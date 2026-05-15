@@ -28,12 +28,13 @@ try {
         $toName = $abgabe['Vorname'] . ' ' . $abgabe['Nachname'];
     
         $reminderTitle = "Rückgabe fällig: " . $abgabe['Bezeichnung'];
-        $reminderMessage = "Dies ist eine automatische Erinnerung für " . $abgabe['Bezeichnung'] . " (Barcode: " . $abgabe['Barcode'] . ").";
+        $reminderMessage = "Dies ist eine automatische Erinnerung für " . $abgabe['Bezeichnung'] . ".";
     
-        $reminderDate = $abgabe['Faelligkeitsdatum']; 
+        $rückgabeTermin = $abgabe['Fälligkeitsdatum'];
+        $gegenstand = $abgabe['Bezeichnung'] . " (Barcode: " . $abgabe['Barcode'] . ")";
 
         try {
-            $success = $reminderEmail->sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $reminderDate);
+            $success = $reminderEmail->sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $gegenstand, $rückgabeTermin);
         
             if ($success) {
                 $databaseHandler->setEmailSent($abgabe['Ausleih_ID']);
