@@ -76,7 +76,6 @@ class DatabaseHandler
         $sql = "SELECT COUNT(*) FROM Werkzeuge WHERE Barcode = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$barcode]);
-
         return (int)$stmt->fetchColumn() > 0;
     }
 
