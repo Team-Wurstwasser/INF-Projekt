@@ -13,12 +13,12 @@ class ReminderEmail
         $this->emailService = new EmailService();
     }
 
-    public function sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $rückgabeTermin)
+    public function sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $gegenstand, $rückgabeTermin)
     {
         try {
             $subject = "Erinnerung: " . $reminderTitle;
 
-            $body = $this->generateEmailTemplate($toName, $reminderTitle, $reminderMessage, $rückgabeTermin);
+            $body = $this->generateEmailTemplate($toName, $reminderTitle, $reminderMessage, $gegenstand, $rückgabeTermin);
 
             return $this->emailService->sendEmail($toEmail, $toName, $subject, $body);
         } catch (Exception $exception) {
@@ -27,7 +27,7 @@ class ReminderEmail
         }
     }
 
-    private function generateEmailTemplate($toName, $reminderTitle, $reminderMessage, $rückgabeTermin)
+    private function generateEmailTemplate($toName, $reminderTitle, $reminderMessage, $gegenstand, $rückgabeTermin)
     {
         $dateRow = '
         <tr>
@@ -71,7 +71,7 @@ class ReminderEmail
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td style="padding-bottom: 10px;">
-                                            <strong>Gegenstand:</strong> ' . htmlspecialchars($reminderTitle) . '
+                                            <strong>Gegenstand:</strong> ' . htmlspecialchars($gegenstand) . '
                                         </td>
                                     </tr>
                                     ' . $dateRow . '

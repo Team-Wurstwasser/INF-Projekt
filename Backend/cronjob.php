@@ -30,10 +30,11 @@ try {
         $reminderTitle = "Rückgabe fällig: " . $abgabe['Bezeichnung'];
         $reminderMessage = "Dies ist eine automatische Erinnerung für " . $abgabe['Bezeichnung'] . " (Barcode: " . $abgabe['Barcode'] . ").";
     
-        $rückgabeTermin = $abgabe['Fälligkeitsdatum']; 
+        $rückgabeTermin = $abgabe['Fälligkeitsdatum'];
+        $gegenstand = $abgabe['Bezeichnung'];
 
         try {
-            $success = $reminderEmail->sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $rückgabeTermin);
+            $success = $reminderEmail->sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $gegenstand, $rückgabeTermin);
         
             if ($success) {
                 $databaseHandler->setEmailSent($abgabe['Ausleih_ID']);
