@@ -176,6 +176,27 @@ try {
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
 
+        case 'werkzeug_status':
+        case 'werkzeug-status':
+            if ($method === 'PUT') {
+                $barcode = trim((string)($data['barcode'] ?? ''));
+                $statusId = (int)($data['status_id'] ?? 0);
+
+                if ($barcode === '' || $statusId <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter barcode und status_id müssen gesetzt sein.'], 400);
+                }
+
+                $res = $dbHandler->updateWerkzeugStatus($barcode, $statusId);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Status des Werkzeugs erfolgreich aktualisiert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Werkzeug konnte nicht gefunden oder aktualisiert werden.'], 404);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
         case 'werkzeug_typen':
         case 'typen':
         case 'art':
@@ -390,6 +411,16 @@ try {
         case 'ausgeliehen':
             if ($method === 'GET') {
                 json_response(['success' => true, 'data' => $dbHandler->getAllAusgelieheneSachen()]);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
+        case 'ausleihen_historie':
+        case 'ausleihe_historie':
+        case 'ausgeliehene_historie':
+            if ($method === 'GET') {
+                json_response(['success' => true, 'data' => $dbHandler->getAllAusleihenHistorie()]);
             }
 
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
