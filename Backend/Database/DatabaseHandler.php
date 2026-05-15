@@ -16,7 +16,7 @@ class DatabaseHandler
 
     public function getAllAbgabenin48h(): array
     {
-        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Faelligkeitsdatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID

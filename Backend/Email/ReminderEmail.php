@@ -18,12 +18,7 @@ class ReminderEmail
         try {
             $subject = "Erinnerung: " . $reminderTitle;
 
-            $body = $this->generateEmailTemplate(
-                $toName,
-                $reminderTitle,
-                $reminderMessage,
-                $rückgabeTermin
-            );
+            $body = $this->generateEmailTemplate($toName, $reminderTitle, $reminderMessage, $rückgabeTermin);
 
             return $this->emailService->sendEmail($toEmail, $toName, $subject, $body);
         } catch (Exception $exception) {
