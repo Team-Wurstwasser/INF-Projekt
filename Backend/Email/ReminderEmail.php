@@ -78,7 +78,7 @@ class ReminderEmail
                                 </table>
                             </div>
                             
-                            <p>Bitte stelle sicher, dass die Werkzeuge bis zum genannten Termin zurückgegeben oder die Leihfrist im Portal verlängert wird.</p>
+                            <p>Bitte stelle sicher, dass das Werkzeug bis zum genannten Termin zurückgegeben oder die Leihfrist im Portal verlängert wird.</p>
                             <br>
                             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                                 <tr>

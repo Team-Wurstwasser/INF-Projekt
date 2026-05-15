@@ -31,7 +31,7 @@ try {
         $reminderMessage = "Dies ist eine automatische Erinnerung für " . $abgabe['Bezeichnung'] . ".";
     
         $rückgabeTermin = $abgabe['Fälligkeitsdatum'];
-        $gegenstand = $abgabe['Bezeichnung'];
+        $gegenstand = $abgabe['Bezeichnung'] . " (Barcode: " . $abgabe['Barcode'] . ")";
 
         try {
             $success = $reminderEmail->sendEmail($toEmail, $toName, $reminderTitle, $reminderMessage, $gegenstand, $rückgabeTermin);
