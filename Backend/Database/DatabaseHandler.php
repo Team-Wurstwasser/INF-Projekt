@@ -438,4 +438,16 @@ class DatabaseHandler
             return false;
         }
     }
+
+    public function extendAusleihen(int $ausleihId, int $zusatzTage): bool
+    {
+        try {
+            $sql = "UPDATE Ausleihe SET Ausleihdauer = Ausleihdauer + ?, EmailVersendet = 0 WHERE Ausleih_ID = ? AND Rückgabedatum IS NULL";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$zusatzTage, $ausleihId]);
+        } catch (Exception $exception) {
+            error_log("Fehler in extendAusleihen: " . $exception->getMessage());
+            return false;
+        }
+    }
 }

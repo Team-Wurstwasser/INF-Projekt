@@ -429,6 +429,29 @@ try {
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
 
+        case 'verlaengern':
+        case 'verlängern':
+        case 'abgabe_verlaengern':
+        case 'abgabe_verlängern':
+            if ($method === 'PUT' || $method === 'POST') {
+                $ausleihId = (int)($data['ausleih_id'] ?? 0);
+                $zusatzTage = (int)($data['zusatz_tage'] ?? 0);
+
+                if ($ausleihId <= 0 || $zusatzTage <= 0) {
+                    json_response(['success' => false, 'error' => 'Parameter ausleih_id und zusatz_tage müssen gesetzt sein und größer als 0 sein.'], 400);
+                }
+
+                $res = $dbHandler->extendAusleihen($ausleihId, $zusatzTage);
+                if ($res) {
+                    json_response(['success' => true, 'message' => 'Abgabe/Ausleihe erfolgreich verlängert']);
+                }
+
+                json_response(['success' => false, 'error' => 'Abgabe konnte nicht verlängert werden.'], 404);
+            }
+
+            json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
+            break;
+
         default:
             json_response(['success' => false, 'error' => 'Anfrage ungültig.'], 404);
     }
