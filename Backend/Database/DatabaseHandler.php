@@ -96,13 +96,11 @@ class DatabaseHandler
         return $checkDigit === (int)$barcode[12];
     }
 
-    public function generateUniqueBarcode(int $maxAttempts = 100): ?string
+    public function generateBarcode(): string
     {
-        $attempts = 0;
-
-        while ($attempts < $maxAttempts) {
+        do {
             $randomDigits = mt_rand(0, 999999999);
-            $baseCode = '200' . str_pad($randomDigits, 9, '0', STR_PAD_LEFT);
+            $baseCode = '200' . str_pad((string)$randomDigits, 9, '0', STR_PAD_LEFT);
 
             $sum = 0;
             for ($i = 0; $i < 12; $i++) {
@@ -111,15 +109,10 @@ class DatabaseHandler
             $checkDigit = (10 - ($sum % 10)) % 10;
         
             $fullBarcode = $baseCode . $checkDigit;
+        
+        } while ($this->barcodeExists($fullBarcode));
 
-            if (!$this->barcodeExists($fullBarcode)) {
-                return $fullBarcode;
-            }
-
-            $attempts++;
-        }
-
-        return null;
+        return $fullBarcode;
     }
 
     public function getAllWerkzeugeTypen(): array
