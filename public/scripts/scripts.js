@@ -148,7 +148,7 @@ async function showTable() {
     tableData.innerHTML = "";
     
 	// aufrufen der API
-	const answer = await fetch(`https://pelican.hallo123wert.de/api.php?resource=${select}`);
+	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=${select}`);
 	//Antowrt für json lesbar machen
 	const jsonData = await answer.json();
 	// nur daten werden benötigt
