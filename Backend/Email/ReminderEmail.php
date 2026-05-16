@@ -83,7 +83,7 @@ class ReminderEmail
                             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                                 <tr>
                                     <td align="center">
-                                        <a href="https://pelican.hallo123wert.de/" class="button">Jetzt im Portal bearbeiten</a>
+                                        <a href="https://mhp.hallo123wert.de/" class="button">Jetzt im Portal bearbeiten</a>
                                     </td>
                                 </tr>
                             </table>
