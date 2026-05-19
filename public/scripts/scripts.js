@@ -81,7 +81,6 @@ async function getBarcode() {
 		const response = await fetch(`https://mhp.hallo123wert.de/api.php?resource=barcode`);
 		const jsonData = await response.json();
 
-
 		const Barcode = jsonData.barcode;
 
 		currentObject.id = Barcode;
@@ -165,7 +164,7 @@ async function saveNewObject() {
         status_id: currentObject.statusId
     };
 
-    const response = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeuge", {
+    await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeuge", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
