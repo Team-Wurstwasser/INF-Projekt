@@ -293,13 +293,38 @@ dialog button {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 12px 24px;
+    padding: 12px 20px;
+    /* Leicht reduziertes Padding für bessere horizontale Einpassung */
     cursor: pointer;
     border-radius: 6px;
     border: 1px solid #cccccc;
     background-color: #ffffff;
     transition: all 0.2s ease;
-    margin: 5px 5px 5px 0;
+    margin: 5px;
+}
+
+/* Spezifischer Fix für die beiden Buttons im Modus-Auswahl-Dialog, 
+   damit sie zwingend nebeneinander in einer Zeile bleiben */
+#objectCreationMethodSelectionDialog button:not(.closeBtn) {
+    flex: 1;
+    min-width: 180px;
+    white-space: nowrap;
+}
+
+/* Flexbox-Container für die Buttons im ersten Dialog aktivieren */
+#objectCreationMethodSelectionDialog {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sorgt dafür, dass die Buttons nebeneinandergereiht werden */
+#objectCreationMethodSelectionDialog h2 {
+    width: 100%;
+}
+
+#objectCreationMethodSelectionDialog .closeBtn {
+    position: absolute;
+    /* Behält die absolute Positionierung des X bei */
 }
 
 /* Primäre Aktions-Buttons in Dialogen */
@@ -318,11 +343,6 @@ dialog button[id="objectSubmitBtn"]:hover {
 dialog button:hover {
     background-color: #f5f5f5;
     transform: translateY(-1px);
-}
-
-dialog img {
-    height: 24px;
-    width: auto;
 }
 
 /* Schließen-Button (X) oben rechts */
