@@ -16,6 +16,9 @@ function updateOverviewUI() {
 	document.getElementById("objectOverviewID").innerHTML = "ID: " + currentObject.id;
 	document.getElementById("objectOverviewName").innerHTML = "Name: " + currentObject.name;
 	document.getElementById("objectOverviewPurchaseDate").innerHTML = "Anschaffungsdatum: " + currentObject.date;
+	
+	
+
 }
 
 // event listener für barcode eingabe
@@ -136,9 +139,18 @@ function objectConfigDialog() {
 		currentObject.date = document.getElementById('objectPurchaseDate').value;
 
 		// zu overview hinzufügen
+		const barcodeImg = document.getElementById("barcodeimg");
+		if (barcodeImg && currentObject.barcode) {
+			// Pfad zur API anpassen (z. B. api.php?action=barcode&code=...)
+			barcodeImg.src = `api.php?action=barcode&code=${encodeURIComponent(currentObject.barcode)}`;
+		} else if (barcodeImg) {
+			barcodeImg.src = ""; // Zurücksetzen, falls kein Barcode vorhanden
+		}
+
 		modal.close();
 		updateOverviewUI();
 		createdObjectOverviewDialog();
+		
 	};
 }
 // Zusammenfassung des erstellten Objekts
