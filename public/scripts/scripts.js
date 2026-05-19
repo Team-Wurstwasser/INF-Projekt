@@ -170,24 +170,19 @@ async function showTable() {
 	// nur daten werden benötigt
 	const dataArray = jsonData.data; 
 
+	// Spaltenname aus erstem datan array holen
+	const columnName = Object.keys(dataArray[0]);
+	
+	//kopfzeile
+	columnName.forEach(generateColumn);
+
 	// erstellt die Spalten
 	function generateColumn(key) {
 		const th = document.createElement('th');
 		th.innerText = key;
 		tableHead.appendChild(th);
 	}
-	// Erstellt die Zellen
-	function generateCell(key, entry, tr) {
-		const td = document.createElement('td');
-		td.innerHTML = entry[key];
-		tr.appendChild(td);
-	}
-	// Spaltenname aus erstem datan array holen
-	const columnName = Object.keys(dataArray[0]);
-	
-	//kopfzeile
-	columnName.forEach(generateColumn);
-	
+		
 	// datennzeile
 	dataArray.forEach(function(entry) {
 		const tr = document.createElement('tr');
@@ -196,4 +191,11 @@ async function showTable() {
 		});
 		tableData.appendChild(tr);
 	});
+	
+	// Erstellt die Zellen
+	function generateCell(key, entry, tr) {
+		const td = document.createElement('td');
+		td.innerHTML = entry[key];
+		tr.appendChild(td);
+	}
 }
