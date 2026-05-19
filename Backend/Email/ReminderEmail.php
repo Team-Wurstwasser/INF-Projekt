@@ -58,7 +58,7 @@ class ReminderEmail
                 <table border="0" cellpadding="0" cellspacing="0" width="600" class="container" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e1e1e1; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <tr>
                         <td align="left" style="background-color: #0000bf; padding: 25px 40px; color: #ffffff;">
-                            <h1 style="margin: 0; font-size: 22px; font-weight: bold; letter-spacing: 0.5px;">Werkzeuginventarisierung</h1>
+                            <h1 style="margin: 0; font-size: 22px; font-weight: bold; letter-spacing: 0.5px;">Easy Inventory</h1>
                         </td>
                     </tr>
                     <tr>
