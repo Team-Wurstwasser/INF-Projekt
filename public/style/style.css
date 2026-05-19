@@ -1,180 +1,206 @@
+/* --- GLOBALE EINSTELLUNGEN & FIXES --- */
+* {
+    box-sizing: border-box;
+    /* Verhindert, dass Padding Elemente über den Bildschirmrand drückt */
+}
+
 body {
-    margin:0;
+    margin: 0;
     padding: 0;
     background-color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333333;
+    overflow-x: hidden;
+    /* Verhindert horizontales Scrollen der gesamten Website */
 }
+
+/* --- HEADER --- */
 header {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     position: sticky;
-    top: 0; 
+    top: 0;
     z-index: 1000;
     background: linear-gradient(to left, #000080, #0000cd);
-    padding: 33px 32px;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    padding: 20px 32px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 header img {
     height: 37px;
     filter: brightness(0) invert(1);
     margin-right: 30px;
-    margin-top: 5px;
 }
 
 header h1 {
     margin: 0;
     color: white;
-    font-size: 30px;
-    flex-grow: 1; 
+    font-size: 28px;
+    flex-grow: 1;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .MenuButton {
     background-color: transparent;
     border: none;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .MenuButton img {
-    height: 45px; 
-    margin: 0;   
-}
-.MenuButton :hover{
-      filter: brightness(0.9);
+    height: 40px;
+    margin: 0;
+    transition: filter 0.2s ease;
 }
 
-.ImpExpButtons { 
-    padding: 30px;
-
-}
-.ImpExpButtons button { 
-      
-    padding: 10px;
-    margin-right: 10px;
-    height: 50px;
-   font-size: 20px;
-    border-radius: 5px;
-    border: none;
-    outline: none;
-    background: blue;
-    color: white;
-
-}
-.ImpExpButtons  :hover{ 
-    background-color: rgb(52, 52, 163);
-
+.MenuButton:hover img {
+    filter: brightness(0.8);
 }
 
-
-.ImpExpButtons img {
-    background-color: transparent !important;
-    background: none !important;
-    height: 18px;
-    width: auto;
-    margin: -3px;
-    padding-left: 6px;
-    filter: brightness(0) invert(1); /*Da Icons PNGs sind kann man sie nur mit filter färben, da CSS kein zugriff auf PNGs hat  */
-
-}
-.icon-header{
+/* --- SEKTION: ÜBERSICHT & AKTIONEN --- */
+.icon-header {
     display: flex;
     justify-content: space-between;
-    font-family: Opensans;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px 20px;
 }
 
-.HeaderIconÜbersicht{
-    font-size: 35px;
-    margin-left: 20px;
-    margin-top: 36px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.HeaderIconÜbersicht {
+    font-size: 32px;
+    margin: 20px 0;
     color: #383846;
 }
 
-button {
-    margin: 5px;
-}
-
-dialog {
-    margin: auto;
-    /* Optional: prevents the dialog from spanning full-width on tiny screens */
-    max-width: calc(100% - 2rem);
-    max-height: calc(100% - 2rem);
-    border-radius: 10px;
-    border-width: 3px;
-    
-}
-
-dialog img {
-    background-color: transparent !important;
-    background: none !important;
-    height: 40px;
-    width: auto;
-    margin: -3px;
-    padding-left: 6px;
-}
-dialog button {
-    font-size: large;
-
-    display: inline-flex;
-    /* Aktiviert Flexbox und hält den Button im Textfluss */
-    align-items: center;
-    /* Zentriert Text und Bild perfekt auf einer Höhe (vertikal) */
-    justify-content: center;
-    /* Zentriert den gesamten Inhalt horizontal im Button */
-    gap: 8px;
-    /* Erzeugt einen sauberen Abstand zwischen Text und Bild */
-
-    /* Optionale Design-Optimierungen (nach Bedarf anpassen) */
-    padding: 10px 20px;
-    /* Schafft Platz um den Inhalt */
-    cursor: pointer;
-    /* Zeigt die Klick-Hand beim Drüberfahren */
-    border-radius: 10px;
-    transition: transform 0.3s ease; 
-}
-dialog button:hover {
-    transform: scale(1.05);    
-}
-.closeBtn {
-    background-color: transparent;
-    border: none;
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    border-radius: 100%;
-    height: 30px;
-    width: 30px;
+.ImpExpButtons {
     display: flex;
+    gap: 10px;
+}
+
+.ImpExpButtons button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    padding: 0 20px;
+    height: 45px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    background: #0000cd;
+    color: white;
     cursor: pointer;
-    padding: 0;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.closeBtn img {
-    /* Scale the image down relative to the button */
-    width: 60%;
-    height: auto;
-    /* Smooth transition for the rotation */
-    transition: transform 0.3s ease;
+.ImpExpButtons button:hover {
+    background-color: #000080;
 }
 
-.closeBtn:hover img {
-    transform: scale(1.2);
+.ImpExpButtons button:active {
+    transform: scale(0.98);
 }
-dialog h2 {
-    font-family:  Arial, Helvetica, sans-serif;
-    word-spacing: -1px;
+
+.ImpExpButtons img {
+    height: 16px;
+    width: auto;
+    filter: brightness(0) invert(1);
 }
+
+/* --- OBJEKT-FILTER (KATEGORIEN) --- */
+.ObjektAuswahl {
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ObjektAuswahl button {
+    background-color: #ffffff;
+    color: #383846;
+    border: 1px solid #cccccc;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    margin: 0;
+    transition: all 0.2s ease;
+}
+
+.ObjektAuswahl button:hover {
+    background-color: #0000cd;
+    color: #ffffff;
+    border-color: #0000cd;
+}
+
+/* --- FILTER-BEREICH (Z.B. DYNAMISCHE TABELLE) --- */
+h2 {
+    padding: 0 20px;
+    margin-top: 30px;
+    color: #383846;
+}
+
+label[for="typeSelect"] {
+    margin-left: 20px;
+    font-weight: 600;
+    color: #555555;
+}
+
+select {
+    padding: 8px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #cccccc;
+    background-color: #ffffff;
+    outline: none;
+    cursor: pointer;
+}
+
+#loadButton {
+    background-color: #383846;
+    color: white;
+    border: none;
+    padding: 9px 18px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#loadButton:hover {
+    background-color: #23232c;
+}
+
+/* --- REAKTIVES TABELLEN-DESIGN (RESPONSIVE FIX) --- */
+/* Dieser Wrapper verhindert, dass zu breite Tabellen das Layout zerstören.
+   Füge im HTML im Idealfall ein <div class="table-container"> um die Tabelle herum, 
+   oder nutze diesen globalen Fix, der direkt auf das Tabellen-Element greift:
+*/
 #objektTabelle {
+    display: block;
     width: calc(100% - 40px);
     margin: 20px auto;
+    overflow-x: auto;
+    /* Erlaubt horizontales Scrollen NUR innerhalb der Tabelle, falls sie zu breit wird */
     border-collapse: collapse;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #ffffff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
-    overflow: hidden;
+}
+
+/* Erzwingt, dass die Tabellenstruktur trotz des 'display: block'-Fixes erhalten bleibt */
+#objektTabelle table,
+#objektTabelle thead,
+#objektTabelle tbody,
+#objektTabelle tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    /* Verteilt Spalten gleichmäßig */
 }
 
 #objektTabelle thead {
@@ -183,18 +209,19 @@ dialog h2 {
 }
 
 #objektTabelle th {
-    padding: 15px 20px;
+    padding: 14px 16px;
     text-align: left;
     font-weight: 600;
-    font-size: 16px;
-    letter-spacing: 0.5px;
+    font-size: 15px;
 }
 
 #objektTabelle td {
-    padding: 12px 20px;
-    border-bottom: 1px solid #e0e0e0;
-    color: #333333;
-    font-size: 15px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #eeeeee;
+    color: #444444;
+    font-size: 14px;
+    word-break: break-word;
+    /* Verhindert, dass extrem langer Text die Spalte sprengt */
 }
 
 #objektTabelle tbody tr:last-child td {
@@ -202,10 +229,126 @@ dialog h2 {
 }
 
 #objektTabelle tbody tr:nth-child(even) {
-    background-color: #f8f9fa;
+    background-color: #fdfdfd;
 }
 
 #objektTabelle tbody tr:hover {
-    background-color: #eaeaea;
-    transition: background-color 0.2s ease;
+    background-color: #f1f3f9;
+    transition: background-color 0.15s ease;
+}
+
+/* --- DIALOGE (MODALS) --- */
+dialog {
+    margin: auto;
+    max-width: 500px;
+    width: calc(100% - 2rem);
+    max-height: calc(100% - 2rem);
+    border-radius: 12px;
+    border: 1px solid #cccccc;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    position: relative;
+}
+
+dialog h2 {
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+dialog h3 {
+    font-size: 15px;
+    color: #666666;
+    margin-bottom: 15px;
+}
+
+/* Formular-Elemente in Dialogen */
+dialog input[type="text"],
+dialog input[type="number"],
+dialog input[type="date"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+dialog input:focus {
+    border-color: #0000cd;
+}
+
+/* Buttons in Dialogen */
+dialog button {
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 6px;
+    border: 1px solid #cccccc;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    margin: 5px 5px 5px 0;
+}
+
+/* Primäre Aktions-Buttons in Dialogen */
+dialog button[id="objectManualProceed"],
+dialog button[id="objectSubmitBtn"] {
+    background-color: #0000cd;
+    color: white;
+    border: none;
+}
+
+dialog button[id="objectManualProceed"]:hover,
+dialog button[id="objectSubmitBtn"]:hover {
+    background-color: #000080;
+}
+
+dialog button:hover {
+    background-color: #f5f5f5;
+    transform: translateY(-1px);
+}
+
+dialog img {
+    height: 24px;
+    width: auto;
+}
+
+/* Schließen-Button (X) oben rechts */
+.closeBtn {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border-radius: 50%;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+.closeBtn img {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+}
+
+.closeBtn:hover {
+    background-color: #f0f0f0;
+}
+
+.closeBtn:hover img {
+    transform: scale(1.1);
 }
