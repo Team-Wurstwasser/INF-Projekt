@@ -122,6 +122,22 @@ function barcodeCreateDialog() {
 	};
 }
 
+async function loadWerkzeugTypen() {
+    const typeSelect = document.getElementById("objectTypeSelect");
+
+    typeSelect.innerHTML = "";
+
+    const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
+    const jsonData = await answer.json();
+
+	jsonData.data.forEach(function(typ) {
+    	const option = document.createElement("option");
+    	option.value = typ.Typ_ID; 
+    	option.innerText = typ.Typ; 
+    	typeSelect.appendChild(option);
+	});
+}
+
 // Objekt Configuration Dialog
 function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
@@ -131,12 +147,15 @@ function objectConfigDialog() {
 	document.getElementById('objectName').value = '';
 	document.getElementById('objectPurchaseDate').value = '';
 
+	loadWerkzeugTypen();
+
 	modal.showModal();
 
 	submit.onclick = () => {
 		//aktielle werte 
 		currentObject.name = document.getElementById('objectName').value;
 		currentObject.date = document.getElementById('objectPurchaseDate').value;
+		currentObject.typId = document.getElementById('objectTypeSelect').value;
 
 		// zu overview hinzufügen
 		const barcodeImg = document.getElementById("barcodeimg");

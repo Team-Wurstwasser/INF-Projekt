@@ -81,18 +81,10 @@
 <dialog id="objectConfigDialog">
     <h2>Objekt konfigurieren</h2>
     <h2>Bitte folgende Informationen eingeben:</h2>
-    <input type="text" id="objectID" placeholder="Objekt ID" autocomplete="off">
+    <input type="text" id="objectID" disabled  autocomplete="off">
     <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off">
-    Werkzeugtyp:   <select id="typeSelect">
-        <option value="werkzeuge">Werkzeuge</option>
-        <option value="mitarbeiter">Mitarbeiter</option>
-        <option value="werkzeug_typen">Werkzeugtypen</option>
-        <option value="status">Status</option>
-        <option value="werkzeug_typen">Werkzeugtypen</option>
-        <option value="abteilung">Abteilungen</option>
-        <option value="ausgeliehen">Ausgeliehene Werkzeuge</option>
-        <option value="ausgeliehen_historie">Ausleih Historie</option>
-    </select>
+    Werkzeugtyp:   
+    <select id="objectTypeSelect"></select>
     <div>Anschaffungsdatum:</div>
     <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off">
     <button id="objectSubmitBtn">Bestätigen</button> 
