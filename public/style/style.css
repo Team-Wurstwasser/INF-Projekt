@@ -176,31 +176,22 @@ select {
 }
 
 /* --- REAKTIVES TABELLEN-DESIGN (RESPONSIVE FIX) --- */
-/* Dieser Wrapper verhindert, dass zu breite Tabellen das Layout zerstören.
-   Füge im HTML im Idealfall ein <div class="table-container"> um die Tabelle herum, 
-   oder nutze diesen globalen Fix, der direkt auf das Tabellen-Element greift:
+
+/* Globale Absicherung: Falls die Tabelle zu breit wird, 
+   erlaubt dieses CSS das Scrollen im Tabellenbereich, ohne das Layout zu stauchen.
 */
 #objektTabelle {
-    display: block;
     width: calc(100% - 40px);
     margin: 20px auto;
-    overflow-x: auto;
-    /* Erlaubt horizontales Scrollen NUR innerhalb der Tabelle, falls sie zu breit wird */
     border-collapse: collapse;
     background-color: #ffffff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
-}
 
-/* Erzwingt, dass die Tabellenstruktur trotz des 'display: block'-Fixes erhalten bleibt */
-#objektTabelle table,
-#objektTabelle thead,
-#objektTabelle tbody,
-#objektTabelle tr {
+    /* WICHTIG: Stellt die native Tabellenstruktur wieder her */
     display: table;
-    width: 100%;
-    table-layout: fixed;
-    /* Verteilt Spalten gleichmäßig */
+    table-layout: auto;
+    /* Erlaubt Spalten, sich nach dem Inhalt zu strecken */
 }
 
 #objektTabelle thead {
@@ -209,19 +200,21 @@ select {
 }
 
 #objektTabelle th {
-    padding: 14px 16px;
+    padding: 14px 20px;
     text-align: left;
     font-weight: 600;
     font-size: 15px;
+    white-space: nowrap;
+    /* Verhindert, dass Überschriften hässlich umbrechen */
 }
 
 #objektTabelle td {
-    padding: 12px 16px;
+    padding: 12px 20px;
     border-bottom: 1px solid #eeeeee;
     color: #444444;
     font-size: 14px;
-    word-break: break-word;
-    /* Verhindert, dass extrem langer Text die Spalte sprengt */
+    white-space: nowrap;
+    /* Verhindert das Zusammenquetschen von Text */
 }
 
 #objektTabelle tbody tr:last-child td {
@@ -235,6 +228,16 @@ select {
 #objektTabelle tbody tr:hover {
     background-color: #f1f3f9;
     transition: background-color 0.15s ease;
+}
+
+/* Zukunftssicherer globaler Fix für mobile Geräte oder kleine Bildschirme:
+   Wenn du eine Tabelle in HTML mit <div class="table-container">...</div> umschließt,
+   wird sie auf kleinen Bildschirmen scrollbar, bleibt auf großen Bildschirmen aber voll gestreckt.
+*/
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* --- DIALOGE (MODALS) --- */
