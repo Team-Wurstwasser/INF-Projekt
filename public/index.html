@@ -77,23 +77,18 @@
     <button id="closeBtn1">Schließen</button>
 </dialog>
 
-<dialog id="objectCreateBarcodeCreationDialog">
-    <h2>Neues Objekt anlegen</h2>
-    <h3>ID für den 13 Stelligen Barcode nach <a href="https://de.wikipedia.org/wiki/European_Article_Number" target="_blank">EAN-13</a> festlegen:</h3> 
-    <input type="number"  placeholder="1234567891234" id="manualBarcodeInput" placeholder="Barcode eingeben" autocomplete="off">
-    <button id="objectManualProceed">Weiter</button>
-</dialog>
 
 <dialog id="objectConfigDialog">
     <h2>Objekt konfigurieren</h2>
     <h2>Bitte folgende Informationen eingeben:</h2>
     <input type="number" id="objectID" placeholder="Objekt ID" autocomplete="off">
     <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off">
+    <div>Anschaffungsdatum:</div>
     <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off">
-    <button id="objectSubmitBtn">Bestätigen</button>
+    <button id="objectSubmitBtn">Bestätigen</button> 
 </dialog>
 
-<dialog id="createdObjectOverviewDialog">
+<dialog id="createdObjectOverviewDialog">P002368
     <h2>Erstelltes Objekt übersicht</h2>
     <p id="objectOverviewID">ID: </p>
     <p id="objectOverviewName">Name: </p>

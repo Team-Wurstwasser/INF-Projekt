@@ -66,10 +66,16 @@ function objectCreationMethodSelectionDialog() {
 
 	manualModeBtn.onclick = () => {
 		modal.close();
-		barcodeCreateDialog();
+		generateBarcode();
 	};
 
 }
+function generateBarcode() {
+	
+}
+
+
+
 // Scan Option 
 function objectCreateScanBarcodeDialog() {
 	const modal = document.getElementById("objectCreateScanBarcodeDialog");
@@ -83,24 +89,6 @@ function objectCreateScanBarcodeDialog() {
 		modal.close();
 	};
 
-}
-
-// manuelle erstellung eines barcodes option
-function barcodeCreateDialog() {
-	const modal = document.getElementById("objectCreateBarcodeCreationDialog");
-	const proceed = document.getElementById("objectManualProceed");
-
-	document.getElementById('manualBarcodeInput').value = ''; //clear bei widereingabe
-	modal.showModal();
-
-	proceed.onclick = () => {
-		// barcode ins config feld rein
-		currentObject.id = document.getElementById('manualBarcodeInput').value; //erstellung eines barcodes dafür die ID
-
-		modal.close();
-		updateOverviewUI();
-		objectConfigDialog();
-	};
 }
 
 // Objekt Configuration Dialog

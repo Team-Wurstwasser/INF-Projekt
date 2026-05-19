@@ -1,7 +1,6 @@
 /* --- GLOBALE EINSTELLUNGEN & FIXES --- */
 * {
-    box-sizing: border-box;
-    /* Verhindert, dass Padding Elemente über den Bildschirmrand drückt */
+    box-sizing: border-box; /* Verhindert, dass Padding Elemente über den Bildschirmrand drückt */
 }
 
 body {
@@ -10,8 +9,7 @@ body {
     background-color: #f0f0f0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333333;
-    overflow-x: hidden;
-    /* Verhindert horizontales Scrollen der gesamten Website */
+    overflow-x: hidden; /* Verhindert horizontales Scrollen der gesamten Website */
 }
 
 /* --- HEADER --- */
@@ -20,11 +18,11 @@ header {
     align-items: center;
     justify-content: flex-start;
     position: sticky;
-    top: 0;
+    top: 0; 
     z-index: 1000;
     background: linear-gradient(to left, #000080, #0000cd);
     padding: 20px 32px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 header img {
@@ -37,7 +35,7 @@ header h1 {
     margin: 0;
     color: white;
     font-size: 28px;
-    flex-grow: 1;
+    flex-grow: 1; 
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
@@ -50,8 +48,8 @@ header h1 {
 }
 
 .MenuButton img {
-    height: 40px;
-    margin: 0;
+    height: 40px; 
+    margin: 0;   
     transition: filter 0.2s ease;
 }
 
@@ -74,12 +72,12 @@ header h1 {
     color: #383846;
 }
 
-.ImpExpButtons {
+.ImpExpButtons { 
     display: flex;
     gap: 10px;
 }
 
-.ImpExpButtons button {
+.ImpExpButtons button { 
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -96,7 +94,7 @@ header h1 {
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.ImpExpButtons button:hover {
+.ImpExpButtons button:hover { 
     background-color: #000080;
 }
 
@@ -176,22 +174,29 @@ select {
 }
 
 /* --- REAKTIVES TABELLEN-DESIGN (RESPONSIVE FIX) --- */
-
-/* Globale Absicherung: Falls die Tabelle zu breit wird, 
-   erlaubt dieses CSS das Scrollen im Tabellenbereich, ohne das Layout zu stauchen.
+/* Dieser Wrapper verhindert, dass zu breite Tabellen das Layout zerstören.
+   Füge im HTML im Idealfall ein <div class="table-container"> um die Tabelle herum, 
+   oder nutze diesen globalen Fix, der direkt auf das Tabellen-Element greift:
 */
 #objektTabelle {
+    display: block;
     width: calc(100% - 40px);
     margin: 20px auto;
+    overflow-x: auto; /* Erlaubt horizontales Scrollen NUR innerhalb der Tabelle, falls sie zu breit wird */
     border-collapse: collapse;
     background-color: #ffffff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
+}
 
-    /* WICHTIG: Stellt die native Tabellenstruktur wieder her */
+/* Erzwingt, dass die Tabellenstruktur trotz des 'display: block'-Fixes erhalten bleibt */
+#objektTabelle table, 
+#objektTabelle thead, 
+#objektTabelle tbody, 
+#objektTabelle tr {
     display: table;
-    table-layout: auto;
-    /* Erlaubt Spalten, sich nach dem Inhalt zu strecken */
+    width: 100%;
+    table-layout: fixed; /* Verteilt Spalten gleichmäßig */
 }
 
 #objektTabelle thead {
@@ -200,21 +205,18 @@ select {
 }
 
 #objektTabelle th {
-    padding: 14px 20px;
+    padding: 14px 16px;
     text-align: left;
     font-weight: 600;
     font-size: 15px;
-    white-space: nowrap;
-    /* Verhindert, dass Überschriften hässlich umbrechen */
 }
 
 #objektTabelle td {
-    padding: 12px 20px;
+    padding: 12px 16px;
     border-bottom: 1px solid #eeeeee;
     color: #444444;
     font-size: 14px;
-    white-space: nowrap;
-    /* Verhindert das Zusammenquetschen von Text */
+    word-break: break-word; /* Verhindert, dass extrem langer Text die Spalte sprengt */
 }
 
 #objektTabelle tbody tr:last-child td {
@@ -230,25 +232,15 @@ select {
     transition: background-color 0.15s ease;
 }
 
-/* Zukunftssicherer globaler Fix für mobile Geräte oder kleine Bildschirme:
-   Wenn du eine Tabelle in HTML mit <div class="table-container">...</div> umschließt,
-   wird sie auf kleinen Bildschirmen scrollbar, bleibt auf großen Bildschirmen aber voll gestreckt.
-*/
-.table-container {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
 /* --- DIALOGE (MODALS) --- */
 dialog {
     margin: auto;
-    max-width: 500px;
+    max-width: 550px;
     width: calc(100% - 2rem);
     max-height: calc(100% - 2rem);
     border-radius: 12px;
     border: 1px solid #cccccc;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     padding: 30px;
     position: relative;
 }
@@ -293,38 +285,13 @@ dialog button {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 12px 20px;
-    /* Leicht reduziertes Padding für bessere horizontale Einpassung */
+    padding: 12px 24px;
     cursor: pointer;
     border-radius: 6px;
     border: 1px solid #cccccc;
     background-color: #ffffff;
     transition: all 0.2s ease;
-    margin: 5px;
-}
-
-/* Spezifischer Fix für die beiden Buttons im Modus-Auswahl-Dialog, 
-   damit sie zwingend nebeneinander in einer Zeile bleiben */
-#objectCreationMethodSelectionDialog button:not(.closeBtn) {
-    flex: 1;
-    min-width: 180px;
-    white-space: nowrap;
-}
-
-/* Flexbox-Container für die Buttons im ersten Dialog aktivieren */
-#objectCreationMethodSelectionDialog {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Sorgt dafür, dass die Buttons nebeneinandergereiht werden */
-#objectCreationMethodSelectionDialog h2 {
-    width: 100%;
-}
-
-#objectCreationMethodSelectionDialog .closeBtn {
-    position: absolute;
-    /* Behält die absolute Positionierung des X bei */
+    margin: 5px 5px 5px 0;
 }
 
 /* Primäre Aktions-Buttons in Dialogen */
@@ -343,4 +310,40 @@ dialog button[id="objectSubmitBtn"]:hover {
 dialog button:hover {
     background-color: #f5f5f5;
     transform: translateY(-1px);
+}
+
+dialog img {
+    height: 24px;
+    width: auto;
+}
+
+/* Schließen-Button (X) oben rechts */
+.closeBtn {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border-radius: 50%;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+.closeBtn img {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+}
+
+.closeBtn:hover {
+    background-color: #f0f0f0;
+}
+
+.closeBtn:hover img {
+    transform: scale(1.1);
 }
