@@ -140,12 +140,8 @@ function objectConfigDialog() {
 
 		// zu overview hinzufügen
 		const barcodeImg = document.getElementById("barcodeimg");
-		if (barcodeImg && currentObject.barcode) {
-			// Pfad zur API anpassen (z. B. api.php?action=barcode&code=...)
-			barcodeImg.src = `api.php?action=barcode&code=${encodeURIComponent(currentObject.barcode)}`;
-		} else if (barcodeImg) {
-			barcodeImg.src = ""; // Zurücksetzen, falls kein Barcode vorhanden
-		}
+
+    	barcodeImg.src = `https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(currentObject.id)}`;
 
 		modal.close();
 		updateOverviewUI();
@@ -153,6 +149,7 @@ function objectConfigDialog() {
 		
 	};
 }
+
 // Zusammenfassung des erstellten Objekts
 function createdObjectOverviewDialog() {
 	const modal = document.getElementById("createdObjectOverviewDialog");
