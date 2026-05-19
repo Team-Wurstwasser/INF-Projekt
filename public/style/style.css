@@ -287,3 +287,16 @@ dialog img {
 .closeBtn:hover img {
     transform: scale(1.1);
 }
+/* Table */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden; /* Verhindert, dass Zellen über den Rahmen hinausragen */
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
