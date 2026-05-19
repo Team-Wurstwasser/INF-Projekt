@@ -2,6 +2,8 @@
 let currentObject = {
 	id: "",
 	name: "",
+	typId: "",
+	statusId: "",
 	date: ""
 };
 
