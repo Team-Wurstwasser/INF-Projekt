@@ -7,9 +7,11 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f0f0f0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Moderne und sehr gut lesbare Schriftart-Kombination: */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #333333;
-    overflow-x: hidden; /* Verhindert horizontales Scrollen der gesamten Website */
+    font-size: 15px; /* Angenehme Basis-Textgröße */
+    overflow-x: hidden;
 }
 
 /* --- HEADER --- */
@@ -20,6 +22,7 @@ header {
     position: sticky;
     top: 0; 
     z-index: 1000;
+    /* Der gewünschte Verlauf: Startet tief in Navy Blue und geht in Medium Blue über */
     background: linear-gradient(to left, #000080, #0000cd);
     padding: 20px 32px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -34,9 +37,9 @@ header img {
 header h1 {
     margin: 0;
     color: white;
-    font-size: 28px;
-    flex-grow: 1; 
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 24px; /* Perfekte Größe für die Hauptüberschrift */
+    font-weight: 600;
+    flex-grow: 1;
 }
 
 .MenuButton {
@@ -67,9 +70,10 @@ header h1 {
 }
 
 .HeaderIconÜbersicht {
-    font-size: 32px;
+    font-size: 26px; /* Etwas kleiner als vorher (32px), um mit dem Header (24px) zu harmonieren */
     margin: 20px 0;
     color: #383846;
+    font-weight: 600;
 }
 
 .ImpExpButtons { 
@@ -84,22 +88,22 @@ header h1 {
     gap: 8px;
     padding: 0 20px;
     height: 45px;
-    font-size: 16px;
+    font-size: 14px; /* Synchronisiert mit Tabellen & Inputs */
     font-weight: 600;
     border-radius: 6px;
     border: none;
-    background: #0000cd;
+    background: #000080; /* Hauptfarbe: Navy Blue */
     color: white;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .ImpExpButtons button:hover { 
-    background-color: #000080;
+    background-color: #0000cd; /* Aufhellung beim Hovern (passend zum Header-Verlauf) */
 }
 
 .ImpExpButtons button:active {
-    transform: scale(0.98);
+    transform: scale(0.98); /* Kleine Klick-Animation */
 }
 
 .ImpExpButtons img {
@@ -121,7 +125,7 @@ header h1 {
     color: #383846;
     border: 1px solid #cccccc;
     padding: 10px 20px;
-    font-size: 15px;
+    font-size: 14px; /* Synchronisiert */
     font-weight: 600;
     border-radius: 20px;
     cursor: pointer;
@@ -130,27 +134,33 @@ header h1 {
 }
 
 .ObjektAuswahl button:hover {
-    background-color: #0000cd;
+    background-color: #000080; /* Hover nun auch Navy Blue */
     color: #ffffff;
-    border-color: #0000cd;
+    border-color: #000080;
 }
 
-/* --- FILTER-BEREICH (Z.B. DYNAMISCHE TABELLE) --- */
+/* --- FILTER-BEREICH (DYNAMISCHE TABELLE) --- */
 label[for="typeSelect"] {
     margin-left: 20px;
     font-weight: 600;
     color: #555555;
+    font-size: 15px;
 }
 
 select {
     margin-left: 10px;
     padding: 10px 20px;
-    font-size: 15px;
+    font-size: 14px; /* Synchronisiert */
     border-radius: 20px;
     border: 1px solid #cccccc;
     background-color: #ffffff;
     outline: none;
     cursor: pointer;
+    font-family: inherit;
+}
+
+select:focus {
+    border-color: #000080;
 }
 
 #loadButton {
@@ -158,20 +168,22 @@ select {
     color: #383846;
     border: 1px solid #cccccc;
     padding: 10px 20px;
-    font-size: 15px;
+    font-size: 14px; /* Synchronisiert */
     font-weight: 600;
     border-radius: 20px;
     cursor: pointer;
     margin: 0;
     transition: all 0.2s ease;
     margin-left: 10px;
+    font-family: inherit;
 }
 
 #loadButton:hover {
-    background-color: #0000cd;
+    background-color: #000080; /* Hover: Navy Blue */
     color: #ffffff;
-    border-color: #0000cd;
+    border-color: #000080;
 }
+
 /* --- DIALOGE (MODALS) --- */
 dialog {
     margin: auto;
@@ -183,20 +195,22 @@ dialog {
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     padding: 30px;
     position: relative;
+    font-family: inherit;
 }
 
 dialog h2 {
-    padding: 0;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 22px;
-    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;          
+    color: #000080; /* Dialog-Titel in Navy Blue */
+    font-weight: 600;
+    margin-top: 5px;
+    margin-bottom: 15px;
 }
 
 dialog h3 {
-    font-size: 15px;
-    color: #666666;
-    margin-bottom: 15px;
+    font-size: 16px;          
+    color: #444444;
+    font-weight: 600;
+    margin-bottom: 10px;
 }
 
 /* Formular-Elemente in Dialogen */
@@ -208,18 +222,20 @@ dialog input[type="date"] {
     margin-bottom: 15px;
     border: 1px solid #cccccc;
     border-radius: 6px;
-    font-size: 15px;
+    font-size: 14px; /* Synchronisiert */
+    font-family: inherit;
     outline: none;
     transition: border-color 0.2s;
 }
 
 dialog input:focus {
-    border-color: #0000cd;
+    border-color: #000080; /* Fokus-Farbe Navy Blue */
 }
 
-/* Buttons in Dialogen */
+/* Normale Buttons in Dialogen */
 dialog button {
-    font-size: 16px;
+    font-size: 14px; /* Synchronisiert */
+    font-family: inherit;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
@@ -230,26 +246,41 @@ dialog button {
     border-radius: 6px;
     border: 1px solid #cccccc;
     background-color: #ffffff;
+    color: #333333;
     transition: all 0.2s ease;
     margin: 5px 5px 5px 0;
-}
-
-/* Primäre Aktions-Buttons in Dialogen */
-dialog button[id="objectManualProceed"],
-dialog button[id="objectSubmitBtn"] {
-    background-color: #0000cd;
-    color: white;
-    border: none;
-}
-
-dialog button[id="objectManualProceed"]:hover,
-dialog button[id="objectSubmitBtn"]:hover {
-    background-color: #000080;
 }
 
 dialog button:hover {
     background-color: #f5f5f5;
     transform: translateY(-1px);
+}
+
+/* Primäre Aktions-Buttons in Dialogen (z.B. Bestätigen) */
+dialog button[id="objectManualProceed"],
+dialog button[id="objectSubmitBtn"],
+dialog button[id="borrowSubmitBtn"],
+dialog button[id="returnSubmitBtn"],
+dialog button[id="downloadBarcodeBtn"] {
+    background-color: #000080; /* Hauptfarbe Navy Blue */
+    color: white;
+    border: none;
+}
+
+dialog button[id="objectManualProceed"]:hover,
+dialog button[id="objectSubmitBtn"]:hover,
+dialog button[id="borrowSubmitBtn"]:hover,
+dialog button[id="returnSubmitBtn"]:hover,
+dialog button[id="downloadBarcodeBtn"]:hover {
+    background-color: #0000cd; /* Aufhellung beim Hovern */
+}
+
+/* Deaktivierte Buttons (disabled) */
+dialog button:disabled {
+    background-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed;
+    transform: none !important;
 }
 
 dialog img {
@@ -287,18 +318,19 @@ dialog img {
 .closeBtn:hover img {
     transform: scale(1.1);
 }
-/* Table Container */
+
+/* --- TABELLEN-BEREICH --- */
 .table-container {
     width: 100%;
-    overflow-x: auto;          /* Scrollbalken NUR bei Bedarf */
+    overflow-x: auto;          
     scrollbar-width: thin;
-    padding-left: 10px;        /* Abstand links */
-    padding-right: 10px;       /* NEU: Abstand rechts */
-    box-sizing: border-box;    /* WICHTIG: Verhindert, dass die Paddings die 100% Breite vergrößern */
+    padding-left: 10px;        
+    padding-right: 10px;       
+    box-sizing: border-box;    
 }
 
 table {
-    width: 100%;               /* Nutzt den Platz des Containers minus der Paddings */
+    width: 100%;               
     max-width: 100%;           
     border-spacing: 0;
     margin-top: 10px;          
@@ -310,19 +342,37 @@ table {
 }
 
 th {
-    padding: 10px;
-    background-color: #0000cd;
-    color: #f0f0f0;
-    font-weight: bold;
+    padding: 12px 10px;        /* Etwas mehr Luft nach oben und unten */
+    background-color: #000080; /* Header Navy Blue */
+    color: #ffffff;            
+    font-size: 14px;           /* Synchronisiert */
+    font-weight: 600;
     text-align: left;
+}
+
+/* Die Filter-Inputs in den Tabellenköpfen anpassen */
+th input[type="text"] {
+    margin-top: 8px;
+    width: 100%;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #333;
+    outline: none;
+}
+
+th input[type="text"]:focus {
+    box-shadow: 0 0 0 2px #0000cd; /* Fokus-Rahmen für die kleinen Inputs */
 }
 
 td {
     padding: 10px;
-    color: #333333; 
+    color: #333333;
+    font-size: 14px;           /* Synchronisiert */
 }
 
-/* Abwechselnde Zeilenfarben für die Daten */
+/* Abwechselnde Zeilenfarben (Grau / Weiß) bleiben erhalten */
 tr:nth-child(even) {
     background-color: #f9f9f9; 
 }
@@ -341,17 +391,18 @@ tr:last-child td {
     border-bottom: none;
 }
 
-#WaitingMessage{
+#WaitingMessage {
     margin-left: 10px;
+    font-size: 15px;
+    color: #000080; /* Wartetext ebenfalls passend eingefärbt */
+    font-weight: 600;
 }
-input{
-    width: 90%;
-    margin-top: 5px;
+
+input, select, button {
+    font-family: inherit;      
 }
 
-
-
-/* Erfogreich nahrciht wenn asuleihe oder rückgaeb */
+/* --- ERFOLGS-MELDUNG (TOAST) --- */
 .toast-notification {
     position: fixed;
     top: 20px;
@@ -361,8 +412,9 @@ input{
     padding: 16px 24px;
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: sans-serif;
-    font-weight: bold;
+    font-family: inherit; /* Übernimmt nun auch die moderne Schriftart */
+    font-size: 15px;
+    font-weight: 600;
     z-index: 9999;
     opacity: 0;
     transform: translateY(-20px);
@@ -370,7 +422,6 @@ input{
     pointer-events: none;
 }
 
-/* Klasse zum Einblenden */
 .toast-notification.show {
     opacity: 1;
     transform: translateY(0);
