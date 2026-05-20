@@ -445,33 +445,39 @@ function borrowDialog() {
 	const modal = document.getElementById("borrowDialog");
 	const submitBtn = document.getElementById("borrowSubmitBtn");
 	console.log("Ausleihe dialog"); // Debug-Ausgabe
+	document.getElementById('borrowDuration').disabled = true; //dauer erst aktivieren wenn barcode gescannt
+	document.getElementById('borrowDuration').value = '';
+	document.getElementById('borrowSubmitBtn').disabled = true;
+
 	modal.showModal();
 
 	submitBtn.onclick = () => {
 		console.log("submit btn clicked"); // Debug-Ausgabe
 		transmitBorrowData();
-		document.getElementById("returnCondition").disabled = true;
+		modal.close();
 
 	};
 
 }
 
 async function transmitBorrowData() {
-	console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowReturnDate").value);
+	// console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowDuration").value);
+	const borrowDuration = document.getElementById("borrowDuration").value;
 
 	const payload = {
 		barcode: currentObject.id,
-		ausleihdauer: document.getElementById("borrowDuration").value,
+		ausleihdauer: borrowDuration,
 		mitarbeiter_id: 1,
 	};
 
-	await fetch("https://mhp.hallo123wert.de/api.php?resource=abgeben", {
+	await fetch("https://mhp.hallo123wert.de/api.php?resource=ausleihen", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify(payload)
 	});
+	
 
 }
 
@@ -504,16 +510,19 @@ window.addEventListener("keydown", (e) => {
 
 function returnDialog() {
 	const modal = document.getElementById("returnDialog");
-	const closeBtn3 = document.getElementById("closeBtn3");
+	const returnSubmitBtn = document.getElementById("returnSubmitBtn");
 	console.log("Rückgabe dialog"); // Debug-Ausgabe
+	document.getElementById('returnCondition').value = ''; //clear
+	document.getElementById('returnCondition').disabled = true; //zustand erst aktivieren wenn barcode gescannt
+	document.getElementById('returnSubmitBtn').disabled = true;
 	modal.showModal();
 
 
-	closeBtn3.onclick = () => {
+	returnSubmitBtn.onclick = () => {
 		modal.close();
 	};
 
-}
+} 
 
 async function returnObject() {
 	console.log("Rückgabe des Objekts mit ID: " + currentObject.id + " und Zustand: " + document.getElementById("returnCondition").value);
@@ -544,6 +553,7 @@ window.addEventListener("keydown", (e) => {
 				scannedBarcodeReturn = "";
 
 				document.getElementById("returnCondition").disabled = false;
+				document.getElementById("returnSubmitBtn").disabled = false;
 				console.log("Scanned barcode for return: " + currentObject.id); // Debug-Ausgabe
 
 			}
