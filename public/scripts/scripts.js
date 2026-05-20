@@ -289,18 +289,41 @@ async function showTable() {
 		});
 
 		// erstellt die Spalten inklusive Suchfeld
+		// erstellt die Spalten inklusive Suchfeld und Sortierfunktion
 		function generateColumn(key, index) {
 			const th = document.createElement('th');
 
-			// eingeabefeld erstellen
-			th.innerHTML = `${key}<br>`;
+			// Container für Text und Sortier-Pfeil erstellen
+			const headerDiv = document.createElement('div');
+			headerDiv.style.cursor = 'pointer'; // Zeigt beim Drüberfahren eine Hand (Klickbar)
+			headerDiv.style.display = 'flex';
+			headerDiv.style.justifyContent = 'space-between';
+			headerDiv.style.alignItems = 'center';
+			headerDiv.title = "Klicken zum Sortieren";
 
-			// input erstellen
+			// Der eigentliche Spaltenname
+			const textSpan = document.createElement('span');
+			textSpan.innerHTML = key;
+
+			// Das Sortier-Icon (Standard: ↕)
+			const sortIcon = document.createElement('span');
+			sortIcon.innerHTML = ' ↕'; 
+			sortIcon.className = 'sort-icon';
+
+			// Elemente zusammenfügen
+			headerDiv.appendChild(textSpan);
+			headerDiv.appendChild(sortIcon);
+
+			// Klick-Event für die Sortierung hinzufügen
+			headerDiv.onclick = () => sortTable(index, th);
+
+			th.appendChild(headerDiv);
+			th.appendChild(document.createElement('br'));
+
+			// input erstellen fürs Filtern (bleibt wie vorher)
 			const input = document.createElement('input');
 			input.type = 'text';
 			input.placeholder = "filtern...";
-
-			// eventlistener fürs filtern
 			input.addEventListener('input', filterTable);
 
 			th.appendChild(input);
@@ -372,7 +395,50 @@ function filterTable() {
 		}
 	}
 }
+// --- Tabellen Sortierfunktion ---
+function sortTable(columnIndex, thElement) {
+	const tableData = document.getElementById("tableData");
+	// Holt alle Tabellenzeilen und wandelt sie in ein Array um
+	const rows = Array.from(tableData.getElementsByTagName("tr"));
 
+	// Überprüfen, ob wir gerade aufsteigend (asc) oder absteigend (desc) sortieren sollen
+	let isAscending = thElement.getAttribute("data-sort") !== "asc";
+
+	// Alle Icons in der Kopfzeile wieder auf Standard (↕) zurücksetzen
+	const allThs = document.getElementById("headerRow").getElementsByTagName("th");
+	for (let th of allThs) {
+		th.removeAttribute("data-sort");
+		const icon = th.querySelector('.sort-icon');
+		if (icon) icon.innerHTML = ' ↕';
+	}
+
+	// Neue Sortierrichtung speichern und das passende Icon anzeigen (↓ oder ↑)
+	thElement.setAttribute("data-sort", isAscending ? "asc" : "desc");
+	const currentIcon = thElement.querySelector('.sort-icon');
+	currentIcon.innerHTML = isAscending ? ' ↓' : ' ↑';
+
+	// Zeilen sortieren
+	rows.sort((rowA, rowB) => {
+		// Den Text aus den jeweiligen Spalten auslesen
+		const cellA = rowA.getElementsByTagName("td")[columnIndex].innerText.trim();
+		const cellB = rowB.getElementsByTagName("td")[columnIndex].innerText.trim();
+
+		// Versuchen, die Werte als Zahlen zu interpretieren (wichtig für IDs oder Ausleihdauer)
+		const numA = parseFloat(cellA);
+		const numB = parseFloat(cellB);
+
+		// Wenn beides gültige Zahlen sind, numerisch sortieren (1, 2, 10 statt 1, 10, 2)
+		if (!isNaN(numA) && !isNaN(numB)) {
+			return isAscending ? numA - numB : numB - numA;
+		}
+
+		// Ansonsten alphabetisch (Text) sortieren
+		return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+	});
+
+	// Die sortierten Zeilen wieder in die Tabelle einhängen (das verschiebt sie im HTML)
+	rows.forEach(row => tableData.appendChild(row));
+}
 async function showTableOnLoad() {
 	const typeSelect = document.getElementById("typeSelect");
 	//setzt kategorie auf werkzeuge
