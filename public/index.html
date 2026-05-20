@@ -22,11 +22,11 @@
                 Objekt anlegen
                 <img src="pics/plus.png" />
             </button>
-            <button id="borrowBtn" onclick="borrowDialog()">
+            <button id="borrowBtn" onclick="borrowScanDialog()">
                 Ausleihe
                 <img src="pics/borrow.png" />
             </button>
-            <button id="returnBtn" onclick="returnDialog()">
+            <button id="returnBtn" onclick="returnScanDialog()">
                 Rückgabe
                 <img src="pics/returnicon.png" />
             </button>
@@ -110,28 +110,35 @@
     </dialog>
 
     <!-- * Ausleihe Dialoge ################################################### -->
-     <dialog id="borrowDialog">
-        <h3>Objekt ausleihen</h3>
-        <h3> 1. Scannen Sie den Barcode des auszuleihenden Objekts.</h3>
-        <h3> 2. Geben Sie die Ausleihauder in Tagen und ihre Mitarbeiter-ID ein.</h3>
-        Ausleihauder in Tage : <input type="number" id="borrowDuration" autocomplete="off" disabled> <br>
-        Mitabeiter : <select id="borrowerIdSelect" autocomplete="off"></select>
+    <dialog id="borrowScanBarcodeDialog">
+        <h2>Objekt ausleihen</h2>
+        <h2>Bitte den Barcode scannen.</h2>
+        <button id="closeBorrowScanBtn">Schließen</button>
+    </dialog>
 
-        <br>
+     <dialog id="borrowDialog">
+        <h2>Objekt ausleihen</h2>
+        <h2>Bitte folgende Informationen eingeben:</h2>
+        Barcode: <input type="text" id="borrowBarcode" disabled autocomplete="off"> <br>
+        Ausleihauder in Tage : <input type="number" id="borrowDuration" autocomplete="off"> <br>
+        Mitabeiter : <select id="borrowerIdSelect" autocomplete="off"></select> <br>
         <button id="borrowSubmitBtn" disabled>Bestätigen</button>
-        <button class="closeBtn" id="closeBtnBorrow"> <img src="pics/close.png" alt="X"></button>
      </dialog>
+
     <!-- Rückgabe Dialoge ################################################### -->
+    <dialog id="returnScanBarcodeDialog">
+        <h2>Objekt zurückgeben</h2>
+        <h2>Bitte den Barcode scannen.</h2>
+        <button id="closeReturnScanBtn">Schließen</button>
+    </dialog>
 
     <dialog id="returnDialog">
-        <h1>Objekt zurückgeben</h1>
-        <h3> 1. Scannen Sie den Barcode des zurückzugebenden Objekts.</h3>
-        <h3> 2. Geben sie die Kondition des Objekts bei Rückgabe ein.</h3>
+        <h2>Objekt zurückgeben</h2>
+        <h2>Bitte folgende Informationen eingeben.</h2>
+        Barcode: <input type="text" id="returnBarcode" disabled autocomplete="off"> <br>
+        Kondition des Objekts bei Rückgabe: <br> <input type="text" id="returnCondition" placeholder="Zustand des Objekts" autocomplete="off">
         <br>
-        Kondition des Objekts bei Rückgabe: <br> <input type="text" id="returnCondition" placeholder="Zustand des Objekts" autocomplete="off" disabled>
-        <br>
-        <button id="returnSubmitBtn" onclick="returnObject()" >Bestätigen</button>
-        <button class="closeBtn" id="closeBtnReturn"> <img src="pics/close.png" alt="X"></button>
+        <button id="returnSubmitBtn" disabled>Bestätigen</button>
     </dialog>
 
 
