@@ -253,6 +253,13 @@ async function showTable() {
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=${select}`);
 	//Antowrt für json lesbar machen
 	const jsonData = await answer.json();
+
+	// falls api fehler zurückgibt
+	if (jsonData.success == false) {
+		message.innerHTML = "Fehler: " + jsonData.error;
+		return;
+	}
+
 	// nur daten werden benötigt
 	const dataArray = jsonData.data; 
 
@@ -285,7 +292,7 @@ async function showTable() {
 		function generateCell(key, entry, tr) {
 			const td = document.createElement('td');
 
-			// Prüft, ob der Spaltenname barcode enthält
+			// Prüft ob der Spaltenname barcode enthält
 			if (key.toLowerCase() === 'barcode') {
 				const barcodeValue = entry[key];
 				td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
@@ -311,6 +318,13 @@ async function showTableOnLoad() {
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=werkzeuge`);
 	//Antowrt für json lesbar machen
 	const jsonData = await answer.json();
+
+	// falls api fehler zurückgibt
+	if (jsonData.success == false) {
+		message.innerHTML = "Fehler: " + jsonData.error;
+		return;
+	}
+
 	// nur daten werden benötigt
 	const dataArray = jsonData.data; 
 
@@ -343,7 +357,7 @@ async function showTableOnLoad() {
 		function generateCell(key, entry, tr) {
 			const td = document.createElement('td');
 
-			// Prüft, ob der Spaltenname barcode enthält
+			// Prüft ob der Spaltenname barcode enthält
 			if (key.toLowerCase() === 'barcode') {
 				const barcodeValue = entry[key];
 				td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
