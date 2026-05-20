@@ -212,8 +212,24 @@ function objectConfigDialog() {
 function createdObjectOverviewDialog() {
 	const modal = document.getElementById("createdObjectOverviewDialog");
 	const closeBtn = document.getElementById("closeCreatedObjectOverviewBtn");
+	const downloadBtn = document.getElementById("downloadBarcodeBtn");
 
 	modal.showModal();
+
+	// Download logik fur download
+	downloadBtn.onclick = async () => {
+		const imageUrl = document.getElementById("barcodeimg").src;
+		const response = await fetch(imageUrl);
+		const blob = await response.blob();
+
+		const link = document.createElement("a");
+		link.href = URL.createObjectURL(blob);
+		link.download = `barcode_${currentObject.id}.png`;
+
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	};
 
 	closeBtn.onclick = () => {
 		modal.close();
@@ -260,9 +276,18 @@ async function showTable() {
 	});
 	
 	// Erstellt die Zellen
+	// Erstellt die Zellen
 	function generateCell(key, entry, tr) {
 		const td = document.createElement('td');
-		td.innerHTML = entry[key];
+
+		// Prüft, ob der Spaltenname 'barcode' oder 'Barcode' enthält
+		if (key.toLowerCase() === 'barcode') {
+			const barcodeValue = entry[key];
+			td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
+		} else {
+			td.innerHTML = entry[key];
+		}
+
 		tr.appendChild(td);
 	}
 }
