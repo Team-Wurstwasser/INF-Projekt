@@ -136,21 +136,6 @@ async function loadWerkzeugTypen() {
 	});
 }
 
-async function loadWerkzeugStatus() {
-	const statusSelect = document.getElementById("objectStatusSelect");
-
-	statusSelect.innerHTML = "";
-
-	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=status");
-	const jsonData = await answer.json();
-
-	jsonData.data.forEach(function (typ) {
-		const option = document.createElement("option");
-		option.value = typ.Status_ID;
-		option.innerText = typ.Bezeichnung;
-		statusSelect.appendChild(option);
-	});
-}
 async function loadMitarbeiter() {
 	const borrowerSelect = document.getElementById("borrowerIdSelect");
 	
@@ -173,7 +158,6 @@ async function saveNewObject() {
 		bezeichnung: currentObject.name,
 		typ_id: currentObject.typId,
 		anschaffungsdatum: currentObject.date,
-		status_id: currentObject.statusId
 	};
 
 	const response = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeuge", {
@@ -209,7 +193,6 @@ function objectConfigDialog() {
 	document.getElementById('objectPurchaseDate').value = '';
 
 	loadWerkzeugTypen();
-	loadWerkzeugStatus();
 
 	modal.showModal();
 
@@ -218,7 +201,6 @@ function objectConfigDialog() {
 		currentObject.name = document.getElementById('objectName').value;
 		currentObject.date = document.getElementById('objectPurchaseDate').value;
 		currentObject.typId = document.getElementById('objectTypeSelect').value;
-		currentObject.statusId = document.getElementById('objectStatusSelect').value;
 
 		modal.close();
 

@@ -136,7 +136,7 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
-    public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = '', int $statusId = 1): bool
+    public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = ''): bool
     {
         try {
             if (!$this->isValidEan13Barcode($barcode)) {
@@ -151,15 +151,15 @@ class DatabaseHandler
 
             if ($anschaffungsdatum !== '') {
                 $sql = "INSERT INTO Werkzeuge (Barcode, Bezeichnung, Typ_ID, Anschaffungsdatum, Status_ID)
-                        VALUES (?, ?, ?, ?, ?)";
+                        VALUES (?, ?, ?, ?, 1)";
                 $stmt = $this->pdo->prepare($sql);
-                return $stmt->execute([$barcode, $bezeichnung, $typId, $anschaffungsdatum, $statusId]);
+                return $stmt->execute([$barcode, $bezeichnung, $typId, $anschaffungsdatum]);
             }
 
             $sql = "INSERT INTO Werkzeuge (Barcode, Bezeichnung, Typ_ID, Anschaffungsdatum, Status_ID)
-                    VALUES (?, ?, ?, CURDATE(), ?)";
+                    VALUES (?, ?, ?, CURDATE(), 1)";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$barcode, $bezeichnung, $typId, $statusId]);
+            return $stmt->execute([$barcode, $bezeichnung, $typId]);
         } catch (Exception $exception) {
             error_log("Fehler in addWerkzeug: " . $exception->getMessage());
             return false;

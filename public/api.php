@@ -88,7 +88,6 @@ try {
                 $bezeichnung = trim((string)($data['bezeichnung'] ?? ''));
                 $typId = (int)($data['typ_id'] ?? 0);
                 $anschaffungsdatum = trim((string)($data['anschaffungsdatum'] ?? ''));
-                $statusId = (int)($data['status_id'] ?? 1);
 
                 if ($barcode === '' || $bezeichnung === '' || $typId <= 0) {
                     jsonResponse(['success' => false, 'error' => 'Parameter barcode, bezeichnung und typ_id fehlen.'], 400);
@@ -102,7 +101,7 @@ try {
                     jsonResponse(['success' => false, 'error' => 'Barcode existiert bereits.'], 409);
                 }
 
-                $geklappt = $dbHandler->addWerkzeug($barcode, $bezeichnung, $typId, $anschaffungsdatum, $statusId);
+                $geklappt = $dbHandler->addWerkzeug($barcode, $bezeichnung, $typId, $anschaffungsdatum);
                 if ($geklappt) {
                     jsonResponse(['success' => true, 'message' => 'Werkzeug erfolgreich hinzugefügt']);
                 }
