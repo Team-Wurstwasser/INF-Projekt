@@ -23,7 +23,7 @@ header {
     top: 0; 
     z-index: 1000;
     /* Der gewünschte Verlauf: Startet tief in Navy Blue und geht in Medium Blue über */
-    background: linear-gradient(to left, #000080, #0000cd);
+    background: linear-gradient(to left, #0000cd, #000080);
     padding: 20px 32px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
