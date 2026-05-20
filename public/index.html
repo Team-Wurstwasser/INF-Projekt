@@ -53,6 +53,15 @@
     </div>
     <br>
     <p id="WaitingMessage"></p>
+    <div class="image-toggle-container">
+        <button id="toggleImagesBtn" onclick="toggleImages()">Bilder anzeigen</button>
+    </div>
+    
+    <div id="imageGallery" class="hidden-gallery">
+        <img src="pics/platzhalter1.png" alt="Bild 1">
+        <img src="pics/platzhalter2.png" alt="Bild 2">
+        <img src="pics/platzhalter3.png" alt="Bild 3">
+    </div>
     <dialog id="objectCreationMethodSelectionDialog">
         <h2>Wie möchten Sie ein neues Objekt anlegen ?</h2>
         <button id="scannerMode">Barcode scannen

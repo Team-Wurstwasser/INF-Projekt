@@ -434,5 +434,30 @@ dialog h1 {
     margin-top: 5px;
     margin-bottom: 15px;
 }
+/* --- Versteckte Bilder Galerie am Ende der Seite --- */
+.image-toggle-container {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+.hidden-gallery {
+    display: none; /* Standardmäßig komplett unsichtbar */
+    justify-content: center; /* Setzt die Bilder mittig */
+    gap: 20px; /* Abstand zwischen den Bildern */
+    margin-bottom: 50px; /* Abstand zum Seitenende */
+}
+
+/* Diese Klasse wird per JavaScript hinzugefügt, um die Bilder zu zeigen */
+.hidden-gallery.show {
+    display: flex;
+}
+
+.hidden-gallery img {
+    max-width: 250px; /* Passt die Bildgröße an - Wert nach Belieben ändern */
+    height: auto;
+    border-radius: 8px; /* Leichte Rundungen passend zu deinem Design */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
 
 

@@ -564,5 +564,19 @@ function showCreateWorkerDialog() {
 	closeBtn.onclick = () => {
 		modal.close();
 	};
-
+}
+// --- Bilder Toggle Funktion ---
+function toggleImages() {
+    const gallery = document.getElementById("imageGallery");
+    const btn = document.getElementById("toggleImagesBtn");
+    
+    // Schaltet die 'show'-Klasse an oder aus
+    gallery.classList.toggle("show");
+    
+    // Ändert den Text des Buttons je nach Zustand
+    if (gallery.classList.contains("show")) {
+        btn.innerText = "Bilder ausblenden";
+    } else {
+        btn.innerText = "Bilder anzeigen";
+    }
 }
