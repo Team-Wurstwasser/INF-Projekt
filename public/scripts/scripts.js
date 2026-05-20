@@ -463,7 +463,7 @@ function borrowDialog() {
 async function transmitBorrowData() {
 	// console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowDuration").value);
 	const borrowDuration = document.getElementById("borrowDuration").value;
-
+	console.log("Barcode: " + currentObject.id + ", Dauer: " + borrowDuration + ", Mitarbeiter: debug" ); // Debug-Ausgabe
 	const payload = {
 		barcode: currentObject.id,
 		ausleihdauer: borrowDuration,
@@ -519,6 +519,7 @@ function returnDialog() {
 
 
 	returnSubmitBtn.onclick = () => {
+		returnObject();
 		modal.close();
 	};
 
