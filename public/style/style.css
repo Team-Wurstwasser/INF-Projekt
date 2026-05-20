@@ -348,3 +348,30 @@ input{
     width: 90%;
     margin-top: 5px;
 }
+
+
+
+/* Erfogreich nahrciht wenn asuleihe oder rückgaeb */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #2ecc71; /* Grüner Hintergrund für Erfolg */
+    color: white;
+    padding: 16px 24px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: sans-serif;
+    font-weight: bold;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+/* Klasse zum Einblenden */
+.toast-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
