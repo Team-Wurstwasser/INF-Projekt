@@ -340,7 +340,8 @@ async function showTableOnLoad() {
 		// Prüft, ob der Spaltenname barcode enthält
 		if (key.toLowerCase() === 'barcode') {
 			const barcodeValue = entry[key];
-			td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
+			// download-Attribut erzwingt den Download und benennt die Datei sinnvoll
+			td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" download="barcode-${barcodeValue}.png" style="color: #0000cd; font-weight: bold; text-decoration: underline;">${barcodeValue}</a>`;
 		} else {
 			td.innerHTML = entry[key];
 		}
