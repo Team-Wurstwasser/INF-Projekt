@@ -241,14 +241,14 @@ async function showTable() {
 	const message = document.getElementById("WaitingMessage");
 	message.innerHTML = "Tabelle wird geladen...";
 
-    const select = document.getElementById("typeSelect").value;
-    const tableHead = document.getElementById("headerRow");
-    const tableData = document.getElementById("tableData");
-    
-    // Tabelle leeren
-    tableHead.innerHTML = "";
-    tableData.innerHTML = "";
-    
+	const select = document.getElementById("typeSelect").value;
+	const tableHead = document.getElementById("headerRow");
+	const tableData = document.getElementById("tableData");
+	
+	// Tabelle leeren
+	tableHead.innerHTML = "";
+	tableData.innerHTML = "";
+	
 	// aufrufen der API
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=${select}`);
 	//Antowrt für json lesbar machen
@@ -269,17 +269,32 @@ async function showTable() {
 		
 		message.innerHTML = "";
 
-		//kopfzeile
-		columnName.forEach(generateColumn);
+		// kopfzeile mit Index für den Filter
+		columnName.forEach((key, index) => generateColumn(key, index));
 
-		// erstellt die Spalten
-		function generateColumn(key) {
+		// erstellt die Spalten inklusive Suchfeld
+		function generateColumn(key, index) {
 			const th = document.createElement('th');
-			th.innerText = key;
+			
+			// Textknoten für den Spaltennamen
+			th.appendChild(document.createTextNode(key));
+			th.appendChild(document.createElement('br'));
+			
+			// Dynamisches Input-Feld erstellen
+			const input = document.createElement('input');
+			input.type = 'text';
+			input.placeholder = `${key} filtern...`;
+			input.style.width = '90%';
+			input.style.marginTop = '5px';
+			
+			// Event-Listener für die Filterung hinzufügen
+			input.addEventListener('keyup', filterTable);
+			
+			th.appendChild(input);
 			tableHead.appendChild(th);
 		}
 			
-		// datennzeile
+		// datenzeile
 		dataArray.forEach(function(entry) {
 			const tr = document.createElement('tr');
 			columnName.forEach(function(key) {
@@ -303,9 +318,44 @@ async function showTable() {
 			tr.appendChild(td);
 		}
 	} else {
-		message.innerHTML = "Keine Daten vorhanden!"
+		message.innerHTML = "Keine Daten vorhanden!";
 	}
 }
+
+// Neue, kombinierte Filter-Funktion für alle Spalten
+function filterTable() {
+	const tableHead = document.getElementById("headerRow");
+	const tableData = document.getElementById("tableData");
+	
+	// Alle Inputs aus der Kopfzeile holen
+	const inputs = tableHead.getElementsByTagName("input");
+	// Alle Datenzeilen holen
+	const rows = tableData.getElementsByTagName("tr");
+
+	// Jede Zeile in der Tabelle prüfen
+	for (let i = 0; i < rows.length; i++) {
+		const cells = rows[i].getElementsByTagName("td");
+		let showRow = true;
+
+		// Jede Spalte mit dem jeweiligen Input abgleichen (Multi-Filter)
+		for (let j = 0; j < inputs.length; j++) {
+			const filterValue = inputs[j].value.toLowerCase();
+			
+			if (filterValue && cells[j]) {
+				const cellText = cells[j].textContent || cells[j].innerText;
+				// Wenn ein Filter Text enthält, aber die Zelle ihn nicht matcht: Zeile ausblenden
+				if (cellText.toLowerCase().indexOf(filterValue) === -1) {
+					showRow = false;
+					break; // Sobald eine Spalte nicht matcht, bricht die Spaltenprüfung für diese Zeile ab
+				}
+			}
+		}
+
+		// Zeile anzeigen oder verstecken
+		rows[i].style.display = showRow ? "" : "none";
+	}
+}
+
 async function showTableOnLoad() {
 	// wartenachricht
 	const message = document.getElementById("WaitingMessage");
