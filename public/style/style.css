@@ -29,8 +29,8 @@ header {
 }
 
 header img {
-    height: 37px;
-    filter: brightness(0) invert(1);
+    height: 70px; /* Etwas größer für bessere Sichtbarkeit */
+    width: auto;
     margin-right: 30px;
 }
 
@@ -426,3 +426,4 @@ input, select, button {
     opacity: 1;
     transform: translateY(0);
 }
+
