@@ -427,3 +427,12 @@ input, select, button {
     transform: translateY(0);
 }
 
+dialog h1 {
+    font-size: 22px;          
+    color: #000080; /* Dialog-Titel in Navy Blue */
+    font-weight: 600;
+    margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+
