@@ -355,7 +355,6 @@ function filterTable() {
 		rows[i].style.display = showRow ? "" : "none";
 	}
 }
-
 async function showTableOnLoad() {
 	// wartenachricht
 	const message = document.getElementById("WaitingMessage");
