@@ -575,8 +575,8 @@ function toggleImages() {
     
     // Ändert den Text des Buttons je nach Zustand
     if (gallery.classList.contains("show")) {
-        btn.innerText = "Bilder ausblenden";
+        btn.innerText = "Certifikate ausblenden";
     } else {
-        btn.innerText = "Bilder anzeigen";
+        btn.innerText = "Certifikate anzeigen";
     }
 }
