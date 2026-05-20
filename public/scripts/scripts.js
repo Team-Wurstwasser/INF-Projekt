@@ -439,6 +439,7 @@ function borrowDialog() {
 
 	durationInput.addEventListener('input', validateBorrowForm);
 	borrowerSelect.addEventListener('change', validateBorrowForm);
+	validateBorrowForm(); // initiale Validierung
 
 	modal.showModal();
 
@@ -512,6 +513,8 @@ function returnDialog() {
 	}
 
 	document.getElementById('returnCondition').addEventListener('input', validateReturnForm);
+	validateReturnForm(); // initiale Validierung
+
 	modal.showModal();
 
 
