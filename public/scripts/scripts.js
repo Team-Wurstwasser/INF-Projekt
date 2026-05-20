@@ -153,6 +153,21 @@ async function loadWerkzeugStatus() {
 		statusSelect.appendChild(option);
 	});
 }
+async function loadMitarbeiter() {
+	const borrowerSelect = document.getElementById("borrowerIdSelect");
+	
+	borrowerSelect.innerHTML = ""; 
+
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=mitarbeiter");
+	const jsonData = await answer.json();
+
+	jsonData.data.forEach(function (typ) {
+		const option = document.createElement("option");		
+		option.value = typ.Mitarbeiter_ID; 		
+		option.innerText = typ.Vorname + " " + typ.Nachname;
+		borrowerSelect.appendChild(option);
+	});
+}
 
 async function saveNewObject() {
 	const payload = {
@@ -370,62 +385,64 @@ async function showTableOnLoad() {
 }
 
 // --- Ausleihe (Borrow) ---
-
 function borrowDialog() {
-	const modal = document.getElementById("borrowDialog");
-	const submitBtn = document.getElementById("borrowSubmitBtn");
-	const closeBtn = document.getElementById("closeBtnBorrow");
-	console.log("Ausleihe dialog"); // Debug-Ausgabe
-	document.getElementById('borrowDuration').disabled = true; //dauer erst aktivieren wenn barcode gescannt
-	document.getElementById('borrowDuration').value = '';
-	document.getElementById('borrowSubmitBtn').disabled = true;
+    const modal = document.getElementById("borrowDialog");
+    const submitBtn = document.getElementById("borrowSubmitBtn");
+    const closeBtn = document.getElementById("closeBtnBorrow");
+    console.log("Ausleihe dialog"); // Debug-Ausgabe
+    
+    loadMitarbeiter();
 
-	modal.showModal();
+    document.getElementById('borrowDuration').disabled = true; //dauer erst aktivieren wenn barcode gescannt
+    document.getElementById('borrowDuration').value = '';
+    document.getElementById('borrowSubmitBtn').disabled = true;
 
+    modal.showModal();
 
-	closeBtn.onclick = () => {
-		modal.close();
-	};
-	submitBtn.onclick = () => {
-		console.log("submit btn clicked"); // Debug-Ausgabe
-		transmitBorrowData();
-		modal.close();
-
-	};
-
+    closeBtn.onclick = () => {
+        modal.close();
+    };
+    submitBtn.onclick = () => {
+        console.log("submit btn clicked"); // Debug-Ausgabe
+        transmitBorrowData();
+        modal.close();
+    };
 }
 
+// --- Daten an Server senden ---
 async function transmitBorrowData() {
-	console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowDuration").value);
-	const borrowDuration = document.getElementById("borrowDuration").value;
-	console.log("Barcode: " + currentObject.id + ", Dauer: " + borrowDuration + ", Mitarbeiter: debug"); // Debug-Ausgabe
+    const borrowDuration = document.getElementById("borrowDuration").value;
+    
+    // NEU: Liest die ausgewählte ID aus dem Mitarbeiter-Dropdown aus
+    const selectedMitarbeiterId = document.getElementById("borrowerIdSelect").value;
 
-	const payload = {
-		barcode: currentObject.id,
-		ausleihdauer: borrowDuration,
-		mitarbeiter_id: 1,
-	};
+    console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + borrowDuration + " Tage.");
+    console.log("Barcode: " + currentObject.id + ", Dauer: " + borrowDuration + ", Mitarbeiter-ID: " + selectedMitarbeiterId); // Debug-Ausgabe
 
-	const response = await fetch("https://mhp.hallo123wert.de/api.php?resource=ausleihen", {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json"
-		},
-		body: JSON.stringify(payload)
-	});
+    const payload = {
+        barcode: currentObject.id,
+        ausleihdauer: borrowDuration,
+        mitarbeiter_id: selectedMitarbeiterId
+    };
 
-	//überpfrungslogik für popup
+    const response = await fetch("https://mhp.hallo123wert.de/api.php?resource=ausleihen", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
 
-	const result = await response.json();
+    //überpfrungslogik für popup
+    const result = await response.json();
 
-	if (result.success) {
-		console.log("Erfolgreich ausgeliehen:", result.message);
-		showToast("Objekt erfolgreich ausgeliehen!"); // <- HIER HINZUFÜGEN
-		if (typeof showTableOnLoad === "function") showTableOnLoad();
-	} else {
-		alert("Fehler beim Ausleihen: " + result.error + "\nMöglicherweise ist das Objekt mit der Barcodenummer :\n" + currentObject.id + " \nnicht exestent , bereits ausgeliehen oder es waren nicht alle Daten korrekt eingegeben.");
-	}
-
+    if (result.success) {
+        console.log("Erfolgreich ausgeliehen:", result.message);
+        showToast("Objekt erfolgreich ausgeliehen!"); 
+        if (typeof showTableOnLoad === "function") showTableOnLoad();
+    } else {
+        alert("Fehler beim Ausleihen: " + result.error + "\nMöglicherweise ist das Objekt mit der Barcodenummer :\n" + currentObject.id + " \nnicht exestent , bereits ausgeliehen oder es waren nicht alle Daten korrekt eingegeben.");
+    }
 }
 
 window.addEventListener("keydown", (e) => {
