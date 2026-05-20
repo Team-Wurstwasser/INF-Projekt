@@ -81,15 +81,14 @@
     <h2>Objekt konfigurieren</h2>
     <h2>Bitte folgende Informationen eingeben:</h2>
     <input type="text" id="objectID" disabled autocomplete="off">
-    <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off">
+    <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off"> <br>
     Werkzeugtyp:   
     <select id="objectTypeSelect"></select>
     <br>
     <br>
     WerkzeugStatus:   
-    <select id="objectStatusSelect"></select>
-    <div>Anschaffungsdatum:</div>
-    <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off">
+    <select id="objectStatusSelect"></select> <br> <br>
+    Anschaffungsdatum: <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off"> <br>
     <button id="objectSubmitBtn">Bestätigen</button> 
 </dialog>
 
@@ -98,10 +97,10 @@
     <p id="objectOverviewID">ID: </p>
     <p id="objectOverviewName">Name: </p>
     <p id="objectOverviewPurchaseDate">Anschaffungsdatum: </p>
+    Barcode: <img id="barcodeimg" src="">
     <br>
+    <button id="downloadBarcodeBtn">Barcode Herunterladen</button>
     <br>
-    <img id="barcodeimg" src="">
-   <br>
     <button id="closeCreatedObjectOverviewBtn">Schließen</button>
 </dialog>
 
