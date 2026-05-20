@@ -23,12 +23,16 @@
                 <img src="pics/plus.png" />
             </button>
             <button>
+                Ausleihe
+                <img src="pics/borrow.png" />
+            </button>
+            <button>
                 Rückgabe
-                <img src="pics/returnicon.png"/>
+                <img src="pics/returnicon.png" />
             </button>
         </div>
     </div>
-    <div class= "ObjektAuswahl">
+    <div class="ObjektAuswahl">
         <button id="changeTitleButton">Alle Objekte</button>
         <button id="changeTitleButton">Funktionsfähig</button>
         <button id="changeTitleButton">In Wartung</button>
@@ -54,51 +58,52 @@
         </table>
     </div>
 
-<dialog id="objectCreationMethodSelectionDialog">
-    <h2>Wie möchten Sie ein neues Objekt anlegen ?</h2>
-    <button id="scannerMode">Barcode scannen
-        <img src="pics/scanBarcode.png" alt="">
-    </button>
-    <button id="manualMode">Barcode Erstellen
-                <img src="pics/createBarcode.png" alt="">
+    <dialog id="objectCreationMethodSelectionDialog">
+        <h2>Wie möchten Sie ein neues Objekt anlegen ?</h2>
+        <button id="scannerMode">Barcode scannen
+            <img src="pics/scanBarcode.png" alt="">
+        </button>
+        <button id="manualMode">Barcode Erstellen
+            <img src="pics/createBarcode.png" alt="">
 
-    </button>
-    <button class="closeBtn" id="closeBtn"> <img src="pics/close.png" alt="X"></button>
-</dialog>
+        </button>
+        <button class="closeBtn" id="closeBtn"> <img src="pics/close.png" alt="X"></button>
+    </dialog>
 
-<dialog id="objectCreateScanBarcodeDialog">
-    <h2>Neues Objekt anlegen</h2>
-    <h2>Bitte den Barcode scannen.</h2>
-    <button id="closeBtn1">Schließen</button>
-</dialog>
+    <dialog id="objectCreateScanBarcodeDialog">
+        <h2>Neues Objekt anlegen</h2>
+        <h2>Bitte den Barcode scannen.</h2>
+        <button id="closeBtn1">Schließen</button>
+    </dialog>
 
 
-<dialog id="objectConfigDialog">
-    <h2>Objekt konfigurieren</h2>
-    <h2>Bitte folgende Informationen eingeben:</h2>
-    <input type="text" id="objectID" disabled autocomplete="off">
-    <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off"> <br>
-    Werkzeugtyp:   
-    <select id="objectTypeSelect"></select>
-    <br>
-    <br>
-    WerkzeugStatus:   
-    <select id="objectStatusSelect"></select> <br> <br>
-    Anschaffungsdatum: <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off"> <br>
-    <button id="objectSubmitBtn">Bestätigen</button> 
-</dialog>
+    <dialog id="objectConfigDialog">
+        <h2>Objekt konfigurieren</h2>
+        <h2>Bitte folgende Informationen eingeben:</h2>
+        <input type="text" id="objectID" disabled autocomplete="off">
+        <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off"> <br>
+        Werkzeugtyp:
+        <select id="objectTypeSelect"></select>
+        <br>
+        <br>
+        WerkzeugStatus:
+        <select id="objectStatusSelect"></select> <br> <br>
+        Anschaffungsdatum: <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum"
+            autocomplete="off"> <br>
+        <button id="objectSubmitBtn">Bestätigen</button>
+    </dialog>
 
-<dialog id="createdObjectOverviewDialog">
-    <h2>Erstelltes Objekt übersicht</h2>
-    <p id="objectOverviewID">ID: </p>
-    <p id="objectOverviewName">Name: </p>
-    <p id="objectOverviewPurchaseDate">Anschaffungsdatum: </p>
-    Barcode: <img id="barcodeimg" src="">
-    <br>
-    <button id="downloadBarcodeBtn">Barcode Herunterladen</button>
-    <br>
-    <button id="closeCreatedObjectOverviewBtn">Schließen</button>
-</dialog>
+    <dialog id="createdObjectOverviewDialog">
+        <h2>Erstelltes Objekt übersicht</h2>
+        <p id="objectOverviewID">ID: </p>
+        <p id="objectOverviewName">Name: </p>
+        <p id="objectOverviewPurchaseDate">Anschaffungsdatum: </p>
+        Barcode: <img id="barcodeimg" src="">
+        <br>
+        <button id="downloadBarcodeBtn">Barcode Herunterladen</button>
+        <br>
+        <button id="closeCreatedObjectOverviewBtn">Schließen</button>
+    </dialog>
 
 
     <script src="scripts/scripts.js"></script>
