@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="pics/favicon.png">
 </head>
 
-<body>
+<body onload="showTableOnLoad()">
     <header class="header">
         <img src="pics/logo.png">
         <h1 id="title">Easy Inventory</h1>
@@ -57,11 +57,8 @@
             <tbody id="tableData"></tbody>
         </table>
     </div>
-
-
-
-
-    <!-- Objekt kreation Dialoge ################################################### -->
+    <br>
+    <p id="WaitingMessage"></p>
     <dialog id="objectCreationMethodSelectionDialog">
         <h2>Wie möchten Sie ein neues Objekt anlegen ?</h2>
         <button id="scannerMode">Barcode scannen

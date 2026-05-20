@@ -235,9 +235,11 @@ function createdObjectOverviewDialog() {
 		modal.close();
 	};
 }
-
-
 async function showTable() {
+	// wartenachricht
+	const message = document.getElementById("WaitingMessage");
+	message.innerHTML = "Tabelle wird geladen...";
+
     const select = document.getElementById("typeSelect").value;
     const tableHead = document.getElementById("headerRow");
     const tableData = document.getElementById("tableData");
@@ -255,6 +257,62 @@ async function showTable() {
 
 	// Spaltenname aus erstem datan array holen
 	const columnName = Object.keys(dataArray[0]);
+	
+	message.innerHTML = "";
+
+	//kopfzeile
+	columnName.forEach(generateColumn);
+
+	// erstellt die Spalten
+	function generateColumn(key) {
+		const th = document.createElement('th');
+		th.innerText = key;
+		tableHead.appendChild(th);
+	}
+		
+	// datennzeile
+	dataArray.forEach(function(entry) {
+		const tr = document.createElement('tr');
+		columnName.forEach(function(key) {
+			generateCell(key, entry, tr);
+		});
+		tableData.appendChild(tr);
+	});
+	
+	// Erstellt die Zellen
+	function generateCell(key, entry, tr) {
+		const td = document.createElement('td');
+
+		// Prüft, ob der Spaltenname barcode enthält
+		if (key.toLowerCase() === 'barcode') {
+			const barcodeValue = entry[key];
+			td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
+		} else {
+			td.innerHTML = entry[key];
+		}
+
+		tr.appendChild(td);
+	}
+}
+async function showTableOnLoad() {
+	// wartenachricht
+	const message = document.getElementById("WaitingMessage");
+	message.innerHTML = "Tabelle wird geladen...";
+
+    const tableHead = document.getElementById("headerRow");
+    const tableData = document.getElementById("tableData");
+    
+	// aufrufen der API
+	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=werkzeuge`);
+	//Antowrt für json lesbar machen
+	const jsonData = await answer.json();
+	// nur daten werden benötigt
+	const dataArray = jsonData.data; 
+
+	// Spaltenname aus erstem datan array holen
+	const columnName = Object.keys(dataArray[0]);
+
+	message.innerHTML = "";
 	
 	//kopfzeile
 	columnName.forEach(generateColumn);
@@ -276,11 +334,10 @@ async function showTable() {
 	});
 	
 	// Erstellt die Zellen
-	// Erstellt die Zellen
 	function generateCell(key, entry, tr) {
 		const td = document.createElement('td');
 
-		// Prüft, ob der Spaltenname 'barcode' oder 'Barcode' enthält
+		// Prüft, ob der Spaltenname barcode enthält
 		if (key.toLowerCase() === 'barcode') {
 			const barcodeValue = entry[key];
 			td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;

@@ -143,6 +143,7 @@ label[for="typeSelect"] {
 }
 
 select {
+    margin-left: 10px;
     padding: 10px 20px;
     font-size: 15px;
     border-radius: 20px;
@@ -286,20 +287,24 @@ dialog img {
 .closeBtn:hover img {
     transform: scale(1.1);
 }
-/* Table */
+/* Table Container */
 .table-container {
-    width: 100%;           /* Nutzt den maximal verfügbaren Platz */
-    overflow-x: auto;      /* Erzeugt automatisch einen Scrollbalken, wenn die Tabelle zu breit wird */
-    -webkit-overflow-scrolling: touch; /* Macht das Scrollen auf iPhones/iPads flüssiger */
-}
-table {
-    min-width: 600px;      /* Verhindert, dass die Tabelle auf kleinen Bildschirmen extrem gequetscht wird */
     width: 100%;
+    overflow-x: auto;          /* Scrollbalken NUR bei Bedarf */
+    scrollbar-width: thin;
+    padding-left: 10px;        /* Abstand links */
+    padding-right: 10px;       /* NEU: Abstand rechts */
+    box-sizing: border-box;    /* WICHTIG: Verhindert, dass die Paddings die 100% Breite vergrößern */
+}
+
+table {
+    width: 100%;               /* Nutzt den Platz des Containers minus der Paddings */
+    max-width: 100%;           
     border-spacing: 0;
-    margin-top: 10px;
-    margin-left: 10px;
+    margin-top: 10px;          
+    margin-left: 0;            
     border-collapse: separate; 
-    border: 1px solid #e0e0e0;    /* Ein helleres Grau für den Clean-Look */
+    border: 1px solid #e0e0e0; 
     border-radius: 8px;        
     overflow: hidden;          
 }
@@ -314,24 +319,24 @@ th {
 
 td {
     padding: 10px;
-    color: #333333;             /* Dunkelgrauer Text wirkt cleaner als reines Schwarz */
+    color: #333333; 
 }
 
-/* Abwechselnde Zeilenfarben für die Daten (Weiß und Leichtes Grau) */
+/* Abwechselnde Zeilenfarben für die Daten */
 tr:nth-child(even) {
-    background-color: #f9f9f9;  /* Sehr helles Grau für die geraden Zeilen */
+    background-color: #f9f9f9; 
 }
 
 tr:nth-child(odd) {
-    background-color: #ffffff;  /* Reines Weiß für die ungeraden Zeilen */
+    background-color: #ffffff; 
 }
 
-/* Rahmen-Optimierung für den Clean-Look (nur horizontale Trennlinien) */
+/* Rahmen-Optimierung (nur horizontale Trennlinien) */
 td {
     border-bottom: 1px solid #eeeeee;
 }
 
-/* Entfernt die letzte Trennlinie ganz unten, damit sie die Rundung nicht stört */
+/* Entfernt die letzte Trennlinie ganz unten */
 tr:last-child td {
     border-bottom: none;
 }
