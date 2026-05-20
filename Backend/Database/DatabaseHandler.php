@@ -30,7 +30,7 @@ class DatabaseHandler
 
     public function getAllAusgelieheneSachen(): array
     {
-        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
@@ -41,7 +41,7 @@ class DatabaseHandler
 
     public function getAusgeliehenHistorie(): array
     {
-        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Rückgabedatum as Rückgabedatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email, a.ZustandBeiRückgabe as ZustandBeiRückgabe
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Rückgabedatum as Rückgabedatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email, a.ZustandBeiRückgabe as ZustandBeiRückgabe
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID";
