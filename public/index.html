@@ -110,18 +110,22 @@
      <dialog id="borrowDialog">
         <h2>Objekt ausleihen</h2>
         <h2>Bitte folgende Informationen eingeben:</h2>
-        Ausleihauder in Tage : <input type="number" id="borrowDuration" >
-        Mitabeiter : <select id="borrowerIdSelect"></select>
+        Ausleihauder in Tage : <input type="number" id="borrowDuration" autocomplete="off" disabled> <br>
+        Mitabeiter : <select id="borrowerIdSelect" autocomplete="off"></select>
 
         <br>
-        <button id="borrowSubmitBtn">Bestätigen</button>
+        <button id="borrowSubmitBtn" disabled>Bestätigen</button>
      </dialog>
     <!-- Rückgabe Dialoge ################################################### -->
 
     <dialog id="returnDialog">
         <h2>Objekt zurückgeben</h2>
         <h2>Bitte das zurückzugebene Objekt scannen.</h2>
-        <button id="closeBtn3">Schließen</button>
+        <br>
+        <br>
+        Kondition des Objekts bei Rückgabe: <br> <input type="text" id="returnCondition" placeholder="Zustand des Objekts" autocomplete="off" disabled>
+        <br>
+        <button id="returnSubmitBtn" onclick="returnObject()" >Bestätigen</button>
     </dialog>
 
     <script src="scripts/scripts.js"></script>

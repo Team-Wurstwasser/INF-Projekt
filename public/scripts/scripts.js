@@ -9,8 +9,10 @@ let currentObject = {
 
 //barcode variable
 let scannedBarcode = "";
+let scannedBarcodeReturn = "";
+let scannedBarcodeBorrow = "";
 
-// Hilfsfunktion zur UI-Aktualisierung
+// --- Hilfsfunktionen & UI-Aktualisierung ---
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
 	if (idDisplay) idDisplay.value = currentObject.id;
@@ -18,12 +20,12 @@ function updateOverviewUI() {
 	document.getElementById("objectOverviewID").innerHTML = "ID: " + currentObject.id;
 	document.getElementById("objectOverviewName").innerHTML = "Name: " + currentObject.name;
 	document.getElementById("objectOverviewPurchaseDate").innerHTML = "Anschaffungsdatum: " + currentObject.date;
-	
-	
+
+
 
 }
 
-// event listener für barcode eingabe
+// --- Objekterstellung & Barcode-Eingabe ---
 window.addEventListener("keydown", (e) => {
 	const modal = document.getElementById("objectCreateScanBarcodeDialog");
 
@@ -49,10 +51,7 @@ window.addEventListener("keydown", (e) => {
 	}
 });
 
-//funktionen Dialoge
-
 //1. Selection zwischen scan barcode und manuelle eingabe
-
 function objectCreationMethodSelectionDialog() {
 	const modal = document.getElementById("objectCreationMethodSelectionDialog");
 	const scannerModeBtn = document.getElementById("scannerMode");
@@ -77,18 +76,16 @@ function objectCreationMethodSelectionDialog() {
 }
 
 async function getBarcode() {
-	
-		const response = await fetch(`https://mhp.hallo123wert.de/api.php?resource=barcode`);
-		const jsonData = await response.json();
 
-		const Barcode = jsonData.barcode;
+	const response = await fetch(`https://mhp.hallo123wert.de/api.php?resource=barcode`);
+	const jsonData = await response.json();
 
-		currentObject.id = Barcode;
-		updateOverviewUI();
-		objectConfigDialog();
+	const Barcode = jsonData.barcode;
+
+	currentObject.id = Barcode;
+	updateOverviewUI();
+	objectConfigDialog();
 }
-
-
 
 // Scan Option 
 function objectCreateScanBarcodeDialog() {
@@ -123,54 +120,56 @@ function barcodeCreateDialog() {
 	};
 }
 
+// --- Objekt-Konfiguration & Speichern ---
+
 async function loadWerkzeugTypen() {
-    const typeSelect = document.getElementById("objectTypeSelect");
+	const typeSelect = document.getElementById("objectTypeSelect");
 
-    typeSelect.innerHTML = "";
+	typeSelect.innerHTML = "";
 
-    const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
-    const jsonData = await answer.json();
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
+	const jsonData = await answer.json();
 
-	jsonData.data.forEach(function(typ) {
-    	const option = document.createElement("option");
-    	option.value = typ.Typ_ID; 
-    	option.innerText = typ.Typ; 
-    	typeSelect.appendChild(option);
+	jsonData.data.forEach(function (typ) {
+		const option = document.createElement("option");
+		option.value = typ.Typ_ID;
+		option.innerText = typ.Typ;
+		typeSelect.appendChild(option);
 	});
 }
 
 async function loadWerkzeugStatus() {
-    const statusSelect = document.getElementById("objectStatusSelect");
+	const statusSelect = document.getElementById("objectStatusSelect");
 
-    statusSelect.innerHTML = "";
+	statusSelect.innerHTML = "";
 
-    const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=status");
-    const jsonData = await answer.json();
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=status");
+	const jsonData = await answer.json();
 
-	jsonData.data.forEach(function(typ) {
-    	const option = document.createElement("option");
-    	option.value = typ.Status_ID; 
-    	option.innerText = typ.Bezeichnung; 
-    	statusSelect.appendChild(option);
+	jsonData.data.forEach(function (typ) {
+		const option = document.createElement("option");
+		option.value = typ.Status_ID;
+		option.innerText = typ.Bezeichnung;
+		statusSelect.appendChild(option);
 	});
 }
 
 async function saveNewObject() {
-    const payload = {
-        barcode: currentObject.id,
-        bezeichnung: currentObject.name,
-        typ_id: currentObject.typId,
-        anschaffungsdatum: currentObject.date,
-        status_id: currentObject.statusId
-    };
+	const payload = {
+		barcode: currentObject.id,
+		bezeichnung: currentObject.name,
+		typ_id: currentObject.typId,
+		anschaffungsdatum: currentObject.date,
+		status_id: currentObject.statusId
+	};
 
-    await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeuge", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    });
+	await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeuge", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(payload)
+	});
 }
 
 // Objekt Configuration Dialog
@@ -199,12 +198,12 @@ function objectConfigDialog() {
 		// zu overview hinzufügen
 		const barcodeImg = document.getElementById("barcodeimg");
 
-    	barcodeImg.src = `https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(currentObject.id)}`;
+		barcodeImg.src = `https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(currentObject.id)}`;
 
 		modal.close();
 		updateOverviewUI();
 		createdObjectOverviewDialog();
-		
+
 	};
 }
 
@@ -235,7 +234,9 @@ function createdObjectOverviewDialog() {
 		modal.close();
 	};
 }
-// zeigt tabelle an
+
+// --- Tabellen-Anzeige & Daten-Abruf ---
+
 async function showTable() {
 	// wartenachricht
 	const message = document.getElementById("WaitingMessage");
@@ -244,11 +245,11 @@ async function showTable() {
 	const select = document.getElementById("typeSelect").value;
 	const tableHead = document.getElementById("headerRow");
 	const tableData = document.getElementById("tableData");
-	
+
 	// Tabelle leeren
 	tableHead.innerHTML = "";
 	tableData.innerHTML = "";
-	
+
 	// aufrufen der API
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=${select}`);
 	//Antowrt für json lesbar machen
@@ -261,12 +262,12 @@ async function showTable() {
 	}
 
 	// nur daten werden benötigt
-	const dataArray = jsonData.data; 
+	const dataArray = jsonData.data;
 
 	if (dataArray && dataArray.length > 0) {
 		// Spaltenname aus erstem datan array holen
 		const columnName = Object.keys(dataArray[0]);
-		
+
 		message.innerHTML = "";
 
 		// kopfzeile mit Index für den Filter
@@ -292,17 +293,17 @@ async function showTable() {
 			th.appendChild(input);
 			tableHead.appendChild(th);
 		}
-			
-		// datenzeile
-		dataArray.forEach(function(entry) {
+
+		// datennzeile
+		dataArray.forEach(function (entry) {
 			const tr = document.createElement('tr');
-			columnName.forEach(function(key) {
+			columnName.forEach(function (key) {
 				generateCell(key, entry, tr);
 			});
 			tableData.appendChild(tr);
 		});
-		
-		// erstellt zellen
+
+		// Erstellt die Zellen
 		function generateCell(key, entry, tr) {
 			const td = document.createElement('td');
 
@@ -358,6 +359,7 @@ function filterTable() {
 		}
 	}
 }
+
 async function showTableOnLoad() {
 	// wartenachricht
 	const message = document.getElementById("WaitingMessage");
@@ -365,8 +367,6 @@ async function showTableOnLoad() {
 
 	const tableHead = document.getElementById("headerRow");
 	const tableData = document.getElementById("tableData");
-	
-	
 	// aufrufen der API
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=werkzeuge`);
 	//Antowrt für json lesbar machen
@@ -379,12 +379,12 @@ async function showTableOnLoad() {
 	}
 
 	// nur daten werden benötigt
-	const dataArray = jsonData.data; 
+	const dataArray = jsonData.data;
 
 	if (dataArray && dataArray.length > 0) {
 		// Spaltenname aus erstem datan array holen
 		const columnName = Object.keys(dataArray[0]);
-		
+
 		message.innerHTML = "";
 
 		// kopfzeile mit Index für den Filter
@@ -410,17 +410,17 @@ async function showTableOnLoad() {
 			th.appendChild(input);
 			tableHead.appendChild(th);
 		}
-			
-		// datenzeile
-		dataArray.forEach(function(entry) {
+
+		// datennzeile
+		dataArray.forEach(function (entry) {
 			const tr = document.createElement('tr');
-			columnName.forEach(function(key) {
+			columnName.forEach(function (key) {
 				generateCell(key, entry, tr);
 			});
 			tableData.appendChild(tr);
 		});
-		
-		// erstellt zellen
+
+		// Erstellt die Zellen
 		function generateCell(key, entry, tr) {
 			const td = document.createElement('td');
 
@@ -439,6 +439,8 @@ async function showTableOnLoad() {
 	}
 }
 
+// --- Ausleihe (Borrow) ---
+
 function borrowDialog() {
 	const modal = document.getElementById("borrowDialog");
 	const submitBtn = document.getElementById("borrowSubmitBtn");
@@ -446,22 +448,59 @@ function borrowDialog() {
 	modal.showModal();
 
 	submitBtn.onclick = () => {
-		modal.close();
+		console.log("submit btn clicked"); // Debug-Ausgabe
+		transmitBorrowData();
+		document.getElementById("returnCondition").disabled = true;
+
 	};
 
 }
 
-function returnDialog() {
-	const modal = document.getElementById("returnDialog");
-	const submitBtn = document.getElementById("returnSubmitBtn");
-	console.log("Rückgabe dialog"); // Debug-Ausgabe
-	modal.showModal();
+async function transmitBorrowData() {
+	console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowReturnDate").value);
 
-	submitBtn.onclick = () => {
-		modal.close();
+	const payload = {
+		barcode: currentObject.id,
+		ausleihdauer: document.getElementById("borrowDuration").value,
+		mitarbeiter_id: 1,
 	};
 
+	await fetch("https://mhp.hallo123wert.de/api.php?resource=abgeben", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(payload)
+	});
+
 }
+
+window.addEventListener("keydown", (e) => {
+	const modal = document.getElementById("borrowDialog");
+	console.log("eventlistener scanner borrow"); // Debug-Ausgabe
+	if (modal && modal.open) {
+		if (e.key === "Enter") {
+			if (scannedBarcodeBorrow.length > 0) {
+				// Wert übertragen
+				currentObject.id = scannedBarcodeBorrow;
+				scannedBarcodeBorrow = "";
+
+				document.getElementById("borrowSubmitBtn").disabled = false;
+				document.getElementById("borrowDuration").disabled = false;
+
+
+			}
+		} else {
+			// Dies hat in deinem Code gefehlt:
+			// Nur Zeichen der Länge 1 hinzufügen (verhindert 'Shift', 'Control' etc.)
+			if (e.key.length === 1) {
+				scannedBarcodeBorrow += e.key;
+			}
+		}
+	}
+});
+
+// --- Rückgabe (Return) ---
 
 function returnDialog() {
 	const modal = document.getElementById("returnDialog");
@@ -475,3 +514,45 @@ function returnDialog() {
 	};
 
 }
+
+async function returnObject() {
+	console.log("Rückgabe des Objekts mit ID: " + currentObject.id + " und Zustand: " + document.getElementById("returnCondition").value);
+
+	const payload = {
+		barcode: currentObject.id,
+		zustand: document.getElementById("returnCondition").value
+	};
+
+	await fetch("https://mhp.hallo123wert.de/api.php?resource=abgeben", {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json"
+		},
+		body: JSON.stringify(payload)
+	});
+
+}
+
+window.addEventListener("keydown", (e) => {
+	const modal = document.getElementById("returnDialog");
+
+	if (modal && modal.open) {
+		if (e.key === "Enter") {
+			if (scannedBarcodeReturn.length > 0) {
+				// Wert übertragen
+				currentObject.id = scannedBarcodeReturn;
+				scannedBarcodeReturn = "";
+
+				document.getElementById("returnCondition").disabled = false;
+				console.log("Scanned barcode for return: " + currentObject.id); // Debug-Ausgabe
+
+			}
+		} else {
+			// Dies hat in deinem Code gefehlt:
+			// Nur Zeichen der Länge 1 hinzufügen (verhindert 'Shift', 'Control' etc.)
+			if (e.key.length === 1) {
+				scannedBarcodeReturn += e.key;
+			}
+		}
+	}
+});
