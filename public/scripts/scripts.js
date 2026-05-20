@@ -374,6 +374,7 @@ async function showTableOnLoad() {
 function borrowDialog() {
 	const modal = document.getElementById("borrowDialog");
 	const submitBtn = document.getElementById("borrowSubmitBtn");
+	const closeBtn = document.getElementById("closeBtnBorrow");
 	console.log("Ausleihe dialog"); // Debug-Ausgabe
 	document.getElementById('borrowDuration').disabled = true; //dauer erst aktivieren wenn barcode gescannt
 	document.getElementById('borrowDuration').value = '';
@@ -381,6 +382,10 @@ function borrowDialog() {
 
 	modal.showModal();
 
+
+	closeBtn.onclick = () => {
+		modal.close();
+	};
 	submitBtn.onclick = () => {
 		console.log("submit btn clicked"); // Debug-Ausgabe
 		transmitBorrowData();
@@ -394,7 +399,7 @@ async function transmitBorrowData() {
 	console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowDuration").value);
 	const borrowDuration = document.getElementById("borrowDuration").value;
 	console.log("Barcode: " + currentObject.id + ", Dauer: " + borrowDuration + ", Mitarbeiter: debug"); // Debug-Ausgabe
-	
+
 	const payload = {
 		barcode: currentObject.id,
 		ausleihdauer: borrowDuration,
@@ -453,13 +458,16 @@ window.addEventListener("keydown", (e) => {
 function returnDialog() {
 	const modal = document.getElementById("returnDialog");
 	const returnSubmitBtn = document.getElementById("returnSubmitBtn");
+	const closeBtn = document.getElementById("closeBtnReturn");
 	console.log("Rückgabe dialog"); // Debug-Ausgabe
 	document.getElementById('returnCondition').value = ''; //clear
 	document.getElementById('returnCondition').disabled = true; //zustand erst aktivieren wenn barcode gescannt
 	document.getElementById('returnSubmitBtn').disabled = true;
 	modal.showModal();
 
-
+	closeBtn.onclick = () => {
+		modal.close();
+	};
 	returnSubmitBtn.onclick = () => {
 		returnObject();
 		modal.close();

@@ -102,24 +102,27 @@
 
     <!-- * Ausleihe Dialoge ################################################### -->
      <dialog id="borrowDialog">
-        <h2>Objekt ausleihen</h2>
-        <h2>Bitte folgende Informationen eingeben:</h2>
+        <h3>Objekt ausleihen</h3>
+        <h3> 1. Scannen Sie den Barcode des auszuleihenden Objekts.</h3>
+        <h3> 2. Geben Sie die Ausleihauder in Tagen und ihre Mitarbeiter-ID ein.</h3>
         Ausleihauder in Tage : <input type="number" id="borrowDuration" autocomplete="off" disabled> <br>
         Mitabeiter : <select id="borrowerIdSelect" autocomplete="off"></select>
 
         <br>
         <button id="borrowSubmitBtn" disabled>Bestätigen</button>
+        <button class="closeBtn" id="closeBtnBorrow"> <img src="pics/close.png" alt="X"></button>
      </dialog>
     <!-- Rückgabe Dialoge ################################################### -->
 
     <dialog id="returnDialog">
-        <h2>Objekt zurückgeben</h2>
-        <h2>Bitte das zurückzugebene Objekt scannen.</h2>
-        <br>
+        <h1>Objekt zurückgeben</h1>
+        <h3> 1. Scannen Sie den Barcode des zurückzugebenden Objekts.</h3>
+        <h3> 2. Geben sie die Kondition des Objekts bei Rückgabe ein.</h3>
         <br>
         Kondition des Objekts bei Rückgabe: <br> <input type="text" id="returnCondition" placeholder="Zustand des Objekts" autocomplete="off" disabled>
         <br>
         <button id="returnSubmitBtn" onclick="returnObject()" >Bestätigen</button>
+        <button class="closeBtn" id="closeBtnReturn"> <img src="pics/close.png" alt="X"></button>
     </dialog>
 
     <script src="scripts/scripts.js"></script>
