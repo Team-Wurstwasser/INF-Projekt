@@ -15,14 +15,15 @@ let scannedBarcodeBorrow = "";
 // --- Hilfsfunktionen & UI-Aktualisierung ---
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
+	const overviewIdEl = document.getElementById("objectOverviewID");
+	const overviewNameEl = document.getElementById("objectOverviewName");
+	const overviewTypeEl = document.getElementById("objectOverviewType");
+	const overviewDateEl = document.getElementById("objectOverviewPurchaseDate");
 	if (idDisplay) idDisplay.value = currentObject.id;
-
-	document.getElementById("objectOverviewID").innerHTML = "ID: " + currentObject.id;
-	document.getElementById("objectOverviewName").innerHTML = "Name: " + currentObject.name;
-	document.getElementById("objectOverviewPurchaseDate").innerHTML = "Anschaffungsdatum: " + currentObject.date;
-
-
-
+	if (overviewIdEl) overviewIdEl.innerHTML = "ID: " + currentObject.id;
+	if (overviewNameEl) overviewNameEl.innerHTML = "Name: " + currentObject.name;
+	if (overviewTypeEl) overviewTypeEl.innerHTML = "Typ: " + (currentObject.typName);
+	if (overviewDateEl) overviewDateEl.innerHTML = "Anschaffungsdatum: " + currentObject.date;
 }
 
 // --- Objekterstellung & Barcode-Eingabe ---
@@ -187,20 +188,32 @@ async function saveNewObject() {
 function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
 	const submit = document.getElementById("objectSubmitBtn");
-
 	// Felder leeren
-	document.getElementById('objectName').value = '';
-	document.getElementById('objectPurchaseDate').value = '';
+	const objectNameEl = document.getElementById('objectName');
+	const purchaseDateEl = document.getElementById('objectPurchaseDate');
+	const typeSelect = document.getElementById('objectTypeSelect');
+	objectNameEl.value = '';
+	purchaseDateEl.value = '';
 
 	loadWerkzeugTypen();
+
+	function validateObjectForm() {
+		const nameSet = objectNameEl.value && objectNameEl.value.trim().length > 0;
+		const barcodeSet = currentObject.id && currentObject.id.length > 0;
+		submit.disabled = !(nameSet && barcodeSet);
+	}
+
+	objectNameEl.addEventListener('input', validateObjectForm);
+	validateObjectForm(); // initiale Validierung
 
 	modal.showModal();
 
 	submit.onclick = async () => {
-		//aktielle werte 
-		currentObject.name = document.getElementById('objectName').value;
-		currentObject.date = document.getElementById('objectPurchaseDate').value;
-		currentObject.typId = document.getElementById('objectTypeSelect').value;
+		// aktuelle Werte übernehmen
+		currentObject.name = objectNameEl.value;
+		currentObject.date = purchaseDateEl.value;
+		currentObject.typId = typeSelect.value;
+		currentObject.typName = typeSelect.options[typeSelect.selectedIndex].text;
 
 		modal.close();
 
@@ -211,12 +224,10 @@ function objectConfigDialog() {
 
 		// zu overview hinzufügen
 		const barcodeImg = document.getElementById("barcodeimg");
-
 		barcodeImg.src = `https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(currentObject.id)}`;
 
 		updateOverviewUI();
 		createdObjectOverviewDialog();
-
 	};
 }
 

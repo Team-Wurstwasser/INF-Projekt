@@ -83,10 +83,9 @@
     <dialog id="objectConfigDialog">
         <h2>Objekt konfigurieren</h2>
         <h2>Bitte folgende Informationen eingeben:</h2>
-        <input type="text" id="objectID" disabled autocomplete="off">
-        <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off"> <br>
-        Werkzeugtyp:
-        <select id="objectTypeSelect"></select><br><br>
+        Barcode: <input type="text" id="objectID" disabled autocomplete="off"> <br>
+        Bezeichnung: <input type="text" id="objectName" placeholder="Objektbezeichnung" autofocus autocomplete="off"> <br>
+        Werkzeugtyp: <select id="objectTypeSelect"></select><br><br>
         Anschaffungsdatum: <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off"> <br>
         <button id="objectSubmitBtn">Bestätigen</button>
     </dialog>
@@ -95,11 +94,10 @@
         <h2>Erstelltes Objekt übersicht</h2>
         <p id="objectOverviewID">ID: </p>
         <p id="objectOverviewName">Name: </p>
+        <p id="objectOverviewType">Typ: </p>
         <p id="objectOverviewPurchaseDate">Anschaffungsdatum: </p>
-        Barcode: <img id="barcodeimg" src="">
-        <br>
-        <button id="downloadBarcodeBtn">Barcode Herunterladen</button>
-        <br>
+        Barcode: <img id="barcodeimg" src=""> <br>
+        <button id="downloadBarcodeBtn">Barcode Herunterladen</button> <br>
         <button id="closeCreatedObjectOverviewBtn">Schließen</button>
     </dialog>
 
