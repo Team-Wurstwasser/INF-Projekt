@@ -463,7 +463,6 @@ function borrowDialog() {
 		modal.close();
 
 	};
-	showTableOnLoad();
 
 }
 
@@ -541,8 +540,6 @@ function returnDialog() {
 		returnObject();
 		modal.close();
 	};
-
-	showTableOnLoad();
 }
 
 async function returnObject() {
