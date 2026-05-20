@@ -441,22 +441,50 @@ dialog h1 {
     margin-bottom: 20px;
 }
 
-.hidden-gallery {
-    display: none; /* Standardmäßig komplett unsichtbar */
-    justify-content: center; /* Setzt die Bilder mittig */
-    gap: 20px; /* Abstand zwischen den Bildern */
-    margin-bottom: 50px; /* Abstand zum Seitenende */
+/* Der Button bekommt das exakte Design deiner anderen Aktions-Buttons */
+#toggleImagesBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    height: 45px;
+    font-size: 14px;
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    background: #000080; /* Hauptfarbe: Navy Blue */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-/* Diese Klasse wird per JavaScript hinzugefügt, um die Bilder zu zeigen */
+/* Hover-Farbe analog zu den anderen Buttons (helleres Blau) */
+#toggleImagesBtn:hover {
+    background-color: #0000cd; 
+}
+
+/* Klick-Animation (Button wird leicht kleiner beim Draufdrücken) */
+#toggleImagesBtn:active {
+    transform: scale(0.98); 
+}
+
+/* Galerie Container */
+.hidden-gallery {
+    display: none; 
+    justify-content: center; 
+    gap: 20px; 
+    margin-bottom: 50px; 
+}
+
 .hidden-gallery.show {
     display: flex;
 }
 
 .hidden-gallery img {
-    max-width: 250px; /* Passt die Bildgröße an - Wert nach Belieben ändern */
+    max-width: 250px; 
     height: auto;
-    border-radius: 8px; /* Leichte Rundungen passend zu deinem Design */
+    border-radius: 8px; 
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
