@@ -415,7 +415,7 @@ function sortTable(columnIndex, thElement) {
 	// Neue Sortierrichtung speichern und das passende Icon anzeigen (↓ oder ↑)
 	thElement.setAttribute("data-sort", isAscending ? "asc" : "desc");
 	const currentIcon = thElement.querySelector('.sort-icon');
-	currentIcon.innerHTML = isAscending ? ' ↓' : ' ↑';
+	currentIcon.innerHTML = isAscending ? ' ↑' : ' ↓';
 
 	// Zeilen sortieren
 	rows.sort((rowA, rowB) => {
