@@ -170,6 +170,7 @@ async function saveNewObject() {
 		},
 		body: JSON.stringify(payload)
 	});
+	showTableOnLoad();
 }
 
 // Objekt Configuration Dialog
@@ -367,6 +368,11 @@ async function showTableOnLoad() {
 
 	const tableHead = document.getElementById("headerRow");
 	const tableData = document.getElementById("tableData");
+
+	// Tabelle leeren
+	tableHead.innerHTML = "";
+	tableData.innerHTML = "";
+
 	// aufrufen der API
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=werkzeuge`);
 	//Antowrt für json lesbar machen
@@ -457,6 +463,7 @@ function borrowDialog() {
 		modal.close();
 
 	};
+	showTableOnLoad();
 
 }
 
@@ -535,6 +542,7 @@ function returnDialog() {
 		modal.close();
 	};
 
+	showTableOnLoad();
 }
 
 async function returnObject() {
