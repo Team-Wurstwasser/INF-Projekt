@@ -76,7 +76,7 @@ class DatabaseHandler
         $sql = "SELECT COUNT(*) FROM Werkzeuge WHERE Barcode = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$barcode]);
-        return (int)$stmt->fetchColumn() > 0;
+        return $stmt->fetchColumn() > 0;
     }
 
     public function isValidEan13Barcode(string $barcode): bool
