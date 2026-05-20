@@ -344,3 +344,7 @@ tr:last-child td {
 #WaitingMessage{
     margin-left: 10px;
 }
+input{
+    width: 90%;
+    margin-top: 5px;
+}

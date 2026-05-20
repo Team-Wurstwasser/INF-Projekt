@@ -235,7 +235,7 @@ function createdObjectOverviewDialog() {
 		modal.close();
 	};
 }
-
+// zeigt tabelle an
 async function showTable() {
 	// wartenachricht
 	const message = document.getElementById("WaitingMessage");
@@ -270,25 +270,24 @@ async function showTable() {
 		message.innerHTML = "";
 
 		// kopfzeile mit Index für den Filter
-		columnName.forEach((key, index) => generateColumn(key, index));
+		columnName.forEach(function(key, index) {
+			generateColumn(key, index);
+		});
 
 		// erstellt die Spalten inklusive Suchfeld
 		function generateColumn(key, index) {
 			const th = document.createElement('th');
 			
-			// Textknoten für den Spaltennamen
-			th.appendChild(document.createTextNode(key));
-			th.appendChild(document.createElement('br'));
+			// eingeabefeld erstellen
+			th.innerHTML = `${key}<br>`;
 			
-			// Dynamisches Input-Feld erstellen
+			// input erstellen
 			const input = document.createElement('input');
 			input.type = 'text';
-			input.placeholder = `${key} filtern...`;
-			input.style.width = '90%';
-			input.style.marginTop = '5px';
+			input.placeholder = "filtern...";
 			
-			// Event-Listener für die Filterung hinzufügen
-			input.addEventListener('keyup', filterTable);
+			// eventlistener fürs filtern
+			input.addEventListener('input', filterTable);
 			
 			th.appendChild(input);
 			tableHead.appendChild(th);
@@ -303,11 +302,11 @@ async function showTable() {
 			tableData.appendChild(tr);
 		});
 		
-		// Erstellt die Zellen
+		// erstellt zellen
 		function generateCell(key, entry, tr) {
 			const td = document.createElement('td');
 
-			// Prüft ob der Spaltenname barcode enthält
+			// prüft ob spaltenname barcode enthält
 			if (key.toLowerCase() === 'barcode') {
 				const barcodeValue = entry[key];
 				td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
@@ -321,38 +320,42 @@ async function showTable() {
 		message.innerHTML = "Keine Daten vorhanden!";
 	}
 }
-
-// Neue, kombinierte Filter-Funktion für alle Spalten
+// filtern
 function filterTable() {
 	const tableHead = document.getElementById("headerRow");
 	const tableData = document.getElementById("tableData");
 	
-	// Alle Inputs aus der Kopfzeile holen
+	// inputs von kopfzeile
 	const inputs = tableHead.getElementsByTagName("input");
-	// Alle Datenzeilen holen
+	// datenzeilen abfragen
 	const rows = tableData.getElementsByTagName("tr");
 
-	// Jede Zeile in der Tabelle prüfen
 	for (let i = 0; i < rows.length; i++) {
+		//holt daten aus einer zeile
 		const cells = rows[i].getElementsByTagName("td");
 		let showRow = true;
 
-		// Jede Spalte mit dem jeweiligen Input abgleichen (Multi-Filter)
+		// spalte für spalte durchgehen
 		for (let j = 0; j < inputs.length; j++) {
+			//einagbe spechern in klein
 			const filterValue = inputs[j].value.toLowerCase();
 			
 			if (filterValue && cells[j]) {
-				const cellText = cells[j].textContent || cells[j].innerText;
-				// Wenn ein Filter Text enthält, aber die Zelle ihn nicht matcht: Zeile ausblenden
-				if (cellText.toLowerCase().indexOf(filterValue) === -1) {
+				//daten in zelle
+				const cellText = cells[j].innerHTML;
+				// macht zelltext klein und vergleicht, -1 is ungleich
+				if (cellText.toLowerCase().indexOf(filterValue) == -1) {
 					showRow = false;
-					break; // Sobald eine Spalte nicht matcht, bricht die Spaltenprüfung für diese Zeile ab
+					break;
 				}
 			}
 		}
-
-		// Zeile anzeigen oder verstecken
-		rows[i].style.display = showRow ? "" : "none";
+		// zelle anzeingen oder nicht
+		if (showRow === true) {
+			rows[i].style.display = "";	//zeigt zelle an, none wird entfernt fals da war
+		} else {
+			rows[i].style.display = "none"; //zeigt zelle nicht an
+		}
 	}
 }
 async function showTableOnLoad() {
@@ -360,9 +363,10 @@ async function showTableOnLoad() {
 	const message = document.getElementById("WaitingMessage");
 	message.innerHTML = "Tabelle wird geladen...";
 
-    const tableHead = document.getElementById("headerRow");
-    const tableData = document.getElementById("tableData");
-    
+	const tableHead = document.getElementById("headerRow");
+	const tableData = document.getElementById("tableData");
+	
+	
 	// aufrufen der API
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=werkzeuge`);
 	//Antowrt für json lesbar machen
@@ -383,17 +387,31 @@ async function showTableOnLoad() {
 		
 		message.innerHTML = "";
 
-		//kopfzeile
-		columnName.forEach(generateColumn);
+		// kopfzeile mit Index für den Filter
+		columnName.forEach(function(key, index) {
+			generateColumn(key, index);
+		});
 
-		// erstellt die Spalten
-		function generateColumn(key) {
+		// erstellt die Spalten inklusive Suchfeld
+		function generateColumn(key, index) {
 			const th = document.createElement('th');
-			th.innerText = key;
+			
+			// eingeabefeld erstellen
+			th.innerHTML = `${key}<br>`;
+			
+			// input erstellen
+			const input = document.createElement('input');
+			input.type = 'text';
+			input.placeholder = "filtern...";
+			
+			// eventlistener fürs filtern
+			input.addEventListener('input', filterTable);
+			
+			th.appendChild(input);
 			tableHead.appendChild(th);
 		}
 			
-		// datennzeile
+		// datenzeile
 		dataArray.forEach(function(entry) {
 			const tr = document.createElement('tr');
 			columnName.forEach(function(key) {
@@ -402,11 +420,11 @@ async function showTableOnLoad() {
 			tableData.appendChild(tr);
 		});
 		
-		// Erstellt die Zellen
+		// erstellt zellen
 		function generateCell(key, entry, tr) {
 			const td = document.createElement('td');
 
-			// Prüft ob der Spaltenname barcode enthält
+			// prüft ob spaltenname barcode enthält
 			if (key.toLowerCase() === 'barcode') {
 				const barcodeValue = entry[key];
 				td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
@@ -417,7 +435,7 @@ async function showTableOnLoad() {
 			tr.appendChild(td);
 		}
 	} else {
-		message.innerHTML = "Keine Daten vorhanden!"
+		message.innerHTML = "Keine Daten vorhanden!";
 	}
 }
 
