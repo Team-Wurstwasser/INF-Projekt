@@ -287,23 +287,57 @@ dialog img {
     transform: scale(1.1);
 }
 /* Table */
+.table-container {
+    width: 100%;           /* Nutzt den maximal verfügbaren Platz */
+    overflow-x: auto;      /* Erzeugt automatisch einen Scrollbalken, wenn die Tabelle zu breit wird */
+    -webkit-overflow-scrolling: touch; /* Macht das Scrollen auf iPhones/iPads flüssiger */
+}
 table {
-  border-collapse: separate;
-  border-spacing: 0;
-  border: 1px;
-  border-radius: 12px;
-  background-color: #0000cd;
+    min-width: 600px;      /* Verhindert, dass die Tabelle auf kleinen Bildschirmen extrem gequetscht wird */
+    width: 100%;
+    border-spacing: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+    border-collapse: separate; 
+    border: 1px solid #e0e0e0;    /* Ein helleres Grau für den Clean-Look */
+    border-radius: 8px;        
+    overflow: hidden;          
 }
 
-th, td {
-  border: 1px;
-  padding: 10px;
+th {
+    padding: 10px;
+    background-color: #0000cd;
+    color: #f0f0f0;
+    font-weight: bold;
+    text-align: left;
 }
 
+td {
+    padding: 10px;
+    color: #333333;             /* Dunkelgrauer Text wirkt cleaner als reines Schwarz */
+}
+
+/* Abwechselnde Zeilenfarben für die Daten (Weiß und Leichtes Grau) */
+tr:nth-child(even) {
+    background-color: #f9f9f9;  /* Sehr helles Grau für die geraden Zeilen */
+}
+
+tr:nth-child(odd) {
+    background-color: #ffffff;  /* Reines Weiß für die ungeraden Zeilen */
+}
+
+/* Rahmen-Optimierung für den Clean-Look (nur horizontale Trennlinien) */
+td {
+    border-bottom: 1px solid #eeeeee;
+}
+
+/* Entfernt die letzte Trennlinie ganz unten, damit sie die Rundung nicht stört */
+tr:last-child td {
+    border-bottom: none;
+}
 * {
-  box-sizing: inherit;
+    box-sizing: inherit;
 }
-
 .page-footer {
     background-color: rgb(75 70 74);
     color: white;
