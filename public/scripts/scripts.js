@@ -362,87 +362,11 @@ function filterTable() {
 }
 
 async function showTableOnLoad() {
-	// wartenachricht
-	const message = document.getElementById("WaitingMessage");
-	message.innerHTML = "Tabelle wird geladen...";
+	const typeSelect = document.getElementById("typeSelect");
+	//setzt kategorie auf werkzeuge
+	typeSelect.value = "werkzeuge";
 
-	const tableHead = document.getElementById("headerRow");
-	const tableData = document.getElementById("tableData");
-
-	// Tabelle leeren
-	tableHead.innerHTML = "";
-	tableData.innerHTML = "";
-
-	// aufrufen der API
-	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=werkzeuge`);
-	//Antowrt für json lesbar machen
-	const jsonData = await answer.json();
-
-	// falls api fehler zurückgibt
-	if (jsonData.success == false) {
-		message.innerHTML = "Fehler: " + jsonData.error;
-		return;
-	}
-
-	// nur daten werden benötigt
-	const dataArray = jsonData.data;
-
-	if (dataArray && dataArray.length > 0) {
-		// Spaltenname aus erstem datan array holen
-		const columnName = Object.keys(dataArray[0]);
-
-		message.innerHTML = "";
-
-		// kopfzeile mit Index für den Filter
-		columnName.forEach(function (key, index) {
-			generateColumn(key, index);
-		});
-
-		// erstellt die Spalten inklusive Suchfeld
-		function generateColumn(key, index) {
-			const th = document.createElement('th');
-
-			// eingeabefeld erstellen
-			th.innerHTML = `${key}<br>`;
-
-			// input erstellen
-			const input = document.createElement('input');
-			input.type = 'text';
-			input.placeholder = "filtern...";
-
-			// eventlistener fürs filtern
-			input.addEventListener('input', filterTable);
-
-			th.appendChild(input);
-			tableHead.appendChild(th);
-		}
-
-		// datennzeile
-		dataArray.forEach(function (entry) {
-			const tr = document.createElement('tr');
-			columnName.forEach(function (key) {
-				generateCell(key, entry, tr);
-			});
-			tableData.appendChild(tr);
-		});
-
-		// Erstellt die Zellen
-		function generateCell(key, entry, tr) {
-			const td = document.createElement('td');
-
-			// prüft ob spaltenname barcode enthält
-			if (key.toLowerCase() === 'barcode') {
-				const barcodeValue = entry[key];
-				td.innerHTML = `<a href="https://mhp.hallo123wert.de/api.php?resource=barcode&code=${encodeURIComponent(barcodeValue)}" target="_blank">${barcodeValue}</a>`;
-			} else {
-				td.innerHTML = entry[key];
-			}
-
-			tr.appendChild(td);
-		}
-	} else {
-		message.innerHTML = "Keine Daten vorhanden!";
-	}
+	await showTable();
 }
 
 // --- Ausleihe (Borrow) ---
