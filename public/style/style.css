@@ -299,3 +299,13 @@ th, td {
   border: 1px;
   padding: 10px;
 }
+
+* {
+  box-sizing: inherit;
+}
+
+.page-footer {
+    background-color: rgb(75 70 74);
+    color: white;
+    padding: 20px;
+}
