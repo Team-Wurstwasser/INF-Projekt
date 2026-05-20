@@ -22,11 +22,11 @@
                 Objekt anlegen
                 <img src="pics/plus.png" />
             </button>
-            <button>
+            <button id="borrowBtn" onclick="borrowDialog()">
                 Ausleihe
                 <img src="pics/borrow.png" />
             </button>
-            <button>
+            <button id="returnBtn" onclick="returnDialog()">
                 Rückgabe
                 <img src="pics/returnicon.png" />
             </button>
@@ -107,8 +107,22 @@
     </dialog>
 
     <!-- * Ausleihe Dialoge ################################################### -->
+     <dialog id="borrowDialog">
+        <h2>Objekt ausleihen</h2>
+        <h2>Bitte folgende Informationen eingeben:</h2>
+        Ausleihauder in Tage : <input type="number" id="borrowDuration" >
+        Mitabeiter : <select id="borrowerIdSelect"></select>
 
+        <br>
+        <button id="borrowSubmitBtn">Bestätigen</button>
+     </dialog>
     <!-- Rückgabe Dialoge ################################################### -->
+
+    <dialog id="returnDialog">
+        <h2>Objekt zurückgeben</h2>
+        <h2>Bitte das zurückzugebene Objekt scannen.</h2>
+        <button id="closeBtn3">Schließen</button>
+    </dialog>
 
     <script src="scripts/scripts.js"></script>
 

@@ -348,3 +348,40 @@ async function showTableOnLoad() {
 		tr.appendChild(td);
 	}
 }
+
+function borrowDialog() {
+	const modal = document.getElementById("borrowDialog");
+	const submitBtn = document.getElementById("borrowSubmitBtn");
+	console.log("Ausleihe dialog"); // Debug-Ausgabe
+	modal.showModal();
+
+	submitBtn.onclick = () => {
+		modal.close();
+	};
+
+}
+
+function returnDialog() {
+	const modal = document.getElementById("returnDialog");
+	const submitBtn = document.getElementById("returnSubmitBtn");
+	console.log("Rückgabe dialog"); // Debug-Ausgabe
+	modal.showModal();
+
+	submitBtn.onclick = () => {
+		modal.close();
+	};
+
+}
+
+function returnDialog() {
+	const modal = document.getElementById("returnDialog");
+	const closeBtn3 = document.getElementById("closeBtn3");
+	console.log("Rückgabe dialog"); // Debug-Ausgabe
+	modal.showModal();
+
+
+	closeBtn3.onclick = () => {
+		modal.close();
+	};
+
+}
