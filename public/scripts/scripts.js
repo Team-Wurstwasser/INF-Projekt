@@ -271,25 +271,25 @@ async function showTable() {
 		message.innerHTML = "";
 
 		// kopfzeile mit Index für den Filter
-		columnName.forEach(function(key, index) {
+		columnName.forEach(function (key, index) {
 			generateColumn(key, index);
 		});
 
 		// erstellt die Spalten inklusive Suchfeld
 		function generateColumn(key, index) {
 			const th = document.createElement('th');
-			
+
 			// eingeabefeld erstellen
 			th.innerHTML = `${key}<br>`;
-			
+
 			// input erstellen
 			const input = document.createElement('input');
 			input.type = 'text';
 			input.placeholder = "filtern...";
-			
+
 			// eventlistener fürs filtern
 			input.addEventListener('input', filterTable);
-			
+
 			th.appendChild(input);
 			tableHead.appendChild(th);
 		}
@@ -325,7 +325,7 @@ async function showTable() {
 function filterTable() {
 	const tableHead = document.getElementById("headerRow");
 	const tableData = document.getElementById("tableData");
-	
+
 	// inputs von kopfzeile
 	const inputs = tableHead.getElementsByTagName("input");
 	// datenzeilen abfragen
@@ -340,7 +340,7 @@ function filterTable() {
 		for (let j = 0; j < inputs.length; j++) {
 			//einagbe spechern in klein
 			const filterValue = inputs[j].value.toLowerCase();
-			
+
 			if (filterValue && cells[j]) {
 				//daten in zelle
 				const cellText = cells[j].innerHTML;
@@ -388,25 +388,25 @@ async function showTableOnLoad() {
 		message.innerHTML = "";
 
 		// kopfzeile mit Index für den Filter
-		columnName.forEach(function(key, index) {
+		columnName.forEach(function (key, index) {
 			generateColumn(key, index);
 		});
 
 		// erstellt die Spalten inklusive Suchfeld
 		function generateColumn(key, index) {
 			const th = document.createElement('th');
-			
+
 			// eingeabefeld erstellen
 			th.innerHTML = `${key}<br>`;
-			
+
 			// input erstellen
 			const input = document.createElement('input');
 			input.type = 'text';
 			input.placeholder = "filtern...";
-			
+
 			// eventlistener fürs filtern
 			input.addEventListener('input', filterTable);
-			
+
 			th.appendChild(input);
 			tableHead.appendChild(th);
 		}
@@ -461,23 +461,35 @@ function borrowDialog() {
 }
 
 async function transmitBorrowData() {
-	// console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowDuration").value);
+	console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowDuration").value);
 	const borrowDuration = document.getElementById("borrowDuration").value;
-	console.log("Barcode: " + currentObject.id + ", Dauer: " + borrowDuration + ", Mitarbeiter: debug" ); // Debug-Ausgabe
+	console.log("Barcode: " + currentObject.id + ", Dauer: " + borrowDuration + ", Mitarbeiter: debug"); // Debug-Ausgabe
+	
 	const payload = {
 		barcode: currentObject.id,
 		ausleihdauer: borrowDuration,
 		mitarbeiter_id: 1,
 	};
 
-	await fetch("https://mhp.hallo123wert.de/api.php?resource=ausleihen", {
+	const response = await fetch("https://mhp.hallo123wert.de/api.php?resource=ausleihen", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify(payload)
 	});
-	
+
+	//überpfrungslogik für popup
+
+	const result = await response.json();
+
+	if (result.success) {
+		console.log("Erfolgreich ausgeliehen:", result.message);
+		showToast("Objekt erfolgreich ausgeliehen!"); // <- HIER HINZUFÜGEN
+		if (typeof showTableOnLoad === "function") showTableOnLoad();
+	} else {
+		alert("Fehler beim Ausleihen: " + result.error + "\nMöglicherweise ist das Objekt mit der Barcodenummer :\n" + currentObject.id + " \nnicht exestent , bereits ausgeliehen oder es waren nicht alle Daten korrekt eingegeben.");
+	}
 
 }
 
@@ -523,7 +535,7 @@ function returnDialog() {
 		modal.close();
 	};
 
-} 
+}
 
 async function returnObject() {
 	console.log("Rückgabe des Objekts mit ID: " + currentObject.id + " und Zustand: " + document.getElementById("returnCondition").value);
@@ -533,13 +545,23 @@ async function returnObject() {
 		zustand: document.getElementById("returnCondition").value
 	};
 
-	await fetch("https://mhp.hallo123wert.de/api.php?resource=abgeben", {
+	const response = await fetch("https://mhp.hallo123wert.de/api.php?resource=abgeben", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},
 		body: JSON.stringify(payload)
 	});
+	//überpfrungslogik für popup
+	const result = await response.json();
+
+	if (result.success) {
+		console.log("Objekt erfolgreich zurückgegeben:", result.message);
+		showToast("Objekt erfolgreich zurückgegeben!"); // <- HIER HINZUFÜGEN
+		if (typeof showTableOnLoad === "function") showTableOnLoad();
+	} else {
+		alert("Fehler bei der Rückgabe: " + result.error + "\nMöglicherweise ist das Objekt mit der Barcodenummer :\n" + currentObject.id + " \nnicht exestent oder es waren nicht alle Daten korrekt eingegeben.");
+	}
 
 }
 
@@ -567,3 +589,15 @@ window.addEventListener("keydown", (e) => {
 		}
 	}
 });
+
+//allgemeine popup funktioen für das erfolgreich durchführen einer aktion 
+function showToast(message) {
+	const toast = document.getElementById("toast");
+	toast.textContent = message;
+	toast.classList.add("show");
+
+	// Nach 3 Sekunden verschwindet das Popup automatisch wieder
+	setTimeout(() => {
+		toast.classList.remove("show");
+	}, 3000);
+}
