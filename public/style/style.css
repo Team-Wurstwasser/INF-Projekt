@@ -136,12 +136,6 @@ header h1 {
 }
 
 /* --- FILTER-BEREICH (Z.B. DYNAMISCHE TABELLE) --- */
-h2 {
-    padding: 0 20px;
-    margin-top: 30px;
-    color: #383846;
-}
-
 label[for="typeSelect"] {
     margin-left: 20px;
     font-weight: 600;
@@ -149,9 +143,9 @@ label[for="typeSelect"] {
 }
 
 select {
-    padding: 8px 12px;
+    padding: 10px 20px;
     font-size: 15px;
-    border-radius: 6px;
+    border-radius: 20px;
     border: 1px solid #cccccc;
     background-color: #ffffff;
     outline: none;
@@ -159,18 +153,23 @@ select {
 }
 
 #loadButton {
-    background-color: #383846;
-    color: white;
-    border: none;
-    padding: 9px 18px;
+    background-color: #ffffff;
+    color: #383846;
+    border: 1px solid #cccccc;
+    padding: 10px 20px;
     font-size: 15px;
-    border-radius: 6px;
+    font-weight: 600;
+    border-radius: 20px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    margin: 0;
+    transition: all 0.2s ease;
+    margin-left: 10px;
 }
 
 #loadButton:hover {
-    background-color: #23232c;
+    background-color: #0000cd;
+    color: #ffffff;
+    border-color: #0000cd;
 }
 /* --- DIALOGE (MODALS) --- */
 dialog {
@@ -291,12 +290,12 @@ dialog img {
 table {
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #ccc;
+  border: 1px;
   border-radius: 12px;
-  overflow: hidden; /* Verhindert, dass Zellen über den Rahmen hinausragen */
+  background-color: #0000cd;
 }
 
 th, td {
-  border: 1px solid #ccc;
+  border: 1px;
   padding: 10px;
 }
