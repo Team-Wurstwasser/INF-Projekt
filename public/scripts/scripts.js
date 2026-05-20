@@ -614,3 +614,14 @@ function showToast(message) {
 		toast.classList.remove("show");
 	}, 3000);
 }
+
+function showCreateWorkerDialog() {
+	const modal = document.getElementById("createWorkerDialog");
+	const closeBtn = document.getElementById("closeBtnWorker");
+	modal.showModal();
+
+	closeBtn.onclick = () => {
+		modal.close();
+	};
+
+}

@@ -13,7 +13,7 @@
     <header class="header">
         <img class="header_logo" src="pics/logo_big.png">
         <h1 id="title">Easy Inventory</h1>
-        <button class="MenuButton"><img src="pics/menu.png"></button>
+        <button class="MenuButton" onclick="showCreateWorkerDialog()"><img src="pics/add_worker.png"></button>
     </header>
     <div class="icon-header">
         <h1 class="HeaderIconÜbersicht">Übersicht Objekte</h1>
@@ -124,6 +124,17 @@
         <button id="returnSubmitBtn" onclick="returnObject()" >Bestätigen</button>
         <button class="closeBtn" id="closeBtnReturn"> <img src="pics/close.png" alt="X"></button>
     </dialog>
+
+
+    <!-- Create Worker Dialog -->
+     
+     <dialog id="createWorkerDialog">
+        <h1>Neuen Mitarbeiter anlegen</h1>
+        
+        <button class="closeBtn" id="closeBtnWorker"> <img src="pics/close.png" alt="X"></button>
+    </dialog>
+
+
 
     <script src="scripts/scripts.js"></script>
     <div id="toast" class="toast-notification">Erfolgreich!</div>
