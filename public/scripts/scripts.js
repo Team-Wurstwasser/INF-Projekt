@@ -303,16 +303,16 @@ async function openEditWerkzeugDialog(entry) {
 	await loadWerkzeugTypenInto(typeSelect);
 	await loadStatus(statusSelect);
 
-	// set current selections if present
-	typeSelect.value = entry.Typ_ID || '';
-	statusSelect.value = entry.Status_ID || '';
-
 	const addStatusBtn = document.getElementById('addStatusBtn');
 	addStatusBtn.title = 'Neuen Status hinzufügen';
 	addStatusBtn.onclick = async () => {
 		await openAddStatusDialog();
 		await loadStatus(statusSelect);
 	};
+
+	// set current selections if present
+	typeSelect.value = getEntryValue(entry, ['Typ_ID']) || '';
+	statusSelect.value = getEntryValue(entry, ['Status_ID']) || '';
 
 	const validateForm = () => {
 		const bezeichnungSet = bezeichnungInput.value && bezeichnungInput.value.trim().length > 0;
@@ -489,7 +489,15 @@ async function showTable() {
 	// prüfen ob daten da sind
 	if (dataArray && dataArray.length > 0) {
 		// überschriften für spalten aus erstem element holen
-		const columnName = Object.keys(dataArray[0]);
+		let columnName = Object.keys(dataArray[0]);
+		
+		// ungewollte ids ausblenden
+		if (select == "werkzeuge") {
+			columnName = columnName.filter(column => column != 'Typ_ID' && column != 'Status_ID');
+		} else if (select == "mitarbeiter") {
+			columnName = columnName.filter(column => column != 'Mitarbeiter_ID');
+		}
+		
 		message.innerHTML = "";
 
 		// kopfzeile
@@ -727,6 +735,15 @@ async function openAddStatusDialog() {
 	});
 }
 
+function getEntryValue(entry, keys) {
+	for (const key of keys) {
+		if (entry[key] !== undefined && entry[key] !== null) {
+			return entry[key];
+		}
+	}
+	return '';
+}
+
 async function openEditMitarbeiterDialog(entry) {
 	const dialog = document.getElementById('editMitarbeiterDialog');
 	const idInput = dialog.querySelector('#editMitarbeiterId');
@@ -737,13 +754,13 @@ async function openEditMitarbeiterDialog(entry) {
 	const saveBtn = dialog.querySelector('#saveEditMitarbeiterBtn');
 	const cancelBtn = dialog.querySelector('#cancelEditMitarbeiterBtn');
 
-	idInput.value = entry.Mitarbeiter_ID || '';
-	firstNameInput.value = entry.Vorname || '';
-	lastNameInput.value = entry.Nachname || '';
-	emailInput.value = entry.Email || '';
+	idInput.value = getEntryValue(entry, ['Mitarbeiter_ID']);
+	firstNameInput.value = getEntryValue(entry, ['Vorname']);
+	lastNameInput.value = getEntryValue(entry, ['Nachname']);
+	emailInput.value = getEntryValue(entry, ['Email']);
 
 	await loadAbteilungenInto(departmentSelect);
-	departmentSelect.value = entry.Abteilung || '';
+	departmentSelect.value = getEntryValue(entry, ['Abteilung']) || '';
 
 	const validateForm = () => {
 		const firstName = firstNameInput.value.trim().length > 0;
@@ -821,8 +838,8 @@ async function openEditAbteilungDialog(entry) {
 	const saveBtn = dialog.querySelector('#saveEditAbteilungBtn');
 	const cancelBtn = dialog.querySelector('#cancelEditAbteilungBtn');
 
-	idInput.value = entry.Abteilung_ID || '';
-	nameInput.value = entry.Name || '';
+	idInput.value = getEntryValue(entry, ['Abteilung_ID']);
+	nameInput.value = getEntryValue(entry, ['Name']);
 
 	const validateForm = () => {
 		saveBtn.disabled = nameInput.value.trim().length === 0;
@@ -859,8 +876,8 @@ async function openEditAbteilungDialog(entry) {
 
 async function openDeleteAbteilungDialog(entry) {
 	const dialog = document.getElementById('deleteAbteilungDialog');
-	const id = entry.Abteilung_ID || '';
-	dialog.querySelector('#deleteAbteilungName').textContent = entry.Name || '';
+	const id = getEntryValue(entry, ['Abteilung_ID', 'abteilung_id']);
+	dialog.querySelector('#deleteAbteilungName').textContent = getEntryValue(entry, ['Name', 'name']);
 
 	const confirmBtn = dialog.querySelector('#confirmDeleteAbteilungBtn');
 	const cancelBtn = dialog.querySelector('#cancelDeleteAbteilungBtn');
@@ -891,8 +908,8 @@ async function openEditWerkzeugTypDialog(entry) {
 	const saveBtn = dialog.querySelector('#saveEditWerkzeugTypBtn');
 	const cancelBtn = dialog.querySelector('#cancelEditWerkzeugTypBtn');
 
-	idInput.value = entry.Typ_ID || '';
-	typeInput.value = entry.Typ || '';
+	idInput.value = getEntryValue(entry, ['Typ_ID']);
+	typeInput.value = getEntryValue(entry, ['Typ']);
 
 	const validateForm = () => {
 		saveBtn.disabled = typeInput.value.trim().length === 0;
@@ -929,7 +946,7 @@ async function openEditWerkzeugTypDialog(entry) {
 
 async function openDeleteWerkzeugTypDialog(entry) {
 	const dialog = document.getElementById('deleteWerkzeugTypDialog');
-	dialog.querySelector('#deleteWerkzeugTypName').textContent = entry.Typ || '';
+	dialog.querySelector('#deleteWerkzeugTypName').textContent = getEntryValue(entry, ['Typ']);
 
 	const confirmBtn = dialog.querySelector('#confirmDeleteWerkzeugTypBtn');
 	const cancelBtn = dialog.querySelector('#cancelDeleteWerkzeugTypBtn');
@@ -937,7 +954,7 @@ async function openDeleteWerkzeugTypDialog(entry) {
 		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen', {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ art: entry.Typ || '' })
+			body: JSON.stringify({ art: getEntryValue(entry, ['Typ']) })
 		});
 
 		const result = await response.json();
@@ -960,8 +977,8 @@ async function openEditStatusDialog(entry) {
 	const saveBtn = dialog.querySelector('#saveEditStatusBtn');
 	const cancelBtn = dialog.querySelector('#cancelEditStatusBtn');
 
-	idInput.value = entry.Status_ID || '';
-	statusInput.value = entry.Bezeichnung || '';
+	idInput.value = getEntryValue(entry, ['Status_ID']);
+	statusInput.value = getEntryValue(entry, ['Bezeichnung']);
 
 	const validateForm = () => {
 		saveBtn.disabled = statusInput.value.trim().length === 0;
@@ -998,7 +1015,7 @@ async function openEditStatusDialog(entry) {
 
 async function openDeleteStatusDialog(entry) {
 	const dialog = document.getElementById('deleteStatusDialog');
-	dialog.querySelector('#deleteStatusName').textContent = entry.Bezeichnung || '';
+	dialog.querySelector('#deleteStatusName').textContent = getEntryValue(entry, ['Bezeichnung']);
 
 	const confirmBtn = dialog.querySelector('#confirmDeleteStatusBtn');
 	const cancelBtn = dialog.querySelector('#cancelDeleteStatusBtn');
@@ -1006,7 +1023,7 @@ async function openDeleteStatusDialog(entry) {
 		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=status', {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ status_id: parseInt(entry.Status_ID) || 0 })
+			body: JSON.stringify({ status_id: parseInt(getEntryValue(entry, ['Status_ID'])) || 0 })
 		});
 
 		const result = await response.json();
