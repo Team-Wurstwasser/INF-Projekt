@@ -295,16 +295,16 @@ async function openEditWerkzeugDialog(entry) {
 	const saveBtn = dialog.querySelector('#saveEditBtn');
 	const cancelBtn = dialog.querySelector('#cancelEditBtn');
 
-	barcodeSpan.textContent = getEntryValue(entry, ['Barcode']);
-	bezeichnungInput.value = getEntryValue(entry, ['Bezeichnung']);
-	purchaseDateInput.value = getEntryValue(entry, ['Anschaffungsdatum']);
+	barcodeSpan.textContent = entry.Barcode;
+	bezeichnungInput.value = entry.Bezeichnung;
+	purchaseDateInput.value = entry.Anschaffungsdatum;
 
 	//fragt aktuelle typen und statuse ab für alle optionen
 	await loadWerkzeugTypenInto(typeSelect);
 	await loadStatus(statusSelect);
 
-	typeSelect.value = getEntryValue(entry, ['Typ_ID']) || '';
-	statusSelect.value = getEntryValue(entry, ['Status_ID']) || '';
+	typeSelect.value = entry.Typ_ID || '';
+	statusSelect.value = entry.Status_ID || '';
 
 	const validateForm = () => {
 		const bezeichnungSet = bezeichnungInput.value && bezeichnungInput.value.trim().length > 0;
@@ -321,7 +321,7 @@ async function openEditWerkzeugDialog(entry) {
 	cancelBtn.onclick = () => dialog.close();
 	saveBtn.onclick = async () => {
 		const payload = {
-			barcode: getEntryValue(entry, ['Barcode']),
+			barcode: entry.Barcode,
 			bezeichnung: bezeichnungInput.value.trim(),
 			typ_id: parseInt(typeSelect.value) || 0,
 			status_id: parseInt(statusSelect.value) || 0,
