@@ -396,6 +396,12 @@ td {
 tr:last-child td {
     border-bottom: none;
 }
+.sort-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
 #WaitingMessage {
     margin-left: 10px;
