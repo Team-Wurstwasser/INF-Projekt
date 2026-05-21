@@ -550,11 +550,10 @@ async function showTable() {
 			if (select == "ausgeliehen") {
 				//verlängerungs erstellen
 				const tdAction = document.createElement('td');
-				const barcodeValue = getBarcodeFromEntry(entry);
 				const editBtn = document.createElement('button');
 				editBtn.innerText = "Verlängern";
 				editBtn.className = "table-action-button";
-				//editBtn.onclick = () => ;
+				editBtn.onclick = () => verlängernScanDialog();
 			}
 			if (select != "ausgeliehen" && select != "ausgeliehen_historie") {
 				//bearbeitungsbuton erstellen
