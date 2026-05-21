@@ -7,11 +7,6 @@ let currentObject = {
 	date: ""
 };
 
-//barcode variable
-let scannedBarcode = "";
-let scannedBarcodeReturn = "";
-let scannedBarcodeBorrow = "";
-
 // --- Hilfsfunktionen & UI-Aktualisierung ---
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
@@ -108,8 +103,7 @@ async function getBarcode() {
 function objectCreateScanBarcodeDialog() {
 	const modal = document.getElementById("objectCreateScanBarcodeDialog");
 	const closeBtn1 = document.getElementById("closeBtn1");
-	console.log("Scanned Barcode: " + scannedBarcode); // Debug-Ausgabe
-	scannedBarcode = ""; // Reset barcode beim Öffnen
+	console.log("Scanned Barcode: " + currentObject.id); // Debug-Ausgabe
 	modal.showModal();
 
 
@@ -495,7 +489,6 @@ function borrowDialog() {
 function borrowScanDialog() {
 	const modal = document.getElementById("borrowScanBarcodeDialog");
 	const closeBtn = document.getElementById("closeBorrowScanBtn");
-	scannedBarcodeBorrow = "";
 	modal.showModal();
 
 	closeBtn.onclick = () => {
@@ -568,7 +561,6 @@ function returnDialog() {
 function returnScanDialog() {
 	const modal = document.getElementById("returnScanBarcodeDialog");
 	const closeBtn = document.getElementById("closeReturnScanBtn");
-	scannedBarcodeReturn = "";
 	modal.showModal();
 
 	closeBtn.onclick = () => {
