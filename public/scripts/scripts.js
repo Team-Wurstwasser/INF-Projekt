@@ -7,6 +7,8 @@ let currentObject = {
 	date: ""
 };
 
+let currentAusleihe = null;
+
 // --- Hilfsfunktionen & UI-Aktualisierung ---
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
@@ -261,7 +263,7 @@ function openDeleteObjectDialog(entry) {
 	const cancelBtn = dialog.querySelector('#cancelDeleteBtn');
 
 	deleteBarcodeSpan.textContent = barcode;
-	deleteNameSpan.textContent = getEntryValue(entry, ['Bezeichnung']);
+	deleteNameSpan.textContent = entry.Bezeichnung || '';
 
 	cancelBtn.onclick = () => dialog.close();
 	confirmBtn.onclick = async () => {
@@ -385,6 +387,7 @@ async function saveNewObject() {
 function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
 	const submit = document.getElementById("objectSubmitBtn");
+	const cancelBtn = document.getElementById("cancelObjectConfigBtn");
 	// Felder leeren
 	const objectName = document.getElementById('objectName');
 	const purchaseDate = document.getElementById('objectPurchaseDate');
@@ -411,6 +414,12 @@ function objectConfigDialog() {
 	validateObjectForm(); // initiale Validierung
 
 	modal.showModal();
+
+	if (cancelBtn) {
+		cancelBtn.onclick = () => {
+			modal.close();
+		};
+	}
 
 	submit.onclick = async () => {
 		// aktuelle Werte übernehmen
@@ -566,7 +575,7 @@ async function showTable() {
 				const editBtn = document.createElement('button');
 				editBtn.innerText = "Verlängern";
 				editBtn.className = "table-action-button";
-				editBtn.onclick = () => verlängernScanDialog();
+				editBtn.onclick = () => verlängernDialog(entry);
 				tdAction.appendChild(editBtn);
 				tr.appendChild(tdAction);
 			}
@@ -805,9 +814,9 @@ async function openEditMitarbeiterDialog(entry) {
 
 async function openDeleteMitarbeiterDialog(entry) {
 	const dialog = document.getElementById('deleteMitarbeiterDialog');
-	const id = getEntryValue(entry, ['Mitarbeiter_ID']);
-	dialog.querySelector('#deleteMitarbeiterName').textContent = `${getEntryValue(entry, ['Vorname'])} ${getEntryValue(entry, ['Nachname'])}`.trim();
-	dialog.querySelector('#deleteMitarbeiterEmail').textContent = getEntryValue(entry, ['Email']);
+	const id = entry.Mitarbeiter_ID || '';
+	dialog.querySelector('#deleteMitarbeiterName').textContent = `${entry.Vorname || ''} ${entry.Nachname || ''}`.trim();
+	dialog.querySelector('#deleteMitarbeiterEmail').textContent = entry.Email || '';
 
 	const confirmBtn = dialog.querySelector('#confirmDeleteMitarbeiterBtn');
 	const cancelBtn = dialog.querySelector('#cancelDeleteMitarbeiterBtn');
@@ -1132,6 +1141,7 @@ async function showTableWorkerAdd(){
 function borrowDialog() {
 	const modal = document.getElementById("borrowDialog");
 	const submitBtn = document.getElementById("borrowSubmitBtn");
+	const cancelBtn = document.getElementById("closeBorrowDialogBtn");
 	console.log("Ausleihe dialog"); // Debug-Ausgabe
 	document.getElementById("borrowBarcode").value = currentObject.id;
 	document.getElementById("borrowDuration").value = "";
@@ -1153,6 +1163,12 @@ function borrowDialog() {
 	validateBorrowForm(); // initiale Validierung
 
 	modal.showModal();
+
+	if (cancelBtn) {
+		cancelBtn.onclick = () => {
+			modal.close();
+		};
+	}
 
 	submitBtn.onclick = () => {
 		console.log("submit btn clicked"); // Debug-Ausgabe
@@ -1211,6 +1227,7 @@ async function transmitBorrowData() {
 function returnDialog() {
 	const modal = document.getElementById("returnDialog");
 	const returnSubmitBtn = document.getElementById("returnSubmitBtn");
+	const cancelBtn = document.getElementById("closeReturnDialogBtn");
 	console.log("Rückgabe dialog"); // Debug-Ausgabe
 	document.getElementById("returnBarcode").value = currentObject.id;
 	document.getElementById("returnCondition").value = "";
@@ -1226,6 +1243,12 @@ function returnDialog() {
 	validateReturnForm(); // initiale Validierung
 
 	modal.showModal();
+
+	if (cancelBtn) {
+		cancelBtn.onclick = () => {
+			modal.close();
+		};
+	}
 
 
 	returnSubmitBtn.onclick = () => {
@@ -1329,6 +1352,55 @@ function showCreateWorkerDialog() {
 		saveWorker();
 		modal.close();
 	};
+}
+
+function verlängernDialog(entry) {
+	currentAusleihe = entry;
+
+	const modal = document.getElementById('verlängernDialog');
+	const barcodeInput = document.getElementById('verlängernBarcode');
+	const durationInput = document.getElementById('verlängernDuration');
+	const submitBtn = document.getElementById('verlängernSubmitBtn');
+	const closeBtn = document.getElementById('closeVerlängernBtn');
+
+	barcodeInput.value = entry.Barcode || '';
+	durationInput.value = '';
+	submitBtn.disabled = true;
+
+	const validateForm = () => {
+		submitBtn.disabled = (parseInt(durationInput.value) || 0) <= 0;
+	};
+
+	durationInput.oninput = validateForm;
+	validateForm();
+
+	if (closeBtn) {
+		closeBtn.onclick = () => {
+			modal.close();
+		};
+	}
+
+	submitBtn.onclick = async () => {
+		const ausleihId = parseInt(entry.Ausleih_ID) || 0;
+		const zusatzTage = parseInt(durationInput.value) || 0;
+
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=verlängern', {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ ausleih_id: ausleihId, zusatz_tage: zusatzTage })
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Ausleihe verlängert');
+			modal.close();
+			showTable();
+		} else {
+			alert('Verlängerung fehlgeschlagen: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+
+	modal.showModal();
 }
 
 async function saveWorker() {

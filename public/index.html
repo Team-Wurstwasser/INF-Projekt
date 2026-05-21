@@ -88,6 +88,7 @@
         Werkzeugtyp: <select id="objectTypeSelect"></select>  <button id="addObjectTypeBtn" class="btnType"><img src="pics/plus_type.png" alt="X"></button><br><br>
         Anschaffungsdatum: <input type="date" id="objectPurchaseDate" placeholder="Anschaffungsdatum" autocomplete="off"> <br>
         <button id="objectSubmitBtn">Bestätigen</button>
+        <button id="cancelObjectConfigBtn">Abbrechen</button>
     </dialog>
 
     <dialog id="createdObjectOverviewDialog">
@@ -115,6 +116,7 @@
         Ausleihauder in Tage : <input type="number" id="borrowDuration" autocomplete="off"> <br>
         Mitabeiter : <select id="borrowerIdSelect" autocomplete="off"></select> <br>
         <button id="borrowSubmitBtn" disabled>Bestätigen</button>
+          <button id="closeBorrowDialogBtn">Abbrechen</button>
      </dialog>
 
     <!-- Rückgabe Dialoge ################################################### -->
@@ -131,21 +133,17 @@
         Kondition des Objekts bei Rückgabe: <br> <input type="text" id="returnCondition" placeholder="Zustand des Objekts" autocomplete="off">
         <br>
         <button id="returnSubmitBtn" disabled>Bestätigen</button>
+        <button id="closeReturnDialogBtn">Abbrechen</button>
     </dialog>
 
-    <!-- Verlängern Dialoge ################################################### -->
-    <dialog id="verlängernScanBarcodeDialog">
-        <h2>Objekt verlängern</h2>
-        <h2>Bitte den Barcode scannen.</h2>
-        <button id="closeVerlängernScanBtn">Schließen</button>
-    </dialog>
-
+    <!-- Verlängern Dialog ################################################### -->
     <dialog id="verlängernDialog">
         <h2>Objekt verlängern</h2>
         <h2>Bitte folgende Informationen eingeben.</h2>
         Barcode: <input type="text" id="verlängernBarcode" disabled autocomplete="off"> <br>
         Verlängerungsdauer in Tage : <input type="number" id="verlängernDuration" autocomplete="off"> <br>
         <button id="verlängernSubmitBtn" disabled>Bestätigen</button>
+        <button id="closeVerlängernBtn">Abbrechen</button>
     </dialog>
 
     <!-- Delete Object Dialog -->

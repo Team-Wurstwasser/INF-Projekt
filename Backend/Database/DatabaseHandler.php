@@ -384,7 +384,7 @@ class DatabaseHandler
 
     public function getAllMitarbeiter(): array
     {
-        $sql = "SELECT m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, ab.Name as Abteilung
+        $sql = "SELECT m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, ab.Name as Abteilung, ab.Abteilung_ID as Abteilung_ID
                 FROM Mitarbeiter m
                 JOIN Abteilung ab ON m.Abteilung_ID = ab.Abteilung_ID";
         return $this->pdo->query($sql)->fetchAll();
