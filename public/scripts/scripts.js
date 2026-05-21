@@ -303,19 +303,24 @@ async function openEditWerkzeugDialog(entry) {
 	await loadWerkzeugTypenInto(typeSelect);
 	await loadStatus(statusSelect);
 
-	typeSelect.value = entry.Typ_ID || '';
-	statusSelect.value = entry.Status_ID || '';
+	const addStatusBtn = document.getElementById('addStatusBtn');
+	addStatusBtn.title = 'Neuen Status hinzufügen';
+	addStatusBtn.onclick = async () => {
+		await openAddStatusDialog();
+		await loadStatus(statusSelect);
+	};
+
+	// set current selections if present
+	typeSelect.value = getEntryValue(entry, ['Typ_ID']) || '';
+	statusSelect.value = getEntryValue(entry, ['Status_ID']) || '';
 
 	const validateForm = () => {
 		const bezeichnungSet = bezeichnungInput.value && bezeichnungInput.value.trim().length > 0;
-		const typSet = parseInt(typeSelect.value) > 0;
-		const statusSet = parseInt(statusSelect.value) > 0;
-		if (saveBtn) saveBtn.disabled = !(bezeichnungSet && typSet && statusSet);
+		if (saveBtn) saveBtn.disabled = !(bezeichnungSet);
 	};
 
 	bezeichnungInput.oninput = validateForm;
 	typeSelect.onchange = validateForm;
-	statusSelect.onchange = validateForm;
 	validateForm();
 
 	cancelBtn.onclick = () => dialog.close();
@@ -681,6 +686,47 @@ async function openAddAbteilungDialog() {
 	});
 }
 
+async function openAddStatusDialog() {
+	let dialog = document.getElementById('addStatusDialog');
+
+	return new Promise((resolve) => {
+		const input = dialog.querySelector("input#newStatusName");
+		const saveBtn = dialog.querySelector("button#saveStatusBtn");
+		const cancelBtn = dialog.querySelector("button#cancelAddStatusBtn");
+
+		input.value = '';
+		if (cancelBtn) cancelBtn.onclick = () => {
+			dialog.close();
+			resolve(false);
+		};
+
+		if (saveBtn) saveBtn.onclick = async () => {
+			const bezeichnung = input.value.trim();
+			if (!bezeichnung) {
+				alert('Bitte eine Bezeichnung eingeben.');
+				return;
+			}
+
+			const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=status', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ bezeichnung })
+			});
+
+			const result = await response.json();
+			if (result.success) {
+				if (typeof showToast === 'function') showToast('Status hinzugefügt');
+				dialog.close();
+				resolve(true);
+			} else {
+				alert('Status konnte nicht hinzugefügt werden: ' + (result.error || 'Unbekannter Fehler'));
+			}
+		};
+
+		dialog.showModal();
+	});
+}
+
 function getEntryValue(entry, keys) {
 	for (const key of keys) {
 		if (entry[key] !== undefined && entry[key] !== null) {
@@ -706,26 +752,18 @@ async function openEditMitarbeiterDialog(entry) {
 	emailInput.value = getEntryValue(entry, ['Email']);
 
 	await loadAbteilungenInto(departmentSelect);
-	const currentDepartment = getEntryValue(entry, ['Abteilung']);
-	for (const option of departmentSelect.options) {
-		if (option.text === currentDepartment) {
-			departmentSelect.value = option.value;
-			break;
-		}
-	}
+	departmentSelect.value = getEntryValue(entry, ['Abteilung']) || '';
 
 	const validateForm = () => {
 		const firstName = firstNameInput.value.trim().length > 0;
 		const lastName = lastNameInput.value.trim().length > 0;
 		const email = emailInput.value.trim().length > 0 && emailInput.checkValidity();
-		const department = parseInt(departmentSelect.value) > 0;
-		saveBtn.disabled = !(firstName && lastName && email && department);
+		saveBtn.disabled = !(firstName && lastName && email);
 	};
 
 	firstNameInput.oninput = validateForm;
 	lastNameInput.oninput = validateForm;
 	emailInput.oninput = validateForm;
-	departmentSelect.onchange = validateForm;
 	validateForm();
 
 	cancelBtn.onclick = () => dialog.close();

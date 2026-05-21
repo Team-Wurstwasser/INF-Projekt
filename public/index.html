@@ -166,10 +166,8 @@
         <p><strong>Barcode:</strong> <span id="editBarcode"></span></p>
         <label>Bezeichnung:</label><br>
         <input type="text" id="editBezeichnung" autocomplete="off"><br>
-        <label>Typ:</label><br>
-        <select id="editTypeSelect"></select><br>
-        <label>Status:</label><br>
-        <select id="editStatusSelect"></select><br>
+        <label>Typ:</label><select id="editTypeSelect"></select><br><br>
+        <label>Status:</label> <select id="editStatusSelect"></select><button id="addStatusBtn" class="btnType"><img src="pics/plus_type.png" alt="X"></button><br>
         <label>Anschaffungsdatum:</label><br>
         <input type="date" id="editPurchaseDate" autocomplete="off"><br>
         <div style="margin-top:18px;">
@@ -186,6 +184,17 @@
         <div style="margin-top:18px;">
             <button id="saveTypeBtn">Hinzufügen</button>
             <button id="cancelAddTypeBtn">Abbrechen</button>
+        </div>
+    </dialog>
+
+    <!-- Add Status Dialog -->
+    <dialog id="addStatusDialog">
+        <h2>Status hinzufügen</h2>
+        <p>Gib die neue Statusbezeichnung ein:</p>
+        <input type="text" id="newStatusName" placeholder="Neuer Status" autocomplete="off">
+        <div style="margin-top:18px;">
+            <button id="saveStatusBtn">Hinzufügen</button>
+            <button id="cancelAddStatusBtn">Abbrechen</button>
         </div>
     </dialog>
 
