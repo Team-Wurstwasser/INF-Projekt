@@ -145,27 +145,7 @@ try {
 
             jsonResponse(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
-
-        case 'werkzeug_status':
-            if ($method === 'PUT') {
-                $barcode = trim((string)($data['barcode'] ?? ''));
-                $statusId = (int)($data['status_id'] ?? 0);
-
-                if ($barcode === '' || $statusId <= 0) {
-                    jsonResponse(['success' => false, 'error' => 'Parameter barcode und status_id müssen gesetzt sein.'], 400);
-                }
-
-                $geklappt = $dbHandler->updateWerkzeugStatus($barcode, $statusId);
-                if ($geklappt) {
-                    jsonResponse(['success' => true, 'message' => 'Status des Werkzeugs erfolgreich aktualisiert']);
-                }
-
-                jsonResponse(['success' => false, 'error' => 'Werkzeug konnte nicht gefunden oder aktualisiert werden.'], 404);
-            }
-
-            jsonResponse(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
-            break;
-
+            
         case 'werkzeug_typen':
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
@@ -366,7 +346,7 @@ try {
                 if ($mitarbeiterId <= 0 || $vorname === '' || $nachname === '' || $email === '' || $abteilungId <= 0) {
                     jsonResponse(['success' => false, 'error' => 'Parameter mitarbeiter_id, vorname, nachname, email und abteilung_id müssen gesetzt sein.'], 400);
                 }
-                
+
                 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     jsonResponse(['success' => false, 'error' => 'Die angegebene E-Mail-Adresse ist ungültig.'], 400);
                 }
