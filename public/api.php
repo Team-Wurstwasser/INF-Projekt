@@ -88,7 +88,6 @@ try {
                 $bezeichnung = trim((string)($data['bezeichnung'] ?? ''));
                 $typId = (int)($data['typ_id'] ?? 0);
                 $anschaffungsdatum = trim((string)($data['anschaffungsdatum'] ?? ''));
-                $statusId = (int)($data['status_id'] ?? 1);
 
                 if ($barcode === '' || $bezeichnung === '' || $typId <= 0) {
                     jsonResponse(['success' => false, 'error' => 'Parameter barcode, bezeichnung und typ_id fehlen.'], 400);
@@ -102,7 +101,7 @@ try {
                     jsonResponse(['success' => false, 'error' => 'Barcode existiert bereits.'], 409);
                 }
 
-                $geklappt = $dbHandler->addWerkzeug($barcode, $bezeichnung, $typId, $anschaffungsdatum, $statusId);
+                $geklappt = $dbHandler->addWerkzeug($barcode, $bezeichnung, $typId, $anschaffungsdatum);
                 if ($geklappt) {
                     jsonResponse(['success' => true, 'message' => 'Werkzeug erfolgreich hinzugefügt']);
                 }
@@ -146,27 +145,7 @@ try {
 
             jsonResponse(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
-
-        case 'werkzeug_status':
-            if ($method === 'PUT') {
-                $barcode = trim((string)($data['barcode'] ?? ''));
-                $statusId = (int)($data['status_id'] ?? 0);
-
-                if ($barcode === '' || $statusId <= 0) {
-                    jsonResponse(['success' => false, 'error' => 'Parameter barcode und status_id müssen gesetzt sein.'], 400);
-                }
-
-                $geklappt = $dbHandler->updateWerkzeugStatus($barcode, $statusId);
-                if ($geklappt) {
-                    jsonResponse(['success' => true, 'message' => 'Status des Werkzeugs erfolgreich aktualisiert']);
-                }
-
-                jsonResponse(['success' => false, 'error' => 'Werkzeug konnte nicht gefunden oder aktualisiert werden.'], 404);
-            }
-
-            jsonResponse(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
-            break;
-
+            
         case 'werkzeug_typen':
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
@@ -331,7 +310,71 @@ try {
             break;
 
         case 'mitarbeiter':
-            jsonResponse(['success' => true, 'data' => $dbHandler->getAllMitarbeiter()]);
+            if ($method === 'GET') {
+                jsonResponse(['success' => true, 'data' => $dbHandler->getAllMitarbeiter()]);
+            }
+
+            if ($method === 'POST') {
+                $vorname = trim((string)($data['vorname'] ?? ''));
+                $nachname = trim((string)($data['nachname'] ?? ''));
+                $email = trim((string)($data['email'] ?? ''));
+                $abteilungId = (int)($data['abteilung_id'] ?? 0);
+
+                if ($vorname === '' || $nachname === '' || $email === '' || $abteilungId <= 0) {
+                    jsonResponse(['success' => false, 'error' => 'Parameter vorname, nachname, email und abteilung_id fehlen.'], 400);
+                }
+
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    jsonResponse(['success' => false, 'error' => 'Die angegebene E-Mail-Adresse ist ungültig.'], 400);
+                }
+
+                $geklappt = $dbHandler->addMitarbeiter($vorname, $nachname, $email, $abteilungId);
+                if ($geklappt) {
+                    jsonResponse(['success' => true, 'message' => 'Mitarbeiter erfolgreich hinzugefügt']);
+                }
+
+                jsonResponse(['success' => false, 'error' => 'Mitarbeiter konnte nicht hinzugefügt werden.'], 500);
+            }
+
+            if ($method === 'PUT') {
+                $mitarbeiterId = (int)($data['mitarbeiter_id'] ?? 0);
+                $vorname = trim((string)($data['vorname'] ?? ''));
+                $nachname = trim((string)($data['nachname'] ?? ''));
+                $email = trim((string)($data['email'] ?? ''));
+                $abteilungId = (int)($data['abteilung_id'] ?? 0);
+
+                if ($mitarbeiterId <= 0 || $vorname === '' || $nachname === '' || $email === '' || $abteilungId <= 0) {
+                    jsonResponse(['success' => false, 'error' => 'Parameter mitarbeiter_id, vorname, nachname, email und abteilung_id müssen gesetzt sein.'], 400);
+                }
+
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    jsonResponse(['success' => false, 'error' => 'Die angegebene E-Mail-Adresse ist ungültig.'], 400);
+                }
+
+                $geklappt = $dbHandler->updateMitarbeiter($mitarbeiterId, $vorname, $nachname, $email, $abteilungId);
+                if ($geklappt) {
+                    jsonResponse(['success' => true, 'message' => 'Mitarbeiter erfolgreich aktualisiert']);
+                }
+
+                jsonResponse(['success' => false, 'error' => 'Mitarbeiter konnte nicht aktualisiert werden.'], 500);
+            }
+
+            if ($method === 'DELETE') {
+                $mitarbeiterId = (int)($data['mitarbeiter_id'] ?? 0);
+
+                if ($mitarbeiterId <= 0) {
+                    jsonResponse(['success' => false, 'error' => 'Parameter mitarbeiter_id fehlt.'], 400);
+                }
+
+                $geklappt = $dbHandler->deleteMitarbeiter($mitarbeiterId);
+                if ($geklappt) {
+                    jsonResponse(['success' => true, 'message' => 'Mitarbeiter erfolgreich gelöscht']);
+                }
+
+                jsonResponse(['success' => false, 'error' => 'Mitarbeiter konnte nicht gelöscht werden oder wird noch verwendet.'], 409);
+            }
+
+            jsonResponse(['success' => false, 'error' => 'Anfrage ungültig.'], 405);
             break;
 
         case 'ausleihen':

@@ -30,7 +30,7 @@ class DatabaseHandler
 
     public function getAllAusgelieheneSachen(): array
     {
-        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID
@@ -41,7 +41,7 @@ class DatabaseHandler
 
     public function getAusgeliehenHistorie(): array
     {
-        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, a.Ausleihdauer as Ausleihdauer, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Rückgabedatum as Rückgabedatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email, a.ZustandBeiRückgabe as ZustandBeiRückgabe
+        $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Rückgabedatum as Rückgabedatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email, a.ZustandBeiRückgabe as ZustandBeiRückgabe
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
                 JOIN Mitarbeiter m ON a.Mitarbeiter_ID = m.Mitarbeiter_ID";
@@ -64,7 +64,7 @@ class DatabaseHandler
 
     public function getAllWerkzeuge(): array
     {
-        $sql = "SELECT w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, t.Art as Typ, w.Anschaffungsdatum as Anschaffungsdatum, s.Bezeichnung as Status
+        $sql = "SELECT w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, t.Art as Typ, w.Anschaffungsdatum as Anschaffungsdatum, s.Bezeichnung as Status, s.Status_ID as Status_ID, t.Typ_ID as Typ_ID
                 FROM Werkzeuge w
                 JOIN Status s ON w.Status_ID = s.Status_ID
                 JOIN Werkzeugtyp t ON w.Typ_ID = t.Typ_ID";
@@ -76,7 +76,7 @@ class DatabaseHandler
         $sql = "SELECT COUNT(*) FROM Werkzeuge WHERE Barcode = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$barcode]);
-        return (int)$stmt->fetchColumn() > 0;
+        return $stmt->fetchColumn() > 0;
     }
 
     public function isValidEan13Barcode(string $barcode): bool
@@ -136,7 +136,7 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
-    public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = '', int $statusId = 1): bool
+    public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = ''): bool
     {
         try {
             if (!$this->isValidEan13Barcode($barcode)) {
@@ -151,15 +151,15 @@ class DatabaseHandler
 
             if ($anschaffungsdatum !== '') {
                 $sql = "INSERT INTO Werkzeuge (Barcode, Bezeichnung, Typ_ID, Anschaffungsdatum, Status_ID)
-                        VALUES (?, ?, ?, ?, ?)";
+                        VALUES (?, ?, ?, ?, 1)";
                 $stmt = $this->pdo->prepare($sql);
-                return $stmt->execute([$barcode, $bezeichnung, $typId, $anschaffungsdatum, $statusId]);
+                return $stmt->execute([$barcode, $bezeichnung, $typId, $anschaffungsdatum]);
             }
 
             $sql = "INSERT INTO Werkzeuge (Barcode, Bezeichnung, Typ_ID, Anschaffungsdatum, Status_ID)
-                    VALUES (?, ?, ?, CURDATE(), ?)";
+                    VALUES (?, ?, ?, CURDATE(), 1)";
             $stmt = $this->pdo->prepare($sql);
-            return $stmt->execute([$barcode, $bezeichnung, $typId, $statusId]);
+            return $stmt->execute([$barcode, $bezeichnung, $typId]);
         } catch (Exception $exception) {
             error_log("Fehler in addWerkzeug: " . $exception->getMessage());
             return false;
@@ -384,10 +384,55 @@ class DatabaseHandler
 
     public function getAllMitarbeiter(): array
     {
-        $sql = "SELECT m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, m.username as Username, ab.Name as Abteilung
+        $sql = "SELECT m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, ab.Name as Abteilung, ab.Abteilung_ID as Abteilung_ID
                 FROM Mitarbeiter m
                 JOIN Abteilung ab ON m.Abteilung_ID = ab.Abteilung_ID";
         return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function addMitarbeiter(string $vorname, string $nachname, string $email, int $abteilungId): bool
+    {
+        try {
+            $sql = "INSERT INTO Mitarbeiter (Vorname, Nachname, Email, Abteilung_ID) VALUES (?, ?, ?, ?)";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$vorname, $nachname, $email, $abteilungId]);
+        } catch (Exception $exception) {
+            error_log("Fehler in addMitarbeiter: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function updateMitarbeiter(int $mitarbeiterId, string $vorname, string $nachname, string $email, int $abteilungId): bool
+    {
+        try {
+            $sql = "UPDATE Mitarbeiter SET Vorname = ?, Nachname = ?, Email = ?, Abteilung_ID = ? WHERE Mitarbeiter_ID = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$vorname, $nachname, $email, $abteilungId, $mitarbeiterId]);
+            return $stmt->rowCount() > 0;
+        } catch (Exception $exception) {
+            error_log("Fehler in updateMitarbeiter: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function deleteMitarbeiter(int $mitarbeiterId): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $sqlAusleihe = "DELETE FROM Ausleihe WHERE Mitarbeiter_ID = ?";
+            $stmtAusleihe = $this->pdo->prepare($sqlAusleihe);
+            $stmtAusleihe->execute([$mitarbeiterId]);
+
+            $sqlMitarbeiter = "DELETE FROM Mitarbeiter WHERE Mitarbeiter_ID = ?";
+            $stmtMitarbeiter = $this->pdo->prepare($sqlMitarbeiter);
+            $stmtMitarbeiter->execute([$mitarbeiterId]);
+
+            return $this->pdo->commit();
+        } catch (Exception $exception) {
+            error_log("Fehler in deleteMitarbeiter: " . $exception->getMessage());
+            $this->pdo->rollBack();
+            return false;
+        }
     }
 
     public function leiheWerkzeug(string $barcode, int $mitarbeiterId, int $ausleihdauer): bool
