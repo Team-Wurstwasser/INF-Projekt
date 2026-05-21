@@ -261,7 +261,7 @@ function openDeleteObjectDialog(entry) {
 	const cancelBtn = dialog.querySelector('#cancelDeleteBtn');
 
 	deleteBarcodeSpan.textContent = barcode;
-	deleteNameSpan.textContent = entry.Bezeichnung;
+	deleteNameSpan.textContent = getEntryValue(entry, ['Bezeichnung']);
 
 	cancelBtn.onclick = () => dialog.close();
 	confirmBtn.onclick = async () => {
@@ -306,8 +306,20 @@ async function openEditWerkzeugDialog(entry) {
 	typeSelect.value = getEntryValue(entry, ['Typ_ID']) || '';
 	statusSelect.value = getEntryValue(entry, ['Status_ID']) || '';
 
-	if (cancelBtn) cancelBtn.onclick = () => dialog.close();
-	if (saveBtn) saveBtn.onclick = async () => {
+	const validateForm = () => {
+		const bezeichnungSet = bezeichnungInput.value && bezeichnungInput.value.trim().length > 0;
+		const typSet = parseInt(typeSelect.value) > 0;
+		const statusSet = parseInt(statusSelect.value) > 0;
+		if (saveBtn) saveBtn.disabled = !(bezeichnungSet && typSet && statusSet);
+	};
+
+	bezeichnungInput.oninput = validateForm;
+	typeSelect.onchange = validateForm;
+	statusSelect.onchange = validateForm;
+	validateForm();
+
+	cancelBtn.onclick = () => dialog.close();
+	saveBtn.onclick = async () => {
 		const payload = {
 			barcode: getEntryValue(entry, ['Barcode']),
 			bezeichnung: bezeichnungInput.value.trim(),
