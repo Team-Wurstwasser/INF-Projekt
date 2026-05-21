@@ -10,7 +10,7 @@ let currentObject = {
 // --- Hilfsfunktionen & UI-Aktualisierung ---
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
-	const overviewIdEl = document.getElementById("objectOverviewID");
+	const overviewId = document.getElementById("objectOverviewID");
 	const overviewName = document.getElementById("objectOverviewName");
 	const overviewType = document.getElementById("objectOverviewType");
 	const overviewDate = document.getElementById("objectOverviewPurchaseDate");
@@ -192,7 +192,7 @@ function objectConfigDialog() {
 	loadWerkzeugTypen();
 
 	function validateObjectForm() {
-		const nameSet = objectNameEl.value && objectName.value.trim().length > 0;
+		const nameSet = objectName.value && objectName.value.trim().length > 0;
 		const barcodeSet = currentObject.id && currentObject.id.length > 0;
 		submit.disabled = !(nameSet && barcodeSet);
 	}
