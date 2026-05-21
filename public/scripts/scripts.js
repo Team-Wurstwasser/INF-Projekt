@@ -180,6 +180,21 @@ async function loadWerkzeugTypenInto(selectElement) {
 		selectElement.appendChild(option);
 	});
 }
+
+async function loadAbteilungenInto(selectElement) {
+	selectElement.innerHTML = "";
+
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=abteilungen");
+	const jsonData = await answer.json();
+
+	jsonData.data.forEach(function (typ) {
+		const option = document.createElement("option");
+		option.value = typ.Abteilung_ID;
+		option.innerText = typ.Name;
+		selectElement.appendChild(option);
+	});
+}
+
 // holt alle aktuellen status ab
 async function loadStatus(selectElement) {
 	selectElement.innerHTML = "";
@@ -280,20 +295,21 @@ async function openEditWerkzeugDialog(entry) {
 	const saveBtn = dialog.querySelector('#saveEditBtn');
 	const cancelBtn = dialog.querySelector('#cancelEditBtn');
 
-	barcodeSpan.textContent = entry.Barcode || '–';
-	bezeichnungInput.value = entry.Bezeichnung || '';
-	purchaseDateInput.value = entry.Anschaffungsdatum || '';
+	barcodeSpan.textContent = getEntryValue(entry, ['Barcode']);
+	bezeichnungInput.value = getEntryValue(entry, ['Bezeichnung']);
+	purchaseDateInput.value = getEntryValue(entry, ['Anschaffungsdatum']);
 
 	//fragt aktuelle typen und statuse ab für alle optionen
 	await loadWerkzeugTypenInto(typeSelect);
 	await loadStatus(statusSelect);
-	typeSelect.value = '';
-	statusSelect.value = '';
+	// set current selections if present
+	typeSelect.value = getEntryValue(entry, ['Typ_ID']) || '';
+	statusSelect.value = getEntryValue(entry, ['Status_ID']) || '';
 
 	if (cancelBtn) cancelBtn.onclick = () => dialog.close();
 	if (saveBtn) saveBtn.onclick = async () => {
 		const payload = {
-			barcode: entry.Barcode,
+			barcode: getEntryValue(entry, ['Barcode']),
 			bezeichnung: bezeichnungInput.value.trim(),
 			typ_id: parseInt(typeSelect.value) || 0,
 			status_id: parseInt(statusSelect.value) || 0,
@@ -540,13 +556,17 @@ async function showTable() {
 						editBtn.onclick = () => openEditWerkzeugDialog(entry);
 						break;
 					case "mitarbeiter":
-						break;
+							editBtn.onclick = () => openEditMitarbeiterDialog(entry);
+							break;
 					case "abteilung":
-						break;
+							editBtn.onclick = () => openEditAbteilungDialog(entry);
+							break;
 					case "werkzeug_typen":
-						break;
+							editBtn.onclick = () => openEditWerkzeugTypDialog(entry);
+							break;
 					case "status":
-						break;
+							editBtn.onclick = () => openEditStatusDialog(entry);
+							break;
 				}
 
 				//löschbutton erstellen
@@ -558,13 +578,17 @@ async function showTable() {
 						deleteBtn.onclick = () => openDeleteObjectDialog(entry);
 						break;
 					case "mitarbeiter":
-						break;
+							deleteBtn.onclick = () => openDeleteMitarbeiterDialog(entry);
+							break;
 					case "abteilung":
-						break;
+							deleteBtn.onclick = () => openDeleteAbteilungDialog(entry);
+							break;
 					case "werkzeug_typen":
-						break;
+							deleteBtn.onclick = () => openDeleteWerkzeugTypDialog(entry);
+							break;
 					case "status":
-						break;
+							deleteBtn.onclick = () => openDeleteStatusDialog(entry);
+							break;
 				}
 				tdAction.appendChild(editBtn);
 				tdAction.appendChild(deleteBtn);
@@ -642,6 +666,318 @@ async function openAddAbteilungDialog() {
 
 		dialog.showModal();
 	});
+}
+
+function getEntryValue(entry, keys) {
+	for (const key of keys) {
+		if (entry[key] !== undefined && entry[key] !== null) {
+			return entry[key];
+		}
+	}
+	return '';
+}
+
+async function openEditMitarbeiterDialog(entry) {
+	const dialog = document.getElementById('editMitarbeiterDialog');
+	const idInput = dialog.querySelector('#editMitarbeiterId');
+	const firstNameInput = dialog.querySelector('#editWorkerFirstName');
+	const lastNameInput = dialog.querySelector('#editWorkerLastName');
+	const emailInput = dialog.querySelector('#editWorkerEmail');
+	const departmentSelect = dialog.querySelector('#editWorkerDepartmentSelect');
+	const saveBtn = dialog.querySelector('#saveEditMitarbeiterBtn');
+	const cancelBtn = dialog.querySelector('#cancelEditMitarbeiterBtn');
+
+	idInput.value = getEntryValue(entry, ['Mitarbeiter_ID']);
+	firstNameInput.value = getEntryValue(entry, ['Vorname']);
+	lastNameInput.value = getEntryValue(entry, ['Nachname']);
+	emailInput.value = getEntryValue(entry, ['Email']);
+
+	await loadAbteilungenInto(departmentSelect);
+	const currentDepartment = getEntryValue(entry, ['Abteilung']);
+	for (const option of departmentSelect.options) {
+		if (option.text === currentDepartment) {
+			departmentSelect.value = option.value;
+			break;
+		}
+	}
+
+	const validateForm = () => {
+		const firstName = firstNameInput.value.trim().length > 0;
+		const lastName = lastNameInput.value.trim().length > 0;
+		const email = emailInput.value.trim().length > 0 && emailInput.checkValidity();
+		const department = parseInt(departmentSelect.value) > 0;
+		saveBtn.disabled = !(firstName && lastName && email && department);
+	};
+
+	firstNameInput.oninput = validateForm;
+	lastNameInput.oninput = validateForm;
+	emailInput.oninput = validateForm;
+	departmentSelect.onchange = validateForm;
+	validateForm();
+
+	cancelBtn.onclick = () => dialog.close();
+	saveBtn.onclick = async () => {
+		const payload = {
+			mitarbeiter_id: parseInt(idInput.value) || 0,
+			vorname: firstNameInput.value.trim(),
+			nachname: lastNameInput.value.trim(),
+			email: emailInput.value.trim(),
+			abteilung_id: parseInt(departmentSelect.value) || 0
+		};
+
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=mitarbeiter', {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Mitarbeiter aktualisiert');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Mitarbeiter konnte nicht aktualisiert werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+
+	dialog.showModal();
+}
+
+async function openDeleteMitarbeiterDialog(entry) {
+	const dialog = document.getElementById('deleteMitarbeiterDialog');
+	const id = getEntryValue(entry, ['Mitarbeiter_ID']);
+	dialog.querySelector('#deleteMitarbeiterName').textContent = `${getEntryValue(entry, ['Vorname'])} ${getEntryValue(entry, ['Nachname'])}`.trim();
+	dialog.querySelector('#deleteMitarbeiterEmail').textContent = getEntryValue(entry, ['Email']);
+
+	const confirmBtn = dialog.querySelector('#confirmDeleteMitarbeiterBtn');
+	const cancelBtn = dialog.querySelector('#cancelDeleteMitarbeiterBtn');
+	confirmBtn.onclick = async () => {
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=mitarbeiter', {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ mitarbeiter_id: parseInt(id) || 0 })
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Mitarbeiter gelöscht');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Mitarbeiter konnte nicht gelöscht werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+	cancelBtn.onclick = () => dialog.close();
+	dialog.showModal();
+}
+
+async function openEditAbteilungDialog(entry) {
+	const dialog = document.getElementById('editAbteilungDialog');
+	const idInput = dialog.querySelector('#editAbteilungId');
+	const nameInput = dialog.querySelector('#editAbteilungName');
+	const saveBtn = dialog.querySelector('#saveEditAbteilungBtn');
+	const cancelBtn = dialog.querySelector('#cancelEditAbteilungBtn');
+
+	idInput.value = getEntryValue(entry, ['Abteilung_ID']);
+	nameInput.value = getEntryValue(entry, ['Name']);
+
+	const validateForm = () => {
+		saveBtn.disabled = nameInput.value.trim().length === 0;
+	};
+
+	nameInput.oninput = validateForm;
+	validateForm();
+
+	cancelBtn.onclick = () => dialog.close();
+	saveBtn.onclick = async () => {
+		const payload = {
+			abteilung_id: parseInt(idInput.value) || 0,
+			name: nameInput.value.trim()
+		};
+
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=abteilungen', {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Abteilung aktualisiert');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Abteilung konnte nicht aktualisiert werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+
+	dialog.showModal();
+}
+
+async function openDeleteAbteilungDialog(entry) {
+	const dialog = document.getElementById('deleteAbteilungDialog');
+	const id = getEntryValue(entry, ['Abteilung_ID', 'abteilung_id']);
+	dialog.querySelector('#deleteAbteilungName').textContent = getEntryValue(entry, ['Name', 'name']);
+
+	const confirmBtn = dialog.querySelector('#confirmDeleteAbteilungBtn');
+	const cancelBtn = dialog.querySelector('#cancelDeleteAbteilungBtn');
+	confirmBtn.onclick = async () => {
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=abteilungen', {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ abteilung_id: parseInt(id) || 0 })
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Abteilung gelöscht');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Abteilung konnte nicht gelöscht werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+	cancelBtn.onclick = () => dialog.close();
+	dialog.showModal();
+}
+
+async function openEditWerkzeugTypDialog(entry) {
+	const dialog = document.getElementById('editWerkzeugTypDialog');
+	const idInput = dialog.querySelector('#editWerkzeugTypId');
+	const typeInput = dialog.querySelector('#editWerkzeugTypName');
+	const saveBtn = dialog.querySelector('#saveEditWerkzeugTypBtn');
+	const cancelBtn = dialog.querySelector('#cancelEditWerkzeugTypBtn');
+
+	idInput.value = getEntryValue(entry, ['Typ_ID']);
+	typeInput.value = getEntryValue(entry, ['Typ']);
+
+	const validateForm = () => {
+		saveBtn.disabled = typeInput.value.trim().length === 0;
+	};
+
+	typeInput.oninput = validateForm;
+	validateForm();
+
+	cancelBtn.onclick = () => dialog.close();
+	saveBtn.onclick = async () => {
+		const payload = {
+			typ_id: parseInt(idInput.value) || 0,
+			art: typeInput.value.trim()
+		};
+
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen', {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Werkzeugtyp aktualisiert');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Werkzeugtyp konnte nicht aktualisiert werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+
+	dialog.showModal();
+}
+
+async function openDeleteWerkzeugTypDialog(entry) {
+	const dialog = document.getElementById('deleteWerkzeugTypDialog');
+	dialog.querySelector('#deleteWerkzeugTypName').textContent = getEntryValue(entry, ['Typ']);
+
+	const confirmBtn = dialog.querySelector('#confirmDeleteWerkzeugTypBtn');
+	const cancelBtn = dialog.querySelector('#cancelDeleteWerkzeugTypBtn');
+	confirmBtn.onclick = async () => {
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen', {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ art: getEntryValue(entry, ['Typ']) })
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Werkzeugtyp gelöscht');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Werkzeugtyp konnte nicht gelöscht werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+	cancelBtn.onclick = () => dialog.close();
+	dialog.showModal();
+}
+
+async function openEditStatusDialog(entry) {
+	const dialog = document.getElementById('editStatusDialog');
+	const idInput = dialog.querySelector('#editStatusId');
+	const statusInput = dialog.querySelector('#editStatusName');
+	const saveBtn = dialog.querySelector('#saveEditStatusBtn');
+	const cancelBtn = dialog.querySelector('#cancelEditStatusBtn');
+
+	idInput.value = getEntryValue(entry, ['Status_ID']);
+	statusInput.value = getEntryValue(entry, ['Bezeichnung']);
+
+	const validateForm = () => {
+		saveBtn.disabled = statusInput.value.trim().length === 0;
+	};
+
+	statusInput.oninput = validateForm;
+	validateForm();
+
+	cancelBtn.onclick = () => dialog.close();
+	saveBtn.onclick = async () => {
+		const payload = {
+			status_id: parseInt(idInput.value) || 0,
+			bezeichnung: statusInput.value.trim()
+		};
+
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=status', {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Status aktualisiert');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Status konnte nicht aktualisiert werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+
+	dialog.showModal();
+}
+
+async function openDeleteStatusDialog(entry) {
+	const dialog = document.getElementById('deleteStatusDialog');
+	dialog.querySelector('#deleteStatusName').textContent = getEntryValue(entry, ['Bezeichnung']);
+
+	const confirmBtn = dialog.querySelector('#confirmDeleteStatusBtn');
+	const cancelBtn = dialog.querySelector('#cancelDeleteStatusBtn');
+	confirmBtn.onclick = async () => {
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=status', {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ status_id: parseInt(getEntryValue(entry, ['Status_ID'])) || 0 })
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Status gelöscht');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Status konnte nicht gelöscht werden: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+	cancelBtn.onclick = () => dialog.close();
+	dialog.showModal();
 }
 
 // filtern

@@ -64,7 +64,7 @@ class DatabaseHandler
 
     public function getAllWerkzeuge(): array
     {
-        $sql = "SELECT w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, t.Art as Typ, w.Anschaffungsdatum as Anschaffungsdatum, s.Bezeichnung as Status
+        $sql = "SELECT w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, t.Art as Typ, w.Anschaffungsdatum as Anschaffungsdatum, s.Bezeichnung as Status, s.Status_ID as Status_ID, t.Typ_ID as Typ_ID
                 FROM Werkzeuge w
                 JOIN Status s ON w.Status_ID = s.Status_ID
                 JOIN Werkzeugtyp t ON w.Typ_ID = t.Typ_ID";
