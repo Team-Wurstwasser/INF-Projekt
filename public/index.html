@@ -30,6 +30,10 @@
                 Rückgabe
                 <img src="pics/returnicon.png" />
             </button>
+            <button id="verlängernBtn" onclick="verlängernScanDialog()">
+                Verlängern
+                <img src="pics/verlängern.png" />
+            </button>
         </div>
     </div>
     <label for="typeSelect">Kategorie:</label>
@@ -133,6 +137,20 @@
         <button id="returnSubmitBtn" disabled>Bestätigen</button>
     </dialog>
 
+    <!-- Verlängern Dialoge ################################################### -->
+    <dialog id="verlängernScanBarcodeDialog">
+        <h2>Objekt verlängern</h2>
+        <h2>Bitte den Barcode scannen.</h2>
+        <button id="closeVerlängernScanBtn">Schließen</button>
+    </dialog>
+
+    <dialog id="verlängernDialog">
+        <h2>Objekt verlängern</h2>
+        <h2>Bitte folgende Informationen eingeben.</h2>
+        Barcode: <input type="text" id="verlängernBarcode" disabled autocomplete="off"> <br>
+        Verlängerungsdauer in Tage : <input type="number" id="verlängernDuration" autocomplete="off"> <br>
+        <button id="verlängernSubmitBtn" disabled>Bestätigen</button>
+    </dialog>
 
     <!-- Delete Object Dialog -->
     <dialog id="deleteObjectDialog">
