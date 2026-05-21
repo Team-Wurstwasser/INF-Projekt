@@ -138,7 +138,11 @@
      
      <dialog id="createWorkerDialog">
         <h1>Neuen Mitarbeiter anlegen</h1>
-        
+        <h3>Folgende informationen angeben:</h3>
+        Vorname : <input type="text" id="workerFirstName" placeholder="Vorname" autocomplete="off"> <br>
+        Nachname : <input type="text" id="workerLastName" placeholder="Nachname" autocomplete="off"> <br>
+        Abteilung : <select id="workerDepartmentSelect" autocomplete="off"></select> <br>
+        <button id="createWorkerSubmitBtn">Bestätigen</button>
         <button class="closeBtn" id="closeBtnWorker"> <img src="pics/close.png" alt="X"></button>
     </dialog>
 

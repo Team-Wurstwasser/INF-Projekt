@@ -2,4 +2,4 @@
     http_response_code(404);
 ?>
 
-test
+WIE BIST DU HIER HERGEKOMMEN BITTE? DAS IST EINE 404 SEITE, DIE ES NICHT GIBT.
