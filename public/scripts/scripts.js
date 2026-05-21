@@ -127,24 +127,8 @@ function objectCreateScanBarcodeDialog() {
 
 }
 
-//lädt aktuelle werkzeugtypen von api für dropdown auswahl bei objekterstellung
-async function loadWerkzeugTypen() {
-	const typeSelect = document.getElementById("objectTypeSelect");
-
-	typeSelect.innerHTML = "";
-
-	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
-	const jsonData = await answer.json();
-
-	jsonData.data.forEach(function (typ) {
-		const option = document.createElement("option");
-		option.value = typ.Typ_ID;
-		option.innerText = typ.Typ;
-		typeSelect.appendChild(option);
-	});
-}
 // lädt alle werkzeugtypen für beliebiges element
-async function loadWerkzeugTypenInto(selectElement) {
+async function loadWerkzeugTypen(selectElement) {
 	selectElement.innerHTML = "";
 	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
 	const jsonData = await answer.json();
@@ -155,6 +139,7 @@ async function loadWerkzeugTypenInto(selectElement) {
 		selectElement.appendChild(option);
 	});
 }
+
 // lädt aktuelle mitarbeiter von api und erstellt dropdown optionen
 async function loadMitarbeiter() {
 	const borrowerSelect = document.getElementById("borrowerIdSelect");
@@ -171,24 +156,9 @@ async function loadMitarbeiter() {
 		borrowerSelect.appendChild(option);
 	});
 }
-// lädt aktuelle abteilungen von api für mitarbeitererstellung
-async function loadAbteilungen() {
-	const abteilungenSelect = document.getElementById("workerDepartmentSelect");
-	
-	abteilungenSelect.innerHTML = ""; 
 
-	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=abteilungen");
-	const jsonData = await answer.json();
-
-	jsonData.data.forEach(function (typ) {
-		const option = document.createElement("option");
-		option.value = typ.Abteilung_ID; 		
-		option.innerText = typ.Name;
-		abteilungenSelect.appendChild(option);
-	});
-}
 // lädt aktuelle abteilungen von api für beliebiges element
-async function loadAbteilungenInto(selectElement) {
+async function loadAbteilungen(selectElement) {
 	selectElement.innerHTML = "";
 
 	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=abteilungen");
@@ -201,6 +171,7 @@ async function loadAbteilungenInto(selectElement) {
 		selectElement.appendChild(option);
 	});
 }
+
 // holt alle aktuellen status ab
 async function loadStatus(selectElement) {
 	selectElement.innerHTML = "";
@@ -312,7 +283,7 @@ async function openEditWerkzeugDialog(entry) {
 	purchaseDateInput.value = entry.Anschaffungsdatum;
 
 	//fragt aktuelle typen und statuse ab für alle optionen
-	await loadWerkzeugTypenInto(typeSelect);
+	await loadWerkzeugTypen(typeSelect);
 	await loadStatus(statusSelect);
 
 	// + buttons für status
@@ -365,6 +336,7 @@ async function openEditWerkzeugDialog(entry) {
 
 	dialog.showModal();
 }
+
 // neues objekt anlegen
 async function saveNewObject() {
 	const payload = {
@@ -395,25 +367,26 @@ async function saveNewObject() {
 	}
 }
 // Objekt Configuration Dialog
-function objectConfigDialog() {
+async function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
 	const submit = document.getElementById("objectSubmitBtn");
 	const cancelBtn = document.getElementById("cancelObjectConfigBtn");
-	// Felder leeren
 	const objectName = document.getElementById('objectName');
 	const purchaseDate = document.getElementById('objectPurchaseDate');
 	const typeSelect = document.getElementById('objectTypeSelect');
+
+	// Felder leeren
 	objectName.value = '';
 	purchaseDate.value = '';
 
-	loadWerkzeugTypen();
+	await loadWerkzeugTypen(typeSelect);
 
 	// + button für neuen typ
 	const addTypeBtn = document.getElementById('addObjectTypeBtn');
 	addTypeBtn.title = 'Neuen Typ hinzufügen';
 	addTypeBtn.onclick = async () => {
 		await openAddTypeDialog();
-		await loadWerkzeugTypen();
+		await loadWerkzeugTypen(typeSelect);
 	}
 
 	function validateObjectForm() {
@@ -770,7 +743,7 @@ async function openEditMitarbeiterDialog(entry) {
 	lastNameInput.value = entry.Nachname || '';
 	emailInput.value = entry.Email || '';
 
-	await loadAbteilungenInto(departmentSelect);
+	await loadAbteilungen(departmentSelect);
 	departmentSelect.value = entry.Abteilung_ID || '';
 
 	const validateForm = () => {
@@ -1306,10 +1279,10 @@ function showToast(message) {
 }
 
 // dialog zum mitarbeiter erstellen
-function showCreateWorkerDialog() {
+async function showCreateWorkerDialog() {
 	const modal = document.getElementById("createWorkerDialog");
 	const closeBtn = document.getElementById("closeBtnWorker");
-
+	const abteilungenSelect = document.getElementById("workerDepartmentSelect");
 	const firstName = document.getElementById('workerFirstName');
 	const lastName = document.getElementById('workerLastName');
 	const email = document.getElementById('workerEmail');
@@ -1320,13 +1293,13 @@ function showCreateWorkerDialog() {
 	lastName.value = '';
 	email.value = '';
 
-	loadAbteilungen();
+	await loadAbteilungen(abteilungenSelect);
 
 	const addAbteilungBtn = document.getElementById('addAbteilungBtn');
 	addAbteilungBtn.title = 'Neue Abteilung hinzufügen';
 	if (addAbteilungBtn) addAbteilungBtn.onclick = async () => {
 		await openAddAbteilungDialog();
-		await loadAbteilungen();
+		await loadAbteilungen(abteilungenSelect);
 	};
 
 	function validateWorkerForm() {
