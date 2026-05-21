@@ -467,7 +467,12 @@ async function showTable() {
 		//erstellt seperate aktionsspalte
 		if (select != "ausgeliehen" && select != "ausgeliehen_historie") {
 			const th = document.createElement('th');
-			th.innerText = 'Aktion';
+			th.innerText = "Aktion";
+			tableHead.appendChild(th);
+		}
+		if (select == "ausgeliehen") {
+			const th = document.createElement('th');
+			th.innerText = "Verlängern";
 			tableHead.appendChild(th);
 		}
 
@@ -477,7 +482,7 @@ async function showTable() {
 
 			// kopfcontainer erstellen für titel und sortiericon
 			const headerDiv = document.createElement('div');
-			headerDiv.className = 'sort-header';
+			headerDiv.className = "sort-header";
 			headerDiv.title = "sort";
 			// header titel erstellen
 			const headerTitle = document.createElement('span');
@@ -514,16 +519,24 @@ async function showTable() {
 			columnName.forEach((key) => {
 				generateCell(key, entry, tr);
 			});
-
+			if (select == "ausgeliehen") {
+				//verlängerungs erstellen
+				const tdAction = document.createElement('td');
+				const barcodeValue = getBarcodeFromEntry(entry);
+				const editBtn = document.createElement('button');
+				editBtn.innerText = "Verlängern";
+				editBtn.className = "table-action-button";
+				//editBtn.onclick = () => ;
+			}
 			if (select != "ausgeliehen" && select != "ausgeliehen_historie") {
 				//bearbeitungsbuton erstellen
 				const tdAction = document.createElement('td');
-				const barcodeValue = getBarcodeFromEntry(entry);
 				const editBtn = document.createElement('button');
 				editBtn.innerText = "Bearbeiten";
 				editBtn.className = "table-action-button";
 				switch (select) {
 					case "werkzeuge":
+						const barcodeValue = getBarcodeFromEntry(entry);
 						editBtn.onclick = () => openEditWerkzeugDialog(entry);
 						break;
 					case "mitarbeiter":
