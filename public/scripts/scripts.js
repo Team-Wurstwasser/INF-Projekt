@@ -7,8 +7,6 @@ let currentObject = {
 	date: ""
 };
 
-let currentAusleihe = null;
-
 // --- Hilfsfunktionen & UI-Aktualisierung ---
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
@@ -1346,8 +1344,6 @@ function showCreateWorkerDialog() {
 }
 
 function verlängernDialog(entry) {
-	currentAusleihe = entry;
-
 	const modal = document.getElementById('verlängernDialog');
 	const barcodeInput = document.getElementById('verlängernBarcode');
 	const durationInput = document.getElementById('verlängernDuration');
