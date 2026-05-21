@@ -16,14 +16,14 @@ let scannedBarcodeBorrow = "";
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
 	const overviewIdEl = document.getElementById("objectOverviewID");
-	const overviewNameEl = document.getElementById("objectOverviewName");
-	const overviewTypeEl = document.getElementById("objectOverviewType");
-	const overviewDateEl = document.getElementById("objectOverviewPurchaseDate");
+	const overviewName = document.getElementById("objectOverviewName");
+	const overviewType = document.getElementById("objectOverviewType");
+	const overviewDate = document.getElementById("objectOverviewPurchaseDate");
 	if (idDisplay) idDisplay.value = currentObject.id;
-	if (overviewIdEl) overviewIdEl.innerHTML = "ID: " + currentObject.id;
-	if (overviewNameEl) overviewNameEl.innerHTML = "Name: " + currentObject.name;
-	if (overviewTypeEl) overviewTypeEl.innerHTML = "Typ: " + (currentObject.typName);
-	if (overviewDateEl) overviewDateEl.innerHTML = "Anschaffungsdatum: " + currentObject.date;
+	if (overviewId) overviewId.innerHTML = "ID: " + currentObject.id;
+	if (overviewName) overviewName.innerHTML = "Name: " + currentObject.name;
+	if (overviewType) overviewType.innerHTML = "Typ: " + (currentObject.typName);
+	if (overviewDate) overviewDate.innerHTML = "Anschaffungsdatum: " + currentObject.date;
 }
 
 // --- Objekterstellung & Barcode-Eingabe ---
@@ -189,29 +189,29 @@ function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
 	const submit = document.getElementById("objectSubmitBtn");
 	// Felder leeren
-	const objectNameEl = document.getElementById('objectName');
-	const purchaseDateEl = document.getElementById('objectPurchaseDate');
+	const objectName = document.getElementById('objectName');
+	const purchaseDate = document.getElementById('objectPurchaseDate');
 	const typeSelect = document.getElementById('objectTypeSelect');
-	objectNameEl.value = '';
-	purchaseDateEl.value = '';
+	objectName.value = '';
+	purchaseDate.value = '';
 
 	loadWerkzeugTypen();
 
 	function validateObjectForm() {
-		const nameSet = objectNameEl.value && objectNameEl.value.trim().length > 0;
+		const nameSet = objectNameEl.value && objectName.value.trim().length > 0;
 		const barcodeSet = currentObject.id && currentObject.id.length > 0;
 		submit.disabled = !(nameSet && barcodeSet);
 	}
 
-	objectNameEl.addEventListener('input', validateObjectForm);
+	objectName.addEventListener('input', validateObjectForm);
 	validateObjectForm(); // initiale Validierung
 
 	modal.showModal();
 
 	submit.onclick = async () => {
 		// aktuelle Werte übernehmen
-		currentObject.name = objectNameEl.value;
-		currentObject.date = purchaseDateEl.value;
+		currentObject.name = objectName.value;
+		currentObject.date = purchaseDate.value;
 		currentObject.typId = typeSelect.value;
 		currentObject.typName = typeSelect.options[typeSelect.selectedIndex].text;
 
