@@ -5,6 +5,12 @@ namespace Backend\Database;
 use Exception;
 use PDO;
 
+/**
+ * DatabaseHandler
+ *
+ * Zentrale Klasse für Datenbankzugriffe: Werkzeuge, Ausleihe, Mitarbeiter und Stammdaten.
+ * Die Methoden kapseln SQL-Abfragen und führen Transaktionen dort aus, wo nötig.
+ */
 class DatabaseHandler
 {
     private PDO $pdo;
@@ -14,8 +20,16 @@ class DatabaseHandler
         $this->pdo = $pdo;
     }
 
+    /**
+     * Hole alle Ausleihen, deren Fälligkeitsdatum in den nächsten 48 Stunden liegt
+     * und für die noch keine Erinnerungs-E-Mail versendet wurde.
+     *
+     * @return array Liste von allen Abgaben in den nächsten 48 Stunden: Ausleih_ID, Fälligkeitsdatum, Barcode, Bezeichnung, Vorname, Nachname, Email
+     */
     public function getAllAbgabenin48h(): array
     {
+        // Liefert alle Ausleihen, deren Fälligkeitsdatum in den nächsten 48 Stunden liegt
+        // und für die noch keine Erinnerungsemail gesendet wurde.
         $sql = "SELECT a.Ausleih_ID as Ausleih_ID, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
                 FROM Ausleihe a
                 JOIN Werkzeuge w ON a.Barcode = w.Barcode
@@ -28,6 +42,11 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Hole alle aktuell ausgeliehenen Werkzeuge (ohne Rückgabedatum).
+     *
+     * @return array Liste der ausgeliehenen Einträge mit Ausleih_ID, Ausleihdatum, Fälligkeitsdatum, Barcode, Bezeichnung und Mitarbeiterdaten
+     */
     public function getAllAusgelieheneSachen(): array
     {
         $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email
@@ -39,6 +58,11 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Hole die komplette Ausleih-Historie.
+     *
+     * @return array Historische Ausleiheinträge
+     */
     public function getAusgeliehenHistorie(): array
     {
         $sql = "SELECT a.Ausleih_ID as Ausleih_ID, a.Ausleihdatum as Ausleihdatum, DATE_ADD(a.Ausleihdatum, INTERVAL a.Ausleihdauer DAY) as Fälligkeitsdatum, a.Rückgabedatum as Rückgabedatum, a.Barcode as Barcode, w.Bezeichnung as Bezeichnung, m.Vorname as Vorname, m.Nachname as Nachname, m.Email as Email, a.ZustandBeiRückgabe as ZustandBeiRückgabe
@@ -49,9 +73,16 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Markiert eine Ausleihe als bereits per E-Mail benachrichtigt.
+     *
+     * @param int $ausleiId ID des Ausleih-Eintrags
+     * @return bool true, wenn mindestens eine Zeile aktualisiert wurde
+     */
     public function setEmailSent(int $ausleiId): bool
     {
         try {
+            // Markiert eine Ausleihe, dass die Erinnerungsemail versendet wurde
             $sql = "UPDATE Ausleihe SET EmailVersendet = 1 WHERE Ausleih_ID = ?";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$ausleiId]);
@@ -62,6 +93,11 @@ class DatabaseHandler
     }
     }
 
+    /**
+     * Liefert alle Werkzeuge mit Typ- und Statusinformationen.
+     *
+     * @return array Liste aller Werkzeuge
+     */
     public function getAllWerkzeuge(): array
     {
         $sql = "SELECT w.Barcode as Barcode, w.Bezeichnung as Bezeichnung, t.Art as Typ, w.Anschaffungsdatum as Anschaffungsdatum, s.Bezeichnung as Status, s.Status_ID as Status_ID, t.Typ_ID as Typ_ID
@@ -71,16 +107,30 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Prüft, ob ein Barcode bereits in der Datenbank existiert.
+     *
+     * @param string $barcode EAN-13 Barcode
+     * @return bool true, wenn vorhanden
+     */
     public function barcodeExists(string $barcode): bool
     {
+        // Prüft, ob ein Barcode bereits in der Tabelle Werkzeuge existiert
         $sql = "SELECT COUNT(*) FROM Werkzeuge WHERE Barcode = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$barcode]);
         return $stmt->fetchColumn() > 0;
     }
 
+    /**
+     * Validiert einen EAN-13 Barcode durch Format- und Prüfzifferncheck.
+     *
+     * @param string $barcode 13-stelliger numerischer Barcode
+     * @return bool true, wenn gültig
+     */
     public function isValidEan13Barcode(string $barcode): bool
     {
+        // Validiert einen EAN-13 Barcode mithilfe der Prüfzifferberechnung
         if (!preg_match('/^\d{13}$/', $barcode)) {
             return false;
         }
@@ -96,8 +146,16 @@ class DatabaseHandler
         return $checkDigit === (int)$barcode[12];
     }
 
+    /**
+     * Erzeugt einen neuen, eindeutigen EAN-13 Barcode mit Präfix 200.
+     * Prüft die Einzigartigkeit gegenüber der Datenbank.
+     *
+     * @return string generierter 13-stelliger Barcode
+     */
     public function generateBarcode(): string
     {
+        // Generiert einen eindeutigen EAN-13 Barcode mit Präfix 200 und berechnet die Prüfziffer.
+        // Wiederholt die Generierung, bis ein nicht existierender Barcode gefunden ist.
         do {
             $randomDigits = mt_rand(0, 999999999);
             $baseCode = '200' . str_pad((string)$randomDigits, 9, '0', STR_PAD_LEFT);
@@ -115,6 +173,11 @@ class DatabaseHandler
         return $fullBarcode;
     }
 
+    /**
+     * Liefert alle Werkzeugtypen.
+     *
+     * @return array Liste der Typen mit Typ_ID und Typ
+     */
     public function getAllWerkzeugeTypen(): array
     {
         $sql = "SELECT t.Typ_ID as Typ_ID, t.Art as Typ 
@@ -122,6 +185,11 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Liefert alle möglichen Statuswerte für Werkzeuge.
+     *
+     * @return array Liste der Status
+     */
     public function getAllStatus(): array
     {
         $sql = "SELECT s.Status_ID as Status_ID, s.Bezeichnung as Bezeichnung
@@ -129,6 +197,11 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Liefert alle Abteilungen.
+     *
+     * @return array Liste der Abteilungen
+     */
     public function getAllAbteilungen(): array
     {
         $sql = "SELECT a.Abteilung_ID as Abteilung_ID, a.Name as Name
@@ -136,6 +209,16 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Fügt ein neues Werkzeug in die Datenbank ein.
+     * Validiert Barcode (EAN-13) und prüft Duplikate.
+     *
+     * @param string $barcode 13-stelliger EAN-13 Barcode
+     * @param string $bezeichnung Bezeichnung/Name des Werkzeugs
+     * @param int $typId Fremdschlüssel auf Werkzeugtyp
+     * @param string $anschaffungsdatum optionales Datum (YYYY-MM-DD), Standard: CURDATE()
+     * @return bool true bei erfolgreichem Insert
+     */
     public function addWerkzeug(string $barcode, string $bezeichnung, int $typId, string $anschaffungsdatum = ''): bool
     {
         try {
@@ -166,6 +249,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Aktualisiert die Stammdaten eines Werkzeugs.
+     *
+     * @return bool true, wenn mindestens eine Zeile betroffen ist
+     */
     public function updateWerkzeug(string $barcode, string $bezeichnung, int $typId, int $statusId, string $anschaffungsdatum = ''): bool
     {
         try {
@@ -189,6 +277,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Setzt nur den Status eines Werkzeugs.
+     *
+     * @return bool true, wenn geändert
+     */
     public function updateWerkzeugStatus(string $barcode, int $statusId): bool
     {
         try {
@@ -202,6 +295,12 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Löscht ein Werkzeug und alle zugehörigen Ausleihe-Einträge in einer Transaktion.
+     *
+     * @param string $barcode Barcode des zu löschenden Werkzeugs
+     * @return bool true bei erfolgreichem Commit
+     */
     public function deleteWerkzeug(string $barcode): bool
     {
         $this->pdo->beginTransaction();
@@ -222,6 +321,12 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Fügt einen neuen Werkzeugtyp hinzu.
+     *
+     * @param string $art Bezeichnung des Typs
+     * @return bool
+     */
     public function addWerkzeugTyp(string $art): bool
     {
         try {
@@ -234,6 +339,12 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Fügt einen neuen Status-Eintrag hinzu.
+     *
+     * @param string $bezeichnung
+     * @return bool
+     */
     public function addStatus(string $bezeichnung): bool
     {
         try {
@@ -246,6 +357,12 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Legt eine neue Abteilung an.
+     *
+     * @param string $name Name der Abteilung
+     * @return bool
+     */
     public function addAbteilung(string $name): bool
     {
         try {
@@ -258,6 +375,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Aktualisiert den Namen eines Werkzeugtyps.
+     *
+     * @return bool true, wenn Zeilen betroffen
+     */
     public function updateWerkzeugTyp(int $typId, string $art): bool
     {
         try {
@@ -271,6 +393,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Aktualisiert einen Status-Eintrag.
+     *
+     * @return bool
+     */
     public function updateStatus(int $statusId, string $bezeichnung): bool
     {
         try {
@@ -284,6 +411,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Aktualisiert eine Abteilung.
+     *
+     * @return bool
+     */
     public function updateAbteilung(int $abteilungId, string $name): bool
     {
         try {
@@ -297,6 +429,13 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Löscht einen Werkzeugtyp, falls keine Werkzeuge mehr diesem Typ zugeordnet sind.
+     * Führt mehrere Prüfungen in einer Transaktion durch.
+     *
+     * @param string $art Bezeichnung des Typs
+     * @return bool true bei erfolgreichem Löschen
+     */
     public function deleteWerkzeugTyp(string $art): bool
     {
         $this->pdo->beginTransaction();
@@ -332,6 +471,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Löscht einen Status.
+     *
+     * @return bool
+     */
     public function deleteStatus(int $statusId): bool
     {
         $this->pdo->beginTransaction();
@@ -357,6 +501,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Löscht eine Abteilung.
+     *
+     * @return bool
+     */
     public function deleteAbteilung(int $abteilungId): bool
     {
         $this->pdo->beginTransaction();
@@ -382,6 +531,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Liefert alle Mitarbeiter mit zugehöriger Abteilung.
+     *
+     * @return array
+     */
     public function getAllMitarbeiter(): array
     {
         $sql = "SELECT m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, ab.Name as Abteilung, ab.Abteilung_ID as Abteilung_ID
@@ -390,9 +544,16 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    /**
+     * Prüft, ob ein Werkzeug derzeit ausgeliehen ist.
+     *
+     * @param string $barcode
+     * @return bool
+     */
     public function isWerkzeugAusgeliehen(string $barcode): bool
     {
         try {
+            // Prüft, ob es einen offenen Ausleih-Eintrag für den Barcode gibt und kein Rückgabedatum gesetzt ist.
             $sql = "SELECT COUNT(*) FROM Ausleihe WHERE Barcode = ? AND Rückgabedatum IS NULL";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$barcode]);
@@ -403,6 +564,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Legt einen neuen Mitarbeiter an.
+     *
+     * @return bool
+     */
     public function addMitarbeiter(string $vorname, string $nachname, string $email, int $abteilungId): bool
     {
         try {
@@ -415,6 +581,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Aktualisiert Mitarbeiterdaten.
+     *
+     * @return bool true, wenn geändert
+     */
     public function updateMitarbeiter(int $mitarbeiterId, string $vorname, string $nachname, string $email, int $abteilungId): bool
     {
         try {
@@ -428,6 +599,11 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Löscht einen Mitarbeiter und zugehörige Ausleihen in einer Transaktion.
+     *
+     * @return bool
+     */
     public function deleteMitarbeiter(int $mitarbeiterId): bool
     {
         $this->pdo->beginTransaction();
@@ -448,10 +624,20 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Legt eine neue Ausleihe an und setzt den Status des Werkzeugs auf ausgeliehen.
+     * Führt beide Operationen in einer Transaktion aus.
+     *
+     * @param string $barcode
+     * @param int $mitarbeiterId
+     * @param int $ausleihdauer Anzahl Tage
+     * @return bool
+     */
     public function leiheWerkzeug(string $barcode, int $mitarbeiterId, int $ausleihdauer): bool
     {
         $this->pdo->beginTransaction();
         try {
+            // Lege neue Ausleihe an und setze den Werkzeug-Status auf ausgeliehen
             $sqlAusleihe = "INSERT INTO Ausleihe (Ausleihdatum, Ausleihdauer, Mitarbeiter_ID, Barcode, EmailVersendet) 
                             VALUES (CURDATE(), ?, ?, ?, 0)";
             $stmt1 = $this->pdo->prepare($sqlAusleihe);
@@ -469,11 +655,20 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Markiert eine Ausleihe als zurückgegeben, setzt Zustand bei Rückgabe und ändert den Werkzeug-Status.
+     * Beendet die Transaktion nur, wenn die Aktualisierung der Ausleihe erfolgreich war.
+     *
+     * @param string $barcode
+     * @param string $zustand Freitext zum Zustand bei Rückgabe
+     * @return bool
+     */
     public function gebeWerkzeugZurueck(string $barcode, string $zustand): bool
     {
         $this->pdo->beginTransaction();
         try {
 
+            // Aktualisiere aktuelle Ausleihe mit Rückgabedatum, Zustand bei Rückgabe und setze Werkzeug-Status auf verfügbar
             $sqlAusleihe = "UPDATE Ausleihe 
                             SET ZustandBeiRückgabe = ?, Rückgabedatum = CURDATE()
                             WHERE Barcode = ? AND Rückgabedatum IS NULL";
@@ -497,6 +692,13 @@ class DatabaseHandler
         }
     }
 
+    /**
+     * Verlängert die Ausleihdauer eines Ausleih-Eintrags und setzt EmailVersendet zurück.
+     *
+     * @param int $ausleihId
+     * @param int $zusatzTage
+     * @return bool
+     */
     public function extendAusleihen(int $ausleihId, int $zusatzTage): bool
     {
         try {
