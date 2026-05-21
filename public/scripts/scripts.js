@@ -465,7 +465,7 @@ async function showTable() {
 		});
 
 		//erstellt seperate aktionsspalte
-		if (select == "werkzeuge") {
+		if (select != "ausgeliehen" && select != "ausgeliehen_historie") {
 			const th = document.createElement('th');
 			th.innerText = 'Aktion';
 			tableHead.appendChild(th);
@@ -515,20 +515,44 @@ async function showTable() {
 				generateCell(key, entry, tr);
 			});
 
-			if (select == "werkzeuge") {
+			if (select != "ausgeliehen" && select != "ausgeliehen_historie") {
 				//bearbeitungsbuton erstellen
 				const tdAction = document.createElement('td');
 				const barcodeValue = getBarcodeFromEntry(entry);
 				const editBtn = document.createElement('button');
 				editBtn.innerText = "Bearbeiten";
 				editBtn.className = "table-action-button";
-				editBtn.onclick = () => openEditWerkzeugDialog(entry);
+				switch (select) {
+					case "werkzeuge":
+						editBtn.onclick = () => openEditWerkzeugDialog(entry);
+						break;
+					case "mitarbeiter":
+						break;
+					case "abteilung":
+						break;
+					case "werkzeug_typen":
+						break;
+					case "status":
+						break;
+				}
 
 				//löschbutton erstellen
 				const deleteBtn = document.createElement('button');
 				deleteBtn.innerText = "Löschen";
 				deleteBtn.className = "table-action-button";
-				deleteBtn.onclick = () => openDeleteObjectDialog(entry);
+				switch (select) {
+					case "werkzeuge":
+						deleteBtn.onclick = () => openDeleteObjectDialog(entry);
+						break;
+					case "mitarbeiter":
+						break;
+					case "abteilung":
+						break;
+					case "werkzeug_typen":
+						break;
+					case "status":
+						break;
+				}
 				tdAction.appendChild(editBtn);
 				tdAction.appendChild(deleteBtn);
 				tr.appendChild(tdAction);
