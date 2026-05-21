@@ -261,7 +261,7 @@ function openDeleteObjectDialog(entry) {
 	const cancelBtn = dialog.querySelector('#cancelDeleteBtn');
 
 	deleteBarcodeSpan.textContent = barcode;
-	deleteNameSpan.textContent = getEntryValue(entry, ['Bezeichnung']);
+	deleteNameSpan.textContent = entry.Bezeichnung || '';
 
 	cancelBtn.onclick = () => dialog.close();
 	confirmBtn.onclick = async () => {
@@ -788,9 +788,9 @@ async function openEditMitarbeiterDialog(entry) {
 
 async function openDeleteMitarbeiterDialog(entry) {
 	const dialog = document.getElementById('deleteMitarbeiterDialog');
-	const id = getEntryValue(entry, ['Mitarbeiter_ID']);
-	dialog.querySelector('#deleteMitarbeiterName').textContent = `${getEntryValue(entry, ['Vorname'])} ${getEntryValue(entry, ['Nachname'])}`.trim();
-	dialog.querySelector('#deleteMitarbeiterEmail').textContent = getEntryValue(entry, ['Email']);
+	const id = entry.Mitarbeiter_ID || '';
+	dialog.querySelector('#deleteMitarbeiterName').textContent = `${entry.Vorname || ''} ${entry.Nachname || ''}`.trim();
+	dialog.querySelector('#deleteMitarbeiterEmail').textContent = entry.Email || '';
 
 	const confirmBtn = dialog.querySelector('#confirmDeleteMitarbeiterBtn');
 	const cancelBtn = dialog.querySelector('#cancelDeleteMitarbeiterBtn');
