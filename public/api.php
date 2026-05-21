@@ -344,6 +344,10 @@ try {
                     jsonResponse(['success' => false, 'error' => 'Parameter vorname, nachname, email und abteilung_id fehlen.'], 400);
                 }
 
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    jsonResponse(['success' => false, 'error' => 'Die angegebene E-Mail-Adresse ist ungültig.'], 400);
+                }
+
                 $geklappt = $dbHandler->addMitarbeiter($vorname, $nachname, $email, $abteilungId);
                 if ($geklappt) {
                     jsonResponse(['success' => true, 'message' => 'Mitarbeiter erfolgreich hinzugefügt']);
@@ -361,6 +365,10 @@ try {
 
                 if ($mitarbeiterId <= 0 || $vorname === '' || $nachname === '' || $email === '' || $abteilungId <= 0) {
                     jsonResponse(['success' => false, 'error' => 'Parameter mitarbeiter_id, vorname, nachname, email und abteilung_id müssen gesetzt sein.'], 400);
+                }
+                
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    jsonResponse(['success' => false, 'error' => 'Die angegebene E-Mail-Adresse ist ungültig.'], 400);
                 }
 
                 $geklappt = $dbHandler->updateMitarbeiter($mitarbeiterId, $vorname, $nachname, $email, $abteilungId);

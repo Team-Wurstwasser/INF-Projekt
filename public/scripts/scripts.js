@@ -878,7 +878,7 @@ function showCreateWorkerDialog() {
 	function validateWorkerForm() {
 		const fn = firstName.value && firstName.value.trim().length > 0;
 		const ln = lastName.value && lastName.value.trim().length > 0;
-		const em = email.value && email.value.trim().length > 0;
+		const em = email.value && email.value.trim().length > 0 && email.checkValidity();
 		submitBtn.disabled = !(fn && ln && em);
 	}
 
