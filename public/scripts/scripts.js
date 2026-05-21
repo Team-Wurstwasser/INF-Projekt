@@ -502,7 +502,7 @@ async function showTable() {
 		if (select == "werkzeuge") {
 			columnName = columnName.filter(column => column != 'Typ_ID' && column != 'Status_ID');
 		} else if (select == "mitarbeiter") {
-			columnName = columnName.filter(column => column != 'Mitarbeiter_ID');
+			columnName = columnName.filter(column => column != 'Abteilung_ID');
 		}
 		
 		message.innerHTML = "";
