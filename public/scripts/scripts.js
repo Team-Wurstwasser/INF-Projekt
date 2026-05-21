@@ -21,6 +21,12 @@ function updateOverviewUI() {
 	if (overviewDate) overviewDate.innerHTML = "Anschaffungsdatum: " + currentObject.date;
 }
 
+function getBarcodeFromEntry(entry) {
+	for (const k in entry) {
+		if (k.toLowerCase().includes('barcode')) return entry[k];
+	}
+}
+
 // --- Objekterstellung & Barcode-Eingabe ---
 let scannerBuffer = "";
 
@@ -156,11 +162,214 @@ async function loadAbteilungen() {
 	const jsonData = await answer.json();
 
 	jsonData.data.forEach(function (typ) {
-		const option = document.createElement("option");		
+		const option = document.createElement("option");
 		option.value = typ.Abteilung_ID; 		
 		option.innerText = typ.Name;
 		abteilungenSelect.appendChild(option);
 	});
+}
+// lädt alle typen
+async function loadWerkzeugTypenInto(selectElement) {
+	selectElement.innerHTML = "";
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
+	const jsonData = await answer.json();
+	jsonData.data.forEach(function (typ) {
+		const option = document.createElement("option");
+		option.value = typ.Typ_ID;
+		option.innerText = typ.Typ;
+		selectElement.appendChild(option);
+	});
+}
+// holt alle aktuellen status ab
+async function loadStatus(selectElement) {
+	selectElement.innerHTML = "";
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=status");
+	const jsonData = await answer.json();
+	jsonData.data.forEach(function (status) {
+		const option = document.createElement("option");
+		option.value = status.Status_ID;
+		option.innerText = status.Bezeichnung;
+		selectElement.appendChild(option);
+	});
+}
+
+async function openAddTypeDialog() {
+	let dialog = document.getElementById('addTypeDialog');
+	if (!dialog) {
+
+		// erstellt dialog feenster
+		dialog = document.createElement('dialog');
+		dialog.id = 'addTypeDialog';
+		dialog.innerHTML = `
+			<h2>Werkzeugtyp hinzufügen</h2>
+			<p>Gib den neuen Typ ein:</p>
+			<input type="text" id="newTypeName" placeholder="Neuer Typ" autocomplete="off">
+			<div style="margin-top:18px;">
+				<button id="saveTypeBtn">Hinzufügen</button>
+				<button id="cancelAddTypeBtn">Abbrechen</button>
+			</div>
+		`;
+		document.body.appendChild(dialog);
+	}
+
+	// wartet auf userinput
+	return new Promise((resolve) => {
+		const input = dialog.querySelector("input#newTypeName");
+		const saveBtn = dialog.querySelector("button#saveTypeBtn");
+		const cancelBtn = dialog.querySelector("button#cancelAddTypeBtn");
+
+		// cancel button
+		input.value = '';
+		if (cancelBtn) cancelBtn.onclick = () => {
+			dialog.close();
+			resolve(false);
+		};
+
+		// save button
+		if (saveBtn) saveBtn.onclick = async () => {
+			const typeName = input.value.trim();
+			if (!typeName) {
+				alert('Bitte einen Typ eingeben.');
+				return;
+			}
+			// sendet typ an api
+			const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ art: typeName })
+			});
+			// schaut ob geklappt hat
+			const result = await response.json();
+			if (result.success) {
+				if (typeof showToast === 'function') showToast('Typ hinzugefügt');
+				dialog.close();
+				resolve(true);
+			} else {
+				alert('Typ konnte nicht hinzugefügt werden: ' + (result.error || 'Unbekannter Fehler'));
+			}
+		};
+		dialog.showModal();
+	});
+}
+
+function openDeleteObjectDialog(entry) {
+	const barcode = getBarcodeFromEntry(entry);
+	let dialog = document.getElementById('deleteObjectDialog');
+	if (!dialog) {
+
+		// erstellt löschfesnter
+		dialog = document.createElement('dialog');
+		dialog.id = 'deleteObjectDialog';
+		dialog.innerHTML = `
+			<h2>Objekt löschen</h2>
+			<p>Prüfe das Objekt vor dem Löschen:</p>
+			<p><strong>Barcode:</strong> <span id="deleteBarcode"></span></p>
+			<p><strong>Name:</strong> <span id="deleteName"></span></p>
+			<div style="margin-top:18px;">
+				<button id="confirmDeleteBtn">Löschen</button>
+				<button id="cancelDeleteBtn">Abbrechen</button>
+			</div>
+		`;
+		document.body.appendChild(dialog);
+	}
+
+	const deleteBarcodeSpan = dialog.querySelector('#deleteBarcode');
+	const deleteNameSpan = dialog.querySelector('#deleteName');
+	const confirmBtn = dialog.querySelector('#confirmDeleteBtn');
+	const cancelBtn = dialog.querySelector('#cancelDeleteBtn');
+
+	deleteBarcodeSpan.textContent = barcode;
+	deleteNameSpan.textContent = entry.Bezeichnung;
+
+	cancelBtn.onclick = () => dialog.close();
+	confirmBtn.onclick = async () => {
+		// löscht objekt anhand barcode
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeuge', {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ barcode: barcode })
+		});
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Objekt gelöscht');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Löschen fehlgeschlagen: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+
+	dialog.showModal();
+}
+
+async function openEditWerkzeugDialog(entry) {
+	let dialog = document.getElementById('editWerkzeugDialog');
+
+	//erstellt bearbeitungsdialog
+	if (!dialog) {
+		dialog = document.createElement('dialog');
+		dialog.id = "editWerkzeugDialog";
+		dialog.innerHTML = `
+			<h2>Objekt bearbeiten</h2>
+			<p><strong>Barcode:</strong> <span id="editBarcode"></span></p>
+			<label>Bezeichnung:</label><br>
+			<input type="text" id="editBezeichnung" autocomplete="off"><br>
+			<label>Typ:</label><br>
+			<select id="editTypeSelect"></select><br>
+			<label>Status:</label><br>
+			<select id="editStatusSelect"></select><br>
+			<label>Anschaffungsdatum:</label><br>
+			<input type="date" id="editPurchaseDate" autocomplete="off"><br>
+			<div style="margin-top:18px;">
+				<button id="saveEditBtn">Speichern</button>
+				<button id="cancelEditBtn">Abbrechen</button>
+			</div>
+		`;
+		document.body.appendChild(dialog);
+	}
+	const barcodeSpan = dialog.querySelector('#editBarcode');
+	const bezeichnungInput = dialog.querySelector('#editBezeichnung');
+	const typeSelect = dialog.querySelector('#editTypeSelect');
+	const statusSelect = dialog.querySelector('#editStatusSelect');
+	const purchaseDateInput = dialog.querySelector('#editPurchaseDate');
+	const saveBtn = dialog.querySelector('#saveEditBtn');
+	const cancelBtn = dialog.querySelector('#cancelEditBtn');
+
+	barcodeSpan.textContent = entry.Barcode || '–';
+	bezeichnungInput.value = entry.Bezeichnung || '';
+	purchaseDateInput.value = entry.Anschaffungsdatum || '';
+
+	//fragt aktuelle typen und statuse ab für alle optionen
+	await loadWerkzeugTypenInto(typeSelect);
+	await loadStatus(statusSelect);
+	typeSelect.value = '';
+	statusSelect.value = '';
+
+	if (cancelBtn) cancelBtn.onclick = () => dialog.close();
+	if (saveBtn) saveBtn.onclick = async () => {
+		const payload = {
+			barcode: entry.Barcode,
+			bezeichnung: bezeichnungInput.value.trim(),
+			typ_id: parseInt(typeSelect.value) || 0,
+			status_id: parseInt(statusSelect.value) || 0,
+			anschaffungsdatum: purchaseDateInput.value
+		};
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeuge', {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+		const result = await response.json();
+		if (result.success) {
+			if (typeof showToast === 'function') showToast('Objekt aktualisiert');
+			dialog.close();
+			showTable();
+		} else {
+			alert('Aktualisierung fehlgeschlagen: ' + (result.error || 'Unbekannter Fehler'));
+		}
+	};
+
+	dialog.showModal();
 }
 
 async function saveNewObject() {
@@ -206,6 +415,13 @@ function objectConfigDialog() {
 	purchaseDate.value = '';
 
 	loadWerkzeugTypen();
+
+	const addTypeBtn = document.getElementById('addObjectTypeBtn');
+	addTypeBtn.title = 'Neuen Typ hinzufügen';
+	addTypeBtn.onclick = async () => {
+		await openAddTypeDialog();
+		await loadWerkzeugTypen();
+	}
 
 	function validateObjectForm() {
 		const nameSet = objectName.value && objectName.value.trim().length > 0;
@@ -277,7 +493,7 @@ async function showTable() {
 	const select = document.getElementById("typeSelect").value;
 	const tableHead = document.getElementById("headerRow");
 	const tableData = document.getElementById("tableData");
-	// alte tabelle leeren
+
 	tableHead.innerHTML = "";
 	tableData.innerHTML = "";
 	
@@ -285,7 +501,6 @@ async function showTable() {
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=${select}`);
 	//Antowrt für json lesbar machen
 	const jsonData = await answer.json();
-	// falls api fehler zurückgibt
 	if (jsonData.success == false) {
 		message.innerHTML = "Fehler: " + jsonData.error;
 		return;
@@ -303,6 +518,13 @@ async function showTable() {
 		columnName.forEach((key, index) => {
 			generateColumn(key, index);
 		});
+
+		//erstellt seperate aktionsspalte
+		if (select == "werkzeuge") {
+			const th = document.createElement('th');
+			th.innerText = 'Aktion';
+			tableHead.appendChild(th);
+		}
 
 		// erstellt die Spalten
 		function generateColumn(key, index) {
@@ -347,9 +569,34 @@ async function showTable() {
 			columnName.forEach((key) => {
 				generateCell(key, entry, tr);
 			});
+
+			if (select == "werkzeuge") {
+				//bearbeitungsbuton erstellen
+				const tdAction = document.createElement('td');
+				const barcodeValue = getBarcodeFromEntry(entry);
+				const editBtn = document.createElement('button');
+				editBtn.innerText = "Bearbeiten";
+				editBtn.className = "table-action-button";
+				editBtn.onclick = () => openEditWerkzeugDialog(entry);
+
+				//löschbutton erstellen
+				const deleteBtn = document.createElement('button');
+				deleteBtn.innerText = "Löschen";
+				deleteBtn.className = "table-action-button";
+				deleteBtn.onclick = () => openDeleteObjectDialog(entry);
+				tdAction.appendChild(editBtn);
+				tdAction.appendChild(deleteBtn);
+				tr.appendChild(tdAction);
+			}
+
 			tableData.appendChild(tr);
 		});
-
+		// Falls wir Werkzeuge anzeigen, noch eine Aktionsspalte anhängen
+		function getBarcodeFromEntry(entry) {
+			for (const e in entry) {
+				if (e.toLowerCase().includes('barcode')) return entry[e];
+			}
+		}
 		// Erstellt die Zellen
 		function generateCell(key, entry, tr) {
 			const td = document.createElement('td');
@@ -387,8 +634,8 @@ function filterTable() {
 
 			if (filterValue && cells[j]) {
 				const cellText = cells[j].innerHTML;
-				// macht zelltext klein und vergleicht, -1 is ungleich
-				if (cellText.toLowerCase().indexOf(filterValue) == -1) {
+				// macht zelltext klein und vergleicht
+				if (!cellText.toLowerCase().includes(filterValue)) {
 					showRow = false;
 					break;
 				}
@@ -408,25 +655,27 @@ function sortTable(index, th) {
 	isAscending = isAscending == "asc" ? false : true;
 
 
-	// ale icons zurücksetzen
+	// alle icons zurücksetzen
 	const allTh = document.getElementById("headerRow").getElementsByTagName("th");
 	for (let th of allTh) {
 		th.removeAttribute("data-sort");
 		const icon = th.querySelector('.sort-icon');
-		icon.innerHTML = ' ↕';
+		if (icon) icon.innerHTML = ' ↕';
 	}
 
 	// sortierung setzen und icon aktualisieren
 	th.setAttribute("data-sort", isAscending ? "asc" : "desc");
 	const currentIcon = th.querySelector('.sort-icon');
-	currentIcon.innerHTML = isAscending ? ' ↑' : ' ↓';
+	if (currentIcon) currentIcon.innerHTML = isAscending ? ' ↑' : ' ↓';
 
 	// sortieren
 	rows.sort((rowA, rowB) => {
 		// text aus zelle holen
-		const cellA = rowA.getElementsByTagName("td")[index].innerText.trim();
-		const cellB = rowB.getElementsByTagName("td")[index].innerText.trim();
-		//texte in zahlen umwandeln
+		const cellAElement = rowA.getElementsByTagName("td")[index];
+		const cellBElement = rowB.getElementsByTagName("td")[index];
+		const cellA = cellAElement ? cellAElement.innerText.trim() : '';
+		const cellB = cellBElement ? cellBElement.innerText.trim() : '';
+		// texte in zahlen umwandeln
 		const numA = parseFloat(cellA);
 		const numB = parseFloat(cellB);
 

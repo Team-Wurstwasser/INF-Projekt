@@ -184,17 +184,38 @@ select:focus {
     border-color: #000080;
 }
 
+.table-action-button {
+    background-color: #000080;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-right: 6px;
+}
+
+.table-action-button:hover {
+    background-color: #0000cd;
+}
+
 /* --- DIALOGE (MODALS) --- */
 dialog {
-    margin: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    margin: 0;
+    transform: translate(-50%, -50%);
+    width: min(550px, calc(100% - 2rem));
     max-width: 550px;
-    width: calc(100% - 2rem);
+    min-width: 320px;
     max-height: calc(100% - 2rem);
     border-radius: 12px;
     border: 1px solid #cccccc;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     padding: 30px;
-    position: relative;
     font-family: inherit;
 }
 
