@@ -495,3 +495,15 @@ dialog h1 {
 
 
 
+.btnType {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    padding: 0;
+    margin-left: 10px;
+    
+}
