@@ -627,14 +627,65 @@ function showCreateWorkerDialog() {
 	const modal = document.getElementById("createWorkerDialog");
 	const closeBtn = document.getElementById("closeBtnWorker");
 
+	const firstName = document.getElementById('workerFirstName');
+	const lastName = document.getElementById('workerLastName');
+	const email = document.getElementById('workerEmail');
+	const submitBtn = document.getElementById('createWorkerSubmitBtn');
+
+	// Felder zurücksetzen
+	firstName.value = '';
+	lastName.value = '';
+	email.value = '';
+
 	loadAbteilungen();
+
+	function validateWorkerForm() {
+		const fn = firstName.value && firstName.value.trim().length > 0;
+		const ln = lastName.value && lastName.value.trim().length > 0;
+		const em = email.value && email.value.trim().length > 0;
+		submitBtn.disabled = !(fn && ln && em);
+	}
+
+	firstName.addEventListener('input', validateWorkerForm);
+	lastName.addEventListener('input', validateWorkerForm);
+	email.addEventListener('input', validateWorkerForm);
+
+	validateWorkerForm();
 
 	modal.showModal();
 
 	closeBtn.onclick = () => {
 		modal.close();
 	};
+
+	submitBtn.onclick = () => {
+		saveWorker();
+		modal.close();
+	};
 }
+
+async function saveWorker() {
+	const payload = {
+			vorname: document.getElementById('workerFirstName').value.trim(),
+			nachname: document.getElementById('workerLastName').value.trim(),
+			email: document.getElementById('workerEmail').value.trim(),
+			abteilung_id: document.getElementById('workerDepartmentSelect').value
+		};
+
+		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=mitarbeiter', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(payload)
+		});
+
+		const result = await response.json();
+		if (result.success) {
+			showToast('Mitarbeiter erfolgreich angelegt!');
+		} else {
+			alert('Fehler beim Anlegen: ' + result.error + "\nMöglicherweise existiert bereits ein Mitarbeiter mit dieser E-Mail-Adresse");
+		}
+}
+
 // --- Bilder Toggle Funktion ---
 function toggleImages() {
     const gallery = document.getElementById("imageGallery");
