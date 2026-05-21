@@ -563,34 +563,20 @@ async function showTable() {
 
 async function openAddAbteilungDialog() {
 	let dialog = document.getElementById('addAbteilungDialog');
-	if (!dialog) {
-
-		// erstellt dialog feenster
-		dialog = document.createElement('dialog');
-		dialog.id = 'addAbteilungDialog';
-		dialog.innerHTML = `
-			<h2>Abteilung hinzufügen</h2>
-			<p>Gib den Namen der neuen Abteilung ein:</p>
-			<input type="text" id="newAbteilungName" placeholder="Neue Abteilung" autocomplete="off">
-			<div style="margin-top:18px;">
-				<button id="saveAbteilungBtn">Hinzufügen</button>
-				<button id="cancelAddAbteilungBtn">Abbrechen</button>
-			</div>
-		`;
-		document.body.appendChild(dialog);
-	}
 
 	// wartet auf userinput
 	return new Promise((resolve) => {
 		const input = dialog.querySelector("input#newAbteilungName");
 		const saveBtn = dialog.querySelector("button#saveAbteilungBtn");
 		const cancelBtn = dialog.querySelector("button#cancelAddAbteilungBtn");
+
 		// cancel button
 		input.value = '';
 		if (cancelBtn) cancelBtn.onclick = () => {
 			dialog.close();
 			resolve(false);
 		};
+
 		// save button
 		if (saveBtn) saveBtn.onclick = async () => {
 			const name = input.value.trim();
@@ -598,12 +584,14 @@ async function openAddAbteilungDialog() {
 				alert('Bitte einen Namen eingeben.');
 				return;
 			}
+
 			// sendet abteilung an api
 			const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=abteilungen', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ name })
 			});
+
 			// schaut ob geklappt hat
 			const result = await response.json();
 			if (result.success) {
