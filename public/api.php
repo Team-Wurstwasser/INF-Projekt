@@ -387,6 +387,10 @@ try {
                     jsonResponse(['success' => false, 'error' => 'Parameter barcode, mitarbeiter_id oder ausleihdauer fehlen.'], 400);
                 }
 
+                if ($dbHandler->isWerkzeugAusgeliehen($barcode)) {
+                    jsonResponse(['success' => false, 'error' => 'Werkzeug ist bereits ausgeliehen.'], 409);
+                }
+
                 $geklappt = $dbHandler->leiheWerkzeug($barcode, $mitarbeiter_id, $ausleihdauer);
                 if ($geklappt) {
                     jsonResponse(['success' => true, 'message' => 'Erfolgreich ausgeliehen']);
@@ -405,6 +409,10 @@ try {
 
                 if ($barcode == '') {
                     jsonResponse(['success' => false, 'error' => 'Parameter barcode fehlt.'], 400);
+                }
+
+                if (!$dbHandler->isWerkzeugAusgeliehen($barcode)) {
+                    jsonResponse(['success' => false, 'error' => 'Werkzeug ist nicht ausgeliehen.'], 409);
                 }
 
                 $geklappt = $dbHandler->gebeWerkzeugZurueck($barcode, $zustand);

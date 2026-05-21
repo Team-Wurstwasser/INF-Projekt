@@ -390,6 +390,19 @@ class DatabaseHandler
         return $this->pdo->query($sql)->fetchAll();
     }
 
+    public function isWerkzeugAusgeliehen(string $barcode): bool
+    {
+        try {
+            $sql = "SELECT COUNT(*) FROM Ausleihe WHERE Barcode = ? AND Rückgabedatum IS NULL";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$barcode]);
+            return $stmt->fetchColumn() > 0;
+        } catch (Exception $exception) {
+            error_log("Fehler in isWerkzeugAusgeliehen: " . $exception->getMessage());
+            return false;
+        }
+    }
+
     public function addMitarbeiter(string $vorname, string $nachname, string $email, int $abteilungId): bool
     {
         try {
