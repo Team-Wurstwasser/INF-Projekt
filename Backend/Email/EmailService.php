@@ -5,12 +5,20 @@ namespace Backend\Email;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+/**
+ * EmailService
+ *
+ * Verwaltet die Konfiguration von PHPMailer und das Versenden von E-Mails.
+ * Lädt Zugangsdaten aus Umgebungsvariablen und bietet eine einfache Schnittstelle
+ * sendEmail(...) zum Versenden von HTML-E-Mails mit optionalem Alt-Text.
+ */
 class EmailService
 {
     private $mail;
     
     public function __construct()
     {
+        // Initialisiert PHPMailer und konfiguriert SMTP anhand der Umgebungsvariablen
         $this->mail = new PHPMailer(true);
         $this->configureSMTP();
     }
@@ -19,6 +27,7 @@ class EmailService
     {
         try {
             $this->mail->isSMTP();
+            // Host, Credentials und Port werden aus der .env geladen
             $this->mail->Host = $_ENV['SMTP_HOST'];
             $this->mail->SMTPAuth = true;
             $this->mail->Username = $_ENV['SMTP_USER'];
@@ -33,9 +42,21 @@ class EmailService
         }
     }
     
+    /**
+     * Sendet eine E-Mail an einen Empfänger.
+     *
+     * @param string $toEmail Empfänger-E-Mail-Adresse
+     * @param string $toName Empfänger-Name
+     * @param string $subject Betreff der E-Mail
+     * @param string $body HTML-Inhalt der E-Mail
+     * @param string $altBody optionaler Alt-Text (falls nicht gesetzt, wird aus HTML erzeugt)
+     * @return bool true bei erfolgreichem Versand
+     * @throws Exception bei Fehlern im PHPMailer
+     */
     public function sendEmail($toEmail, $toName, $subject, $body, $altBody = '')
     {
         try {
+            // Bereitet die E-Mail vor und sendet sie über PHPMailer
             $this->mail->addAddress($toEmail, $toName);
             
             $this->mail->setFrom($_ENV['SMTP_USER'], $_ENV['Email_AnzeigeName']);
@@ -52,10 +73,5 @@ class EmailService
         } finally {
             $this->mail->clearAddresses();
         }
-    }
-    
-    public function getMailer()
-    {
-        return $this->mail;
     }
 }

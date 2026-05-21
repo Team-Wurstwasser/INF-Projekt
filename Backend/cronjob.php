@@ -5,6 +5,8 @@ require_once __DIR__ . '/bootstrap.php';
 use Backend\Email\ReminderEmail;
 
 try {
+    // Cronjob: Holt alle Ausleihen mit anstehender Rückgabe innerhalb 48 Stunden
+    // und versendet Erinnerungs-E-Mails. Markierte erfolgreiche Sends in der DB.
     $abgabenIn48h = $dbHandler->getAllAbgabenin48h();
 
     $reminderEmail = new ReminderEmail();
