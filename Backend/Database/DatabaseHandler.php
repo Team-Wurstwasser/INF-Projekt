@@ -384,10 +384,35 @@ class DatabaseHandler
 
     public function getAllMitarbeiter(): array
     {
-        $sql = "SELECT m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, m.username as Username, ab.Name as Abteilung
+        $sql = "SELECT m.Mitarbeiter_ID as Mitarbeiter_ID, m.Vorname as Vorname, m.Nachname as Nachname , m.Email as Email, ab.Name as Abteilung
                 FROM Mitarbeiter m
                 JOIN Abteilung ab ON m.Abteilung_ID = ab.Abteilung_ID";
         return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function addMitarbeiter(string $vorname, string $nachname, string $email, int $abteilungId): bool
+    {
+        try {
+            $sql = "INSERT INTO Mitarbeiter (Vorname, Nachname, Email, Abteilung_ID) VALUES (?, ?, ?, ?)";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$vorname, $nachname, $email, $abteilungId]);
+        } catch (Exception $exception) {
+            error_log("Fehler in addMitarbeiter: " . $exception->getMessage());
+            return false;
+        }
+    }
+
+    public function updateMitarbeiter(int $mitarbeiterId, string $vorname, string $nachname, string $email, int $abteilungId): bool
+    {
+        try {
+            $sql = "UPDATE Mitarbeiter SET Vorname = ?, Nachname = ?, Email = ?, Abteilung_ID = ? WHERE Mitarbeiter_ID = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$vorname, $nachname, $email, $abteilungId, $mitarbeiterId]);
+            return $stmt->rowCount() > 0;
+        } catch (Exception $exception) {
+            error_log("Fehler in updateMitarbeiter: " . $exception->getMessage());
+            return false;
+        }
     }
 
     public function leiheWerkzeug(string $barcode, int $mitarbeiterId, int $ausleihdauer): bool
