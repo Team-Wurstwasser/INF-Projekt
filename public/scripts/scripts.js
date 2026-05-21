@@ -147,6 +147,22 @@ async function loadMitarbeiter() {
 	});
 }
 
+async function loadAbteilungen() {
+	const abteilungenSelect = document.getElementById("workerDepartmentSelect");
+	
+	abteilungenSelect.innerHTML = ""; 
+
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=abteilungen");
+	const jsonData = await answer.json();
+
+	jsonData.data.forEach(function (typ) {
+		const option = document.createElement("option");		
+		option.value = typ.Abteilung_ID; 		
+		option.innerText = typ.Name;
+		abteilungenSelect.appendChild(option);
+	});
+}
+
 async function saveNewObject() {
 	const payload = {
 		barcode: currentObject.id,
@@ -610,6 +626,9 @@ function showToast(message) {
 function showCreateWorkerDialog() {
 	const modal = document.getElementById("createWorkerDialog");
 	const closeBtn = document.getElementById("closeBtnWorker");
+
+	loadAbteilungen();
+
 	modal.showModal();
 
 	closeBtn.onclick = () => {
