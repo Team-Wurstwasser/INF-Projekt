@@ -13,7 +13,6 @@ http_response_code(404);
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
     <header class="header">
         <img class="header_logo" src="/pics/logo_big.png" alt="Easy Inventory Logo">
-        <h1 id="title">Easy Inventory</h1>
     </header>
 
     <main style="flex: 1; display: flex; align-items: center; justify-content: center;">
