@@ -681,6 +681,7 @@ async function saveWorker() {
 		const result = await response.json();
 		if (result.success) {
 			showToast('Mitarbeiter erfolgreich angelegt!');
+			if (typeof showTableOnLoad === "function") showTableOnLoad();
 		} else {
 			alert('Fehler beim Anlegen: ' + result.error + "\nMöglicherweise existiert bereits ein Mitarbeiter mit dieser E-Mail-Adresse");
 		}
