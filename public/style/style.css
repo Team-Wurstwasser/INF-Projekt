@@ -216,7 +216,8 @@ dialog h3 {
 /* Formular-Elemente in Dialogen */
 dialog input[type="text"],
 dialog input[type="number"],
-dialog input[type="date"] {
+dialog input[type="date"],
+dialog input[type="email"] {
     width: 50%;
     padding: 12px;
     margin-bottom: 15px;
