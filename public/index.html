@@ -218,6 +218,74 @@
         <button class="closeBtn" id="closeBtnWorker"> <img src="pics/close.png" alt="X"></button>
     </dialog>
 
+    <dialog id="editMitarbeiterDialog">
+        <h2>Mitarbeiter bearbeiten</h2>
+        <input type="hidden" id="editMitarbeiterId">
+        Vorname: <input type="text" id="editWorkerFirstName" autocomplete="off"> <br>
+        Nachname: <input type="text" id="editWorkerLastName" autocomplete="off"> <br>
+        Email: <input type="email" id="editWorkerEmail" autocomplete="off"> <br>
+        Abteilung: <select id="editWorkerDepartmentSelect" autocomplete="off"></select> <br>
+        <button id="saveEditMitarbeiterBtn" disabled>Speichern</button>
+        <button id="cancelEditMitarbeiterBtn">Abbrechen</button>
+    </dialog>
+
+    <dialog id="deleteMitarbeiterDialog">
+        <h2>Mitarbeiter löschen</h2>
+        <p>Prüfe den Mitarbeiter vor dem Löschen:</p>
+        <p><strong>Name:</strong> <span id="deleteMitarbeiterName"></span></p>
+        <p><strong>Email:</strong> <span id="deleteMitarbeiterEmail"></span></p>
+        <button id="confirmDeleteMitarbeiterBtn">Löschen</button>
+        <button id="cancelDeleteMitarbeiterBtn">Abbrechen</button>
+    </dialog>
+
+    <dialog id="editAbteilungDialog">
+        <h2>Abteilung bearbeiten</h2>
+        <input type="hidden" id="editAbteilungId">
+        Abteilung: <input type="text" id="editAbteilungName" autocomplete="off"> <br>
+        <button id="saveEditAbteilungBtn" disabled>Speichern</button>
+        <button id="cancelEditAbteilungBtn">Abbrechen</button>
+    </dialog>
+
+    <dialog id="deleteAbteilungDialog">
+        <h2>Abteilung löschen</h2>
+        <p>Prüfe die Abteilung vor dem Löschen:</p>
+        <p><strong>Name:</strong> <span id="deleteAbteilungName"></span></p>
+        <button id="confirmDeleteAbteilungBtn">Löschen</button>
+        <button id="cancelDeleteAbteilungBtn">Abbrechen</button>
+    </dialog>
+
+    <dialog id="editWerkzeugTypDialog">
+        <h2>Werkzeugtyp bearbeiten</h2>
+        <input type="hidden" id="editWerkzeugTypId">
+        Werkzeugtyp: <input type="text" id="editWerkzeugTypName" autocomplete="off"> <br>
+        <button id="saveEditWerkzeugTypBtn" disabled>Speichern</button>
+        <button id="cancelEditWerkzeugTypBtn">Abbrechen</button>
+    </dialog>
+
+    <dialog id="deleteWerkzeugTypDialog">
+        <h2>Werkzeugtyp löschen</h2>
+        <p>Prüfe den Werkzeugtyp vor dem Löschen:</p>
+        <p><strong>Typ:</strong> <span id="deleteWerkzeugTypName"></span></p>
+        <button id="confirmDeleteWerkzeugTypBtn">Löschen</button>
+        <button id="cancelDeleteWerkzeugTypBtn">Abbrechen</button>
+    </dialog>
+
+    <dialog id="editStatusDialog">
+        <h2>Status bearbeiten</h2>
+        <input type="hidden" id="editStatusId">
+        Status: <input type="text" id="editStatusName" autocomplete="off"> <br>
+        <button id="saveEditStatusBtn" disabled>Speichern</button>
+        <button id="cancelEditStatusBtn">Abbrechen</button>
+    </dialog>
+
+    <dialog id="deleteStatusDialog">
+        <h2>Status löschen</h2>
+        <p>Prüfe den Status vor dem Löschen:</p>
+        <p><strong>Status:</strong> <span id="deleteStatusName"></span></p>
+        <button id="confirmDeleteStatusBtn">Löschen</button>
+        <button id="cancelDeleteStatusBtn">Abbrechen</button>
+    </dialog>
+
 
 
     <script src="scripts/scripts.js"></script>
