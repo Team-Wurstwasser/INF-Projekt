@@ -7,7 +7,7 @@ let currentObject = {
 	date: ""
 };
 
-// --- Hilfsfunktionen & UI-Aktualisierung ---
+// aktualisiert die UI mit aktuellem Objektwerten
 function updateOverviewUI() {
 	const idDisplay = document.getElementById("objectID"); //vergleicvht angezeigte id mit gespeicherter 
 	const overviewId = document.getElementById("objectOverviewID");
@@ -20,30 +20,34 @@ function updateOverviewUI() {
 	if (overviewType) overviewType.innerHTML = "Typ: " + (currentObject.typName);
 	if (overviewDate) overviewDate.innerHTML = "Anschaffungsdatum: " + currentObject.date;
 }
-
+// holt passenden barcode zum objekt
 function getBarcodeFromEntry(entry) {
 	for (const k in entry) {
 		if (k.toLowerCase().includes('barcode')) return entry[k];
 	}
 }
 
-// --- Objekterstellung & Barcode-Eingabe ---
+// puffer für barcodescanner eingaben
 let scannerBuffer = "";
-
+// barcode sanner eingabe abfangen
 window.addEventListener('keydown', (e) => {
 	const objModal = document.getElementById('objectCreateScanBarcodeDialog');
 	const borrowModal = document.getElementById('borrowScanBarcodeDialog');
 	const returnModal = document.getElementById('returnScanBarcodeDialog');
 
+	// abbruch wenn kein modal offen ist
 	const anyOpen = (objModal && objModal.open) || (borrowModal && borrowModal.open) || (returnModal && returnModal.open);
 	if (!anyOpen) return;
 
+	// wartet auf enter vom scanner
 	if (e.key === 'Enter') {
 		if (scannerBuffer.length === 0) return;
 
+		// speichert barcode und leert puffer
 		currentObject.id = scannerBuffer;
 		scannerBuffer = "";
 
+		// öfnet nächstes passendes modal
 		if (objModal && objModal.open) {
 			objModal.close();
 			updateOverviewUI();
@@ -63,13 +67,14 @@ window.addEventListener('keydown', (e) => {
 			return;
 		}
 	} else {
+
+		//fügt eingegeben zahlen ins puffer ein
 		if (e.key.length === 1) {
 			scannerBuffer += e.key;
 		}
 	}
 });
-
-//1. Selection zwischen scan barcode und manuelle eingabe
+//selection zwischen scan barcode und manuelle eingabe
 function objectCreationMethodSelectionDialog() {
 	const modal = document.getElementById("objectCreationMethodSelectionDialog");
 	const scannerModeBtn = document.getElementById("scannerMode");
@@ -81,18 +86,20 @@ function objectCreationMethodSelectionDialog() {
 		modal.close();
 	};
 
+	//wählt scanner eingabe aus
 	scannerModeBtn.onclick = () => {
 		modal.close();
 		objectCreateScanBarcodeDialog();
 	};
 
+	//wählt manuelle eingabe aus
 	manualModeBtn.onclick = () => {
 		modal.close();
 		getBarcode();
 	};
 
 }
-
+// generiert barcode für manuelle eingabe über api
 async function getBarcode() {
 
 	const response = await fetch(`https://mhp.hallo123wert.de/api.php?resource=barcode`);
@@ -102,9 +109,10 @@ async function getBarcode() {
 
 	currentObject.id = Barcode;
 	updateOverviewUI();
+
+	//öffnet Formular zur objekterstellung
 	objectConfigDialog();
 }
-
 // Scan Option 
 function objectCreateScanBarcodeDialog() {
 	const modal = document.getElementById("objectCreateScanBarcodeDialog");
@@ -119,57 +127,8 @@ function objectCreateScanBarcodeDialog() {
 
 }
 
-// --- Objekt-Konfiguration & Speichern ---
-
-async function loadWerkzeugTypen() {
-	const typeSelect = document.getElementById("objectTypeSelect");
-
-	typeSelect.innerHTML = "";
-
-	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
-	const jsonData = await answer.json();
-
-	jsonData.data.forEach(function (typ) {
-		const option = document.createElement("option");
-		option.value = typ.Typ_ID;
-		option.innerText = typ.Typ;
-		typeSelect.appendChild(option);
-	});
-}
-
-async function loadMitarbeiter() {
-	const borrowerSelect = document.getElementById("borrowerIdSelect");
-	
-	borrowerSelect.innerHTML = ""; 
-
-	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=mitarbeiter");
-	const jsonData = await answer.json();
-
-	jsonData.data.forEach(function (typ) {
-		const option = document.createElement("option");		
-		option.value = typ.Mitarbeiter_ID; 		
-		option.innerText = typ.Vorname + " " + typ.Nachname;
-		borrowerSelect.appendChild(option);
-	});
-}
-
-async function loadAbteilungen() {
-	const abteilungenSelect = document.getElementById("workerDepartmentSelect");
-	
-	abteilungenSelect.innerHTML = ""; 
-
-	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=abteilungen");
-	const jsonData = await answer.json();
-
-	jsonData.data.forEach(function (typ) {
-		const option = document.createElement("option");
-		option.value = typ.Abteilung_ID; 		
-		option.innerText = typ.Name;
-		abteilungenSelect.appendChild(option);
-	});
-}
-// lädt alle typen
-async function loadWerkzeugTypenInto(selectElement) {
+// lädt alle werkzeugtypen für beliebiges element
+async function loadWerkzeugTypen(selectElement) {
 	selectElement.innerHTML = "";
 	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen");
 	const jsonData = await answer.json();
@@ -181,7 +140,25 @@ async function loadWerkzeugTypenInto(selectElement) {
 	});
 }
 
-async function loadAbteilungenInto(selectElement) {
+// lädt aktuelle mitarbeiter von api und erstellt dropdown optionen
+async function loadMitarbeiter() {
+	const borrowerSelect = document.getElementById("borrowerIdSelect");
+	
+	borrowerSelect.innerHTML = ""; 
+
+	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=mitarbeiter");
+	const jsonData = await answer.json();
+
+	jsonData.data.forEach(function (typ) {
+		const option = document.createElement("option");		
+		option.value = typ.Mitarbeiter_ID;
+		option.innerText = typ.Vorname + " " + typ.Nachname;
+		borrowerSelect.appendChild(option);
+	});
+}
+
+// lädt aktuelle abteilungen von api für beliebiges element
+async function loadAbteilungen(selectElement) {
 	selectElement.innerHTML = "";
 
 	const answer = await fetch("https://mhp.hallo123wert.de/api.php?resource=abteilungen");
@@ -208,6 +185,7 @@ async function loadStatus(selectElement) {
 	});
 }
 
+// dialog zum werkzeugtyp hinzufügen
 async function openAddTypeDialog() {
 	let dialog = document.getElementById('addTypeDialog');
 
@@ -231,12 +209,14 @@ async function openAddTypeDialog() {
 				alert('Bitte einen Typ eingeben.');
 				return;
 			}
+
 			// sendet typ an api
 			const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeug_typen', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ art: typeName })
 			});
+
 			// schaut ob geklappt hat
 			const result = await response.json();
 			if (result.success) {
@@ -250,22 +230,24 @@ async function openAddTypeDialog() {
 		dialog.showModal();
 	});
 }
-
+// löscht objekt anhand vom barcode
 function openDeleteObjectDialog(entry) {
 	const barcode = getBarcodeFromEntry(entry);
 	let dialog = document.getElementById('deleteObjectDialog');
 
-	const deleteBarcodeSpan = dialog.querySelector('#deleteBarcode');
-	const deleteNameSpan = dialog.querySelector('#deleteName');
+	const deleteBarcode = dialog.querySelector('#deleteBarcode');
+	const deleteNamen = dialog.querySelector('#deleteName');
 	const confirmBtn = dialog.querySelector('#confirmDeleteBtn');
 	const cancelBtn = dialog.querySelector('#cancelDeleteBtn');
 
-	deleteBarcodeSpan.textContent = barcode;
-	deleteNameSpan.textContent = entry.Bezeichnung || '';
+	// zeigt barcode und name im dialog an
+	deleteBarcode.textContent = barcode;
+	deleteNamen.textContent = entry.Bezeichnung || '';
 
 	cancelBtn.onclick = () => dialog.close();
 	confirmBtn.onclick = async () => {
-		// löscht objekt anhand barcode
+
+		// löscht objekt mit deleteanfrage an api
 		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeuge', {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
@@ -275,7 +257,7 @@ function openDeleteObjectDialog(entry) {
 		if (result.success) {
 			if (typeof showToast === 'function') showToast('Objekt gelöscht');
 			dialog.close();
-			showTable();
+			showTable();	//aktualisiert tabelle nach löschung
 		} else {
 			alert('Löschen fehlgeschlagen: ' + (result.error || 'Unbekannter Fehler'));
 		}
@@ -283,7 +265,7 @@ function openDeleteObjectDialog(entry) {
 
 	dialog.showModal();
 }
-
+//bearbeitet Objekt
 async function openEditWerkzeugDialog(entry) {
 	let dialog = document.getElementById('editWerkzeugDialog');
 
@@ -295,25 +277,28 @@ async function openEditWerkzeugDialog(entry) {
 	const saveBtn = dialog.querySelector('#saveEditBtn');
 	const cancelBtn = dialog.querySelector('#cancelEditBtn');
 
+	// fragt aktuelle werte ab und zeigt sie im dialog an
 	barcodeSpan.textContent = entry.Barcode;
 	bezeichnungInput.value = entry.Bezeichnung;
 	purchaseDateInput.value = entry.Anschaffungsdatum;
 
 	//fragt aktuelle typen und statuse ab für alle optionen
-	await loadWerkzeugTypenInto(typeSelect);
+	await loadWerkzeugTypen(typeSelect);
 	await loadStatus(statusSelect);
 
+	// + buttons für status
 	const addStatusBtn = document.getElementById('addStatusBtn');
 	addStatusBtn.title = 'Neuen Status hinzufügen';
 	addStatusBtn.onclick = async () => {
 		await openAddStatusDialog();
-		await loadStatus(statusSelect);
+		await loadStatus(statusSelect);	// lädt alle statusse neu
 	};
 
-	// set current selections if present
+	// holt aktuellen typ und status vom objekt
 	typeSelect.value = entry.Typ_ID || '';
 	statusSelect.value = entry.Status_ID || '';
 
+	//zwingt enigabe von feldern durch deaktivieren vom save button
 	const validateForm = () => {
 		const bezeichnungSet = bezeichnungInput.value && bezeichnungInput.value.trim().length > 0;
 		if (saveBtn) saveBtn.disabled = !(bezeichnungSet);
@@ -325,13 +310,15 @@ async function openEditWerkzeugDialog(entry) {
 
 	cancelBtn.onclick = () => dialog.close();
 	saveBtn.onclick = async () => {
-		const payload = {
+		const payload = {	// neue werte für objekt
 			barcode: entry.Barcode,
 			bezeichnung: bezeichnungInput.value.trim(),
 			typ_id: parseInt(typeSelect.value) || 0,
 			status_id: parseInt(statusSelect.value) || 0,
 			anschaffungsdatum: purchaseDateInput.value
 		};
+
+		// sendet aktualisierte werte an api
 		const response = await fetch('https://mhp.hallo123wert.de/api.php?resource=werkzeuge', {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
@@ -350,6 +337,7 @@ async function openEditWerkzeugDialog(entry) {
 	dialog.showModal();
 }
 
+// neues objekt anlegen
 async function saveNewObject() {
 	const payload = {
 		barcode: currentObject.id,
@@ -377,29 +365,28 @@ async function saveNewObject() {
 		alert("Fehler beim Anlegen: " + result.error );
 		return false;
 	}
-
-	return false;
 }
-
 // Objekt Configuration Dialog
-function objectConfigDialog() {
+async function objectConfigDialog() {
 	const modal = document.getElementById("objectConfigDialog");
 	const submit = document.getElementById("objectSubmitBtn");
 	const cancelBtn = document.getElementById("cancelObjectConfigBtn");
-	// Felder leeren
 	const objectName = document.getElementById('objectName');
 	const purchaseDate = document.getElementById('objectPurchaseDate');
 	const typeSelect = document.getElementById('objectTypeSelect');
+
+	// Felder leeren
 	objectName.value = '';
 	purchaseDate.value = '';
 
-	loadWerkzeugTypen();
+	await loadWerkzeugTypen(typeSelect);
 
+	// + button für neuen typ
 	const addTypeBtn = document.getElementById('addObjectTypeBtn');
 	addTypeBtn.title = 'Neuen Typ hinzufügen';
 	addTypeBtn.onclick = async () => {
 		await openAddTypeDialog();
-		await loadWerkzeugTypen();
+		await loadWerkzeugTypen(typeSelect);
 	}
 
 	function validateObjectForm() {
@@ -441,7 +428,6 @@ function objectConfigDialog() {
 		createdObjectOverviewDialog();
 	};
 }
-
 // Zusammenfassung des erstellten Objekts
 function createdObjectOverviewDialog() {
 	const modal = document.getElementById("createdObjectOverviewDialog");
@@ -482,9 +468,9 @@ async function showTable() {
 	tableHead.innerHTML = "";
 	tableData.innerHTML = "";
 	
-	// aufrufen der API
 	const answer = await fetch(`https://mhp.hallo123wert.de/api.php?resource=${select}`);
-	//Antowrt für json lesbar machen
+
+	//Antowrt lesbar machen
 	const jsonData = await answer.json();
 	if (jsonData.success == false) {
 		message.innerHTML = "Fehler: " + jsonData.error;
@@ -495,8 +481,7 @@ async function showTable() {
 
 	// prüfen ob daten da sind
 	if (dataArray && dataArray.length > 0) {
-		// überschriften für spalten aus erstem element holen
-		let columnName = Object.keys(dataArray[0]);
+		let columnName = Object.keys(dataArray[0]);	// überschriften für spalten aus erstem element holen
 		
 		// ungewollte ids ausblenden
 		if (select == "werkzeuge") {
@@ -512,7 +497,7 @@ async function showTable() {
 			generateColumn(key, index);
 		});
 
-		//erstellt seperate aktionsspalte
+		//erstellt aktionsspalte
 		if (select != "ausgeliehen" && select != "ausgeliehen_historie") {
 			const th = document.createElement('th');
 			th.innerText = "Aktion";
@@ -524,7 +509,7 @@ async function showTable() {
 			tableHead.appendChild(th);
 		}
 
-		// erstellt die Spalten
+		// erstellt die Spaltenheadings
 		function generateColumn(key, index) {
 			const th = document.createElement('th');
 
@@ -538,7 +523,7 @@ async function showTable() {
 			// sortiericon erstellen
 			const sortIcon = document.createElement('span');
 			sortIcon.innerHTML = ' ↕'; 
-			sortIcon.className = 'sort-icon';
+			sortIcon.className = "sort-icon";
 
 			// elemente an container anhängen
 			headerDiv.appendChild(headerTitle);
@@ -568,7 +553,7 @@ async function showTable() {
 				generateCell(key, entry, tr);
 			});
 			if (select == "ausgeliehen") {
-				//verlängerungs erstellen
+				//verlängerungsbutton erstellen
 				const tdAction = document.createElement('td');
 				const editBtn = document.createElement('button');
 				editBtn.innerText = "Verlängern";
@@ -630,7 +615,7 @@ async function showTable() {
 
 			tableData.appendChild(tr);
 		});
-		// Falls wir Werkzeuge anzeigen, noch eine Aktionsspalte anhängen
+		// passender barcode für objekt anzeigen
 		function getBarcodeFromEntry(entry) {
 			for (const e in entry) {
 				if (e.toLowerCase().includes('barcode')) return entry[e];
@@ -655,6 +640,7 @@ async function showTable() {
 	}
 }
 
+// dialog zum abteilung hinzufügen
 async function openAddAbteilungDialog() {
 	let dialog = document.getElementById('addAbteilungDialog');
 
@@ -700,7 +686,7 @@ async function openAddAbteilungDialog() {
 		dialog.showModal();
 	});
 }
-
+// dialog zum status hinzufügen
 async function openAddStatusDialog() {
 	let dialog = document.getElementById('addStatusDialog');
 
@@ -741,7 +727,7 @@ async function openAddStatusDialog() {
 		dialog.showModal();
 	});
 }
-
+// dialog zum mitarbeiter bearbeiten
 async function openEditMitarbeiterDialog(entry) {
 	const dialog = document.getElementById('editMitarbeiterDialog');
 	const idInput = dialog.querySelector('#editMitarbeiterId');
@@ -757,7 +743,7 @@ async function openEditMitarbeiterDialog(entry) {
 	lastNameInput.value = entry.Nachname || '';
 	emailInput.value = entry.Email || '';
 
-	await loadAbteilungenInto(departmentSelect);
+	await loadAbteilungen(departmentSelect);
 	departmentSelect.value = entry.Abteilung_ID || '';
 
 	const validateForm = () => {
@@ -800,10 +786,12 @@ async function openEditMitarbeiterDialog(entry) {
 
 	dialog.showModal();
 }
-
+// dialog zum mitarbeiter löschen
 async function openDeleteMitarbeiterDialog(entry) {
 	const dialog = document.getElementById('deleteMitarbeiterDialog');
 	const id = entry.Mitarbeiter_ID || '';
+
+	// sucht passenden namen und email für anzeige im dialog
 	dialog.querySelector('#deleteMitarbeiterName').textContent = `${entry.Vorname || ''} ${entry.Nachname || ''}`.trim();
 	dialog.querySelector('#deleteMitarbeiterEmail').textContent = entry.Email || '';
 
@@ -828,7 +816,7 @@ async function openDeleteMitarbeiterDialog(entry) {
 	cancelBtn.onclick = () => dialog.close();
 	dialog.showModal();
 }
-
+// dialog zum abteilung bearbeiten
 async function openEditAbteilungDialog(entry) {
 	const dialog = document.getElementById('editAbteilungDialog');
 	const idInput = dialog.querySelector('#editAbteilungId');
@@ -871,7 +859,7 @@ async function openEditAbteilungDialog(entry) {
 
 	dialog.showModal();
 }
-
+// dialog zum abteilung löschen
 async function openDeleteAbteilungDialog(entry) {
 	const dialog = document.getElementById('deleteAbteilungDialog');
 	const id = entry.Abteilung_ID || '';
@@ -898,7 +886,7 @@ async function openDeleteAbteilungDialog(entry) {
 	cancelBtn.onclick = () => dialog.close();
 	dialog.showModal();
 }
-
+// dialog zum werkzeugtyp bearbeiten
 async function openEditWerkzeugTypDialog(entry) {
 	const dialog = document.getElementById('editWerkzeugTypDialog');
 	const idInput = dialog.querySelector('#editWerkzeugTypId');
@@ -941,7 +929,7 @@ async function openEditWerkzeugTypDialog(entry) {
 
 	dialog.showModal();
 }
-
+// dialog zum werkzeugtyp löschen
 async function openDeleteWerkzeugTypDialog(entry) {
 	const dialog = document.getElementById('deleteWerkzeugTypDialog');
 	dialog.querySelector('#deleteWerkzeugTypName').textContent = entry.Typ || '';
@@ -967,7 +955,7 @@ async function openDeleteWerkzeugTypDialog(entry) {
 	cancelBtn.onclick = () => dialog.close();
 	dialog.showModal();
 }
-
+// dialog zum status bearbeiten
 async function openEditStatusDialog(entry) {
 	const dialog = document.getElementById('editStatusDialog');
 	const idInput = dialog.querySelector('#editStatusId');
@@ -1010,7 +998,7 @@ async function openEditStatusDialog(entry) {
 
 	dialog.showModal();
 }
-
+// dialog zum status löschen
 async function openDeleteStatusDialog(entry) {
 	const dialog = document.getElementById('deleteStatusDialog');
 	dialog.querySelector('#deleteStatusName').textContent = entry.Bezeichnung || '';
@@ -1076,7 +1064,6 @@ function sortTable(index, th) {
 	let isAscending = th.getAttribute("data-sort");
 	isAscending = isAscending == "asc" ? false : true;
 
-
 	// alle icons zurücksetzen
 	const allTh = document.getElementById("headerRow").getElementsByTagName("th");
 	for (let th of allTh) {
@@ -1092,12 +1079,11 @@ function sortTable(index, th) {
 
 	// sortieren
 	rows.sort((rowA, rowB) => {
-		// text aus zelle holen
 		const cellAElement = rowA.getElementsByTagName("td")[index];
 		const cellBElement = rowB.getElementsByTagName("td")[index];
 		const cellA = cellAElement ? cellAElement.innerText.trim() : '';
 		const cellB = cellBElement ? cellBElement.innerText.trim() : '';
-		// texte in zahlen umwandeln
+
 		const numA = parseFloat(cellA);
 		const numB = parseFloat(cellB);
 
@@ -1108,11 +1094,12 @@ function sortTable(index, th) {
 		// vergleich für texte
 		return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
 	});
-	// Die sortierten Zeilen wieder in die Tabelle einhängen (das verschiebt sie im HTML)
+	// zeilen nach sortierung ausgeben
 	rows.forEach((row) => {
 		tableData.appendChild(row);
 	});
 }
+
 // funktion fürs erstmalige laden und wenn obejekte hinzugefügt werden
 async function showTableOnLoad() {
 	const typeSelect = document.getElementById("typeSelect");
@@ -1161,12 +1148,12 @@ function borrowDialog() {
 
 	submitBtn.onclick = () => {
 		console.log("submit btn clicked"); // Debug-Ausgabe
-		transmitBorrowData();
+		transmitBorrowData();	// Daten an Server senden
 		modal.close();
 
 	};
 }
-
+// dialog für barcode scannen bei ausleihe
 function borrowScanDialog() {
 	const modal = document.getElementById("borrowScanBarcodeDialog");
 	const closeBtn = document.getElementById("closeBorrowScanBtn");
@@ -1177,7 +1164,7 @@ function borrowScanDialog() {
 	};
 }
 
-// --- Daten an Server senden ---
+// Daten an Server senden für ausleihen
 async function transmitBorrowData() {
 	console.log("Ausleihe des Objekts mit ID: " + currentObject.id + " für Dauer: " + document.getElementById("borrowDuration").value + " Tage und Rückgabedatum: " + document.getElementById("borrowDuration").value);
 	const borrowDuration = document.getElementById("borrowDuration").value;
@@ -1199,7 +1186,6 @@ async function transmitBorrowData() {
 	});
 
 	//überpfrungslogik für popup
-
 	const result = await response.json();
 
 	if (result.success) {
@@ -1210,9 +1196,7 @@ async function transmitBorrowData() {
 		alert("Fehler beim Ausleihen: " + result.error + "\nMöglicherweise ist das Objekt mit der Barcodenummer :\n" + currentObject.id + " \nnicht exestent , bereits ausgeliehen oder es waren nicht alle Daten korrekt eingegeben.");
 	}
 }
-
-// --- Rückgabe (Return) ---
-
+// daten an Server senden für rückgabe
 function returnDialog() {
 	const modal = document.getElementById("returnDialog");
 	const returnSubmitBtn = document.getElementById("returnSubmitBtn");
@@ -1239,13 +1223,12 @@ function returnDialog() {
 		};
 	}
 
-
 	returnSubmitBtn.onclick = () => {
 		returnObject();
 		modal.close();
 	};
 }
-
+// dialog für barcode scannen bei rückgabe
 function returnScanDialog() {
 	const modal = document.getElementById("returnScanBarcodeDialog");
 	const closeBtn = document.getElementById("closeReturnScanBtn");
@@ -1255,7 +1238,7 @@ function returnScanDialog() {
 		modal.close();
 	};
 }
-
+//daten an Server senden für rückgabe
 async function returnObject() {
 	console.log("Rückgabe des Objekts mit ID: " + currentObject.id + " und Zustand: " + document.getElementById("returnCondition").value);
 
@@ -1295,10 +1278,11 @@ function showToast(message) {
 	}, 3000);
 }
 
-function showCreateWorkerDialog() {
+// dialog zum mitarbeiter erstellen
+async function showCreateWorkerDialog() {
 	const modal = document.getElementById("createWorkerDialog");
 	const closeBtn = document.getElementById("closeBtnWorker");
-
+	const abteilungenSelect = document.getElementById("workerDepartmentSelect");
 	const firstName = document.getElementById('workerFirstName');
 	const lastName = document.getElementById('workerLastName');
 	const email = document.getElementById('workerEmail');
@@ -1309,13 +1293,13 @@ function showCreateWorkerDialog() {
 	lastName.value = '';
 	email.value = '';
 
-	loadAbteilungen();
+	await loadAbteilungen(abteilungenSelect);
 
 	const addAbteilungBtn = document.getElementById('addAbteilungBtn');
 	addAbteilungBtn.title = 'Neue Abteilung hinzufügen';
 	if (addAbteilungBtn) addAbteilungBtn.onclick = async () => {
 		await openAddAbteilungDialog();
-		await loadAbteilungen();
+		await loadAbteilungen(abteilungenSelect);
 	};
 
 	function validateWorkerForm() {
@@ -1342,7 +1326,7 @@ function showCreateWorkerDialog() {
 		modal.close();
 	};
 }
-
+// dialog zum verlängerung einer ausleihe
 function verlängernDialog(entry) {
 	const modal = document.getElementById('verlängernDialog');
 	const barcodeInput = document.getElementById('verlängernBarcode');
@@ -1389,7 +1373,7 @@ function verlängernDialog(entry) {
 
 	modal.showModal();
 }
-
+// daten an Server senden für mitarbeiter erstellen
 async function saveWorker() {
 	const payload = {
 			vorname: document.getElementById('workerFirstName').value.trim(),
@@ -1413,15 +1397,15 @@ async function saveWorker() {
 		}
 }
 
-// --- Bilder Toggle Funktion ---
+// bilder ein- und ausblenden
 function toggleImages() {
     const gallery = document.getElementById("imageGallery");
     const btn = document.getElementById("toggleImagesBtn");
     
-    // Schaltet die 'show'-Klasse an oder aus
+    // macht show klasse an oder aus
     gallery.classList.toggle("show");
     
-    // Ändert den Text des Buttons je nach Zustand
+    // Textänderung
     if (gallery.classList.contains("show")) {
         btn.innerText = "Certifikate ausblenden";
     } else {
