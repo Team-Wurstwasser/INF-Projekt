@@ -505,8 +505,6 @@ async function showTable() {
 			columnName = columnName.filter(column => column != 'Typ_ID' && column != 'Status_ID');
 		} else if (select == "mitarbeiter") {
 			columnName = columnName.filter(column => column != 'Mitarbeiter_ID');
-		} else if (select == "abteilung") {
-			columnName = columnName.filter(column => column != 'Abteilung_ID');
 		}
 		
 		message.innerHTML = "";
@@ -762,7 +760,7 @@ async function openEditMitarbeiterDialog(entry) {
 	emailInput.value = entry.Email || '';
 
 	await loadAbteilungenInto(departmentSelect);
-	departmentSelect.value = entry.Abteilung || '';
+	departmentSelect.value = entry.Abteilung_ID || '';
 
 	const validateForm = () => {
 		const firstName = firstNameInput.value.trim().length > 0;
