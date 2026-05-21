@@ -302,7 +302,7 @@ async function openEditWerkzeugDialog(entry) {
 	//fragt aktuelle typen und statuse ab für alle optionen
 	await loadWerkzeugTypenInto(typeSelect);
 	await loadStatus(statusSelect);
-	// set current selections if present
+
 	typeSelect.value = getEntryValue(entry, ['Typ_ID']) || '';
 	statusSelect.value = getEntryValue(entry, ['Status_ID']) || '';
 
@@ -554,6 +554,8 @@ async function showTable() {
 				editBtn.innerText = "Verlängern";
 				editBtn.className = "table-action-button";
 				editBtn.onclick = () => verlängernScanDialog();
+				tdAction.appendChild(editBtn);
+				tr.appendChild(tdAction);
 			}
 			if (select != "ausgeliehen" && select != "ausgeliehen_historie") {
 				//bearbeitungsbuton erstellen
