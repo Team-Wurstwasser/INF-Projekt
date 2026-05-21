@@ -195,22 +195,6 @@ async function loadStatus(selectElement) {
 
 async function openAddTypeDialog() {
 	let dialog = document.getElementById('addTypeDialog');
-	if (!dialog) {
-
-		// erstellt dialog feenster
-		dialog = document.createElement('dialog');
-		dialog.id = 'addTypeDialog';
-		dialog.innerHTML = `
-			<h2>Werkzeugtyp hinzufügen</h2>
-			<p>Gib den neuen Typ ein:</p>
-			<input type="text" id="newTypeName" placeholder="Neuer Typ" autocomplete="off">
-			<div style="margin-top:18px;">
-				<button id="saveTypeBtn">Hinzufügen</button>
-				<button id="cancelAddTypeBtn">Abbrechen</button>
-			</div>
-		`;
-		document.body.appendChild(dialog);
-	}
 
 	// wartet auf userinput
 	return new Promise((resolve) => {
@@ -255,23 +239,6 @@ async function openAddTypeDialog() {
 function openDeleteObjectDialog(entry) {
 	const barcode = getBarcodeFromEntry(entry);
 	let dialog = document.getElementById('deleteObjectDialog');
-	if (!dialog) {
-
-		// erstellt löschfesnter
-		dialog = document.createElement('dialog');
-		dialog.id = 'deleteObjectDialog';
-		dialog.innerHTML = `
-			<h2>Objekt löschen</h2>
-			<p>Prüfe das Objekt vor dem Löschen:</p>
-			<p><strong>Barcode:</strong> <span id="deleteBarcode"></span></p>
-			<p><strong>Name:</strong> <span id="deleteName"></span></p>
-			<div style="margin-top:18px;">
-				<button id="confirmDeleteBtn">Löschen</button>
-				<button id="cancelDeleteBtn">Abbrechen</button>
-			</div>
-		`;
-		document.body.appendChild(dialog);
-	}
 
 	const deleteBarcodeSpan = dialog.querySelector('#deleteBarcode');
 	const deleteNameSpan = dialog.querySelector('#deleteName');
@@ -305,28 +272,6 @@ function openDeleteObjectDialog(entry) {
 async function openEditWerkzeugDialog(entry) {
 	let dialog = document.getElementById('editWerkzeugDialog');
 
-	//erstellt bearbeitungsdialog
-	if (!dialog) {
-		dialog = document.createElement('dialog');
-		dialog.id = "editWerkzeugDialog";
-		dialog.innerHTML = `
-			<h2>Objekt bearbeiten</h2>
-			<p><strong>Barcode:</strong> <span id="editBarcode"></span></p>
-			<label>Bezeichnung:</label><br>
-			<input type="text" id="editBezeichnung" autocomplete="off"><br>
-			<label>Typ:</label><br>
-			<select id="editTypeSelect"></select><br>
-			<label>Status:</label><br>
-			<select id="editStatusSelect"></select><br>
-			<label>Anschaffungsdatum:</label><br>
-			<input type="date" id="editPurchaseDate" autocomplete="off"><br>
-			<div style="margin-top:18px;">
-				<button id="saveEditBtn">Speichern</button>
-				<button id="cancelEditBtn">Abbrechen</button>
-			</div>
-		`;
-		document.body.appendChild(dialog);
-	}
 	const barcodeSpan = dialog.querySelector('#editBarcode');
 	const bezeichnungInput = dialog.querySelector('#editBezeichnung');
 	const typeSelect = dialog.querySelector('#editTypeSelect');
