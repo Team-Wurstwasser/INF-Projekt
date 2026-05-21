@@ -261,6 +261,11 @@ dialog button[id="objectManualProceed"],
 dialog button[id="objectSubmitBtn"],
 dialog button[id="borrowSubmitBtn"],
 dialog button[id="returnSubmitBtn"],
+dialog button[id="createWorkerSubmitBtn"] {
+    background-color: #000080; /* Hauptfarbe Navy Blue */
+    color: white;
+    border: none;
+}
 dialog button[id="downloadBarcodeBtn"] {
     background-color: #000080; /* Hauptfarbe Navy Blue */
     color: white;
