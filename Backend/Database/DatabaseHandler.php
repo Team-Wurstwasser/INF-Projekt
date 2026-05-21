@@ -415,6 +415,26 @@ class DatabaseHandler
         }
     }
 
+    public function deleteMitarbeiter(int $mitarbeiterId): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+            $sqlAusleihe = "DELETE FROM Ausleihe WHERE Mitarbeiter_ID = ?";
+            $stmtAusleihe = $this->pdo->prepare($sqlAusleihe);
+            $stmtAusleihe->execute([$mitarbeiterId]);
+
+            $sqlMitarbeiter = "DELETE FROM Mitarbeiter WHERE Mitarbeiter_ID = ?";
+            $stmtMitarbeiter = $this->pdo->prepare($sqlMitarbeiter);
+            $stmtMitarbeiter->execute([$mitarbeiterId]);
+
+            return $this->pdo->commit();
+        } catch (Exception $exception) {
+            error_log("Fehler in deleteMitarbeiter: " . $exception->getMessage());
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
     public function leiheWerkzeug(string $barcode, int $mitarbeiterId, int $ausleihdauer): bool
     {
         $this->pdo->beginTransaction();
