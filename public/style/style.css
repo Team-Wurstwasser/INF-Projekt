@@ -1,44 +1,51 @@
-/* --- GLOBALE EINSTELLUNGEN & FIXES --- */
 * {
-    box-sizing: border-box; /* Verhindert, dass Padding Elemente über den Bildschirmrand drückt */
+    /* Padding/Border werden in die Breite/Höhe eingerechnet; verhindert Layout-Bruch */
+    box-sizing: border-box; 
 }
 
 body {
     margin: 0;
     padding: 0;
     background-color: #f0f0f0;
-    /* Moderne und sehr gut lesbare Schriftart-Kombination: */
+    /* Ergonomischer, moderner Font-Stack mit hoher systemübergreifender Lesbarkeit */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #333333;
-    font-size: 15px; /* Angenehme Basis-Textgröße */
+    font-size: 15px; 
+    /* Verhindert unschönes horizontales Scrollen bei minimalen Render-Ungenauigkeiten */
     overflow-x: hidden;
 }
 
-/* --- HEADER --- */
+/* Vererbung der Schriftart für Formularelemente erzwingen */
+input, select, button {
+    font-family: inherit;      
+}
+
 header {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    /* Fixiert den Header beim Scrollen am oberen Bildschirmrand */
     position: sticky;
     top: 0; 
     z-index: 1000;
-    /* Der gewünschte Verlauf: Startet tief in Navy Blue und geht in Medium Blue über */
+    /* CD-Farbverlauf von Medium Blue zu Deep Navy Blue */
     background: linear-gradient(to left, #0000cd, #000080);
     padding: 20px 32px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 header img {
-    height: 70px; /* Etwas größer für bessere Sichtbarkeit */
+    height: 70px; 
     width: auto;
     margin-right: 30px;
 }
 
 header h1 {
     margin: 0;
-    color: white;
-    font-size: 24px; /* Perfekte Größe für die Hauptüberschrift */
+    color: #ffffff;
+    font-size: 24px; 
     font-weight: 600;
+    /* Füllt den restlichen Raum aus, drückt nachfolgende Elemente nach rechts */
     flex-grow: 1;
 }
 
@@ -56,21 +63,21 @@ header h1 {
     transition: filter 0.2s ease;
 }
 
+/* Visuelles Feedback beim Hovern des Menü-Icons */
 .MenuButton:hover img {
     filter: brightness(0.8);
 }
 
-/* --- SEKTION: ÜBERSICHT & AKTIONEN --- */
 .icon-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Zeilenumbruch auf kleineren Bildschirmen erlauben */
     padding: 10px 20px;
 }
 
 .HeaderIconÜbersicht {
-    font-size: 26px; /* Etwas kleiner als vorher (32px), um mit dem Header (24px) zu harmonieren */
+    font-size: 26px; 
     margin: 20px 0;
     color: #383846;
     font-weight: 600;
@@ -81,38 +88,40 @@ header h1 {
     gap: 10px;
 }
 
+/* Primäre Aktions-Buttons (Import/Export etc.) */
 .ImpExpButtons button { 
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 8px; /* Abstand zwischen Icon und Text */
     padding: 0 20px;
     height: 45px;
-    font-size: 14px; /* Synchronisiert mit Tabellen & Inputs */
+    font-size: 14px; 
     font-weight: 600;
     border-radius: 6px;
     border: none;
-    background: #000080; /* Hauptfarbe: Navy Blue */
-    color: white;
+    background: #000080; /* Corporate Navy Blue */
+    color: #ffffff;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .ImpExpButtons button:hover { 
-    background-color: #0000cd; /* Aufhellung beim Hovern (passend zum Header-Verlauf) */
+    background-color: #0000cd; /* Farbliche Aufhellung aus dem CI-Verlauf */
 }
 
-.ImpExpButtons button:active {
-    transform: scale(0.98); /* Kleine Klick-Animation */
+/* Haptisches Klick-Feedback für alle primären Buttons */
+.ImpExpButtons button:active, #toggleImagesBtn:active {
+    transform: scale(0.98); 
 }
 
+/* Icons in Buttons über CSS-Filter weiß färben */
 .ImpExpButtons img {
     height: 16px;
     width: auto;
     filter: brightness(0) invert(1);
 }
 
-/* --- OBJEKT-FILTER (KATEGORIEN) --- */
 .ObjektAuswahl {
     padding: 10px 20px;
     display: flex;
@@ -120,26 +129,31 @@ header h1 {
     flex-wrap: wrap;
 }
 
-.ObjektAuswahl button {
+/* Kategorie-Filter als Pill-Buttons */
+.ObjektAuswahl button, #loadButton {
     background-color: #ffffff;
     color: #383846;
     border: 1px solid #cccccc;
     padding: 10px 20px;
-    font-size: 14px; /* Synchronisiert */
+    font-size: 14px; 
     font-weight: 600;
-    border-radius: 20px;
+    border-radius: 20px; /* Vollständig abgerundete Ecken */
     cursor: pointer;
     margin: 0;
     transition: all 0.2s ease;
 }
 
-.ObjektAuswahl button:hover {
-    background-color: #000080; /* Hover nun auch Navy Blue */
+#loadButton {
+    margin-left: 10px;
+}
+
+/* Invertierung der Farben beim Hovern */
+.ObjektAuswahl button:hover, #loadButton:hover {
+    background-color: #000080; 
     color: #ffffff;
     border-color: #000080;
 }
 
-/* --- FILTER-BEREICH (DYNAMISCHE TABELLE) --- */
 label[for="typeSelect"] {
     margin-left: 20px;
     font-weight: 600;
@@ -150,43 +164,23 @@ label[for="typeSelect"] {
 select {
     margin-left: 10px;
     padding: 10px 20px;
-    font-size: 14px; /* Synchronisiert */
+    font-size: 14px; 
     border-radius: 20px;
     border: 1px solid #cccccc;
     background-color: #ffffff;
     outline: none;
     cursor: pointer;
-    font-family: inherit;
 }
 
+/* Akzentuierung des aktiven Auswahlfeldes */
 select:focus {
     border-color: #000080;
 }
 
-#loadButton {
-    background-color: #ffffff;
-    color: #383846;
-    border: 1px solid #cccccc;
-    padding: 10px 20px;
-    font-size: 14px; /* Synchronisiert */
-    font-weight: 600;
-    border-radius: 20px;
-    cursor: pointer;
-    margin: 0;
-    transition: all 0.2s ease;
-    margin-left: 10px;
-    font-family: inherit;
-}
-
-#loadButton:hover {
-    background-color: #000080; /* Hover: Navy Blue */
-    color: #ffffff;
-    border-color: #000080;
-}
-
+/* Kompakte Buttons innerhalb von Tabellenzeilen */
 .table-action-button {
     background-color: #000080;
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 6px;
     padding: 6px 12px;
@@ -199,7 +193,6 @@ select:focus {
     background-color: #0000cd;
 }
 
-/* --- DIALOGE (MODALS) --- */
 dialog {
     position: fixed;
     top: 50%;
@@ -207,24 +200,28 @@ dialog {
     right: auto;
     bottom: auto;
     margin: 0;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); /* Exakte Zentrierung im Viewport */
+    /* Dynamische Breite: Nutzt maximal 550px, bricht auf Mobile sauber um */
     width: min(550px, calc(100% - 2rem));
     max-width: 550px;
     min-width: 320px;
-    max-height: calc(100% - 2rem);
+    max-height: calc(100% - 2rem); /* Verhindert Überlaufen des Bildschirms */
     border-radius: 12px;
     border: 1px solid #cccccc;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     padding: 30px;
-    font-family: inherit;
 }
 
-dialog h2 {
-    font-size: 20px;          
-    color: #000080; /* Dialog-Titel in Navy Blue */
+dialog h1, dialog h2 {
+    font-size: 22px;          
+    color: #000080; 
     font-weight: 600;
     margin-top: 5px;
     margin-bottom: 15px;
+}
+
+dialog h2 {
+    font-size: 20px; /* Leicht kleinere Abstufung für H2 */
 }
 
 dialog h3 {
@@ -234,30 +231,28 @@ dialog h3 {
     margin-bottom: 10px;
 }
 
-/* Formular-Elemente in Dialogen */
+/* Input-Felder innerhalb von Modals */
 dialog input[type="text"],
 dialog input[type="number"],
 dialog input[type="date"],
 dialog input[type="email"] {
-    width: 50%;
+    width: 50%; /* Standardbreite */
     padding: 12px;
     margin-bottom: 15px;
     border: 1px solid #cccccc;
     border-radius: 6px;
-    font-size: 14px; /* Synchronisiert */
-    font-family: inherit;
+    font-size: 14px; 
     outline: none;
     transition: border-color 0.2s;
 }
 
 dialog input:focus {
-    border-color: #000080; /* Fokus-Farbe Navy Blue */
+    border-color: #000080; 
 }
 
-/* Normale Buttons in Dialogen */
+/* Standard-Buttons im Dialog */
 dialog button {
-    font-size: 14px; /* Synchronisiert */
-    font-family: inherit;
+    font-size: 14px; 
     font-weight: 600;
     display: inline-flex;
     align-items: center;
@@ -275,22 +270,18 @@ dialog button {
 
 dialog button:hover {
     background-color: #f5f5f5;
-    transform: translateY(-1px);
+    transform: translateY(-1px); /* Minimaler Schwebe-Effekt */
 }
 
-/* Primäre Aktions-Buttons in Dialogen (z.B. Bestätigen) */
+/* Explizite ID-Zuweisung für primäre Bestätigungs-Aktionen in Modals */
 dialog button[id="objectManualProceed"],
 dialog button[id="objectSubmitBtn"],
 dialog button[id="borrowSubmitBtn"],
 dialog button[id="returnSubmitBtn"],
-dialog button[id="createWorkerSubmitBtn"] {
-    background-color: #000080; /* Hauptfarbe Navy Blue */
-    color: white;
-    border: none;
-}
+dialog button[id="createWorkerSubmitBtn"],
 dialog button[id="downloadBarcodeBtn"] {
-    background-color: #000080; /* Hauptfarbe Navy Blue */
-    color: white;
+    background-color: #000080; 
+    color: #ffffff;
     border: none;
 }
 
@@ -298,11 +289,12 @@ dialog button[id="objectManualProceed"]:hover,
 dialog button[id="objectSubmitBtn"]:hover,
 dialog button[id="borrowSubmitBtn"]:hover,
 dialog button[id="returnSubmitBtn"]:hover,
+dialog button[id="createWorkerSubmitBtn"]:hover,
 dialog button[id="downloadBarcodeBtn"]:hover {
-    background-color: #0000cd; /* Aufhellung beim Hovern */
+    background-color: #0000cd; 
 }
 
-/* Deaktivierte Buttons (disabled) */
+/* Barrierefreies Styling für nicht anklickbare, gesperrte Buttons */
 dialog button:disabled {
     background-color: #cccccc !important;
     color: #666666 !important;
@@ -315,7 +307,7 @@ dialog img {
     width: auto;
 }
 
-/* Schließen-Button (X) oben rechts */
+/* Schließen-Button oben rechts in der Ecke des Modals */
 .closeBtn {
     background-color: transparent;
     border: none;
@@ -343,14 +335,14 @@ dialog img {
 }
 
 .closeBtn:hover img {
-    transform: scale(1.1);
+    transform: scale(1.1); /* Diskrete Vergrößerung des 'X' */
 }
 
-/* --- TABELLEN-BEREICH --- */
+/* Wrapper, der horizontales Scrollen auf Smartphones erlaubt, ohne das Layout zu sprengen */
 .table-container {
     width: 100%;
     overflow-x: auto;          
-    scrollbar-width: thin;
+    scrollbar-width: thin; /* Dezente Scrollbar für moderne Firefox-Browser */
     padding-left: 10px;        
     padding-right: 10px;       
     box-sizing: border-box;    
@@ -362,22 +354,22 @@ table {
     border-spacing: 0;
     margin-top: 10px;          
     margin-left: 0;            
-    border-collapse: separate; 
+    border-collapse: separate; /* Benötigt für border-radius auf Tabellenebene */
     border: 1px solid #e0e0e0; 
     border-radius: 8px;        
-    overflow: hidden;          
+    overflow: hidden; /* Schneidet Ecken der inneren Zeilen sauber an den Kurven ab */
 }
 
 th {
-    padding: 12px 10px;        /* Etwas mehr Luft nach oben und unten */
-    background-color: #000080; /* Header Navy Blue */
+    padding: 12px 10px;        
+    background-color: #000080; 
     color: #ffffff;            
-    font-size: 14px;           /* Synchronisiert */
+    font-size: 14px;           
     font-weight: 600;
     text-align: left;
 }
 
-/* Die Filter-Inputs in den Tabellenköpfen anpassen */
+/* Text-Inputs für Spaltenfilter direkt im Tabellenkopf */
 th input[type="text"] {
     margin-top: 8px;
     width: 100%;
@@ -385,21 +377,22 @@ th input[type="text"] {
     border: none;
     border-radius: 4px;
     font-size: 13px;
-    color: #333;
+    color: #333333;
     outline: none;
 }
 
 th input[type="text"]:focus {
-    box-shadow: 0 0 0 2px #0000cd; /* Fokus-Rahmen für die kleinen Inputs */
+    box-shadow: 0 0 0 2px #0000cd; 
 }
 
 td {
     padding: 10px;
     color: #333333;
-    font-size: 14px;           /* Synchronisiert */
+    font-size: 14px;           
+    border-bottom: 1px solid #eeeeee;
 }
 
-/* Abwechselnde Zeilenfarben (Grau / Weiß) bleiben erhalten */
+/* Zebra-Streifen zur Steigerung der Zeilen-Lesbarkeit */
 tr:nth-child(even) {
     background-color: #f9f9f9; 
 }
@@ -408,15 +401,12 @@ tr:nth-child(odd) {
     background-color: #ffffff; 
 }
 
-/* Rahmen-Optimierung (nur horizontale Trennlinien) */
-td {
-    border-bottom: 1px solid #eeeeee;
-}
-
-/* Entfernt die letzte Trennlinie ganz unten */
+/* Verhindert doppelte Rahmenlinien am Tabellenende */
 tr:last-child td {
     border-bottom: none;
 }
+
+/* Flex-Anordnung für Text und Sortier-Pfeile im Tabellenkopf */
 .sort-header {
     cursor: pointer;
     display: flex;
@@ -424,57 +414,44 @@ tr:last-child td {
     align-items: center;
 }
 
+/* Lade- und Statusmeldungen (z.B. "Daten werden geladen...") */
 #WaitingMessage {
     margin-left: 10px;
     font-size: 15px;
-    color: #000080; /* Wartetext ebenfalls passend eingefärbt */
+    color: #000080; 
     font-weight: 600;
 }
 
-input, select, button {
-    font-family: inherit;      
-}
-
-/* --- ERFOLGS-MELDUNG (TOAST) --- */
 .toast-notification {
     position: fixed;
     top: 20px;
     right: 20px;
-    background-color: #2ecc71; /* Grüner Hintergrund für Erfolg */
-    color: white;
+    background-color: #2ecc71; /* Positives Smaragd-Grün für Erfolgsmeldungen */
+    color: #ffffff;
     padding: 16px 24px;
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-family: inherit; /* Übernimmt nun auch die moderne Schriftart */
     font-size: 15px;
     font-weight: 600;
-    z-index: 9999;
+    z-index: 9999; /* Garantiert Platzierung über allen Dialogen */
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(-20px); /* Schiebt Toast leicht nach oben für Einblend-Effekt */
     transition: opacity 0.3s ease, transform 0.3s ease;
-    pointer-events: none;
+    pointer-events: none; /* Verhindert das Blockieren von Klicks während des Ausblendens */
 }
 
+/* CSS-Klasse wird via JavaScript zugesteuert, um Toast einzufliegen */
 .toast-notification.show {
     opacity: 1;
     transform: translateY(0);
 }
 
-dialog h1 {
-    font-size: 22px;          
-    color: #000080; /* Dialog-Titel in Navy Blue */
-    font-weight: 600;
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
-/* --- Versteckte Bilder Galerie am Ende der Seite --- */
 .image-toggle-container {
     text-align: center;
     margin-top: 50px;
     margin-bottom: 20px;
 }
 
-/* Der Button bekommt das exakte Design deiner anderen Aktions-Buttons */
 #toggleImagesBtn {
     display: inline-flex;
     align-items: center;
@@ -482,27 +459,20 @@ dialog h1 {
     padding: 0 20px;
     height: 45px;
     font-size: 14px;
-    font-family: inherit;
     font-weight: 600;
     border-radius: 6px;
     border: none;
-    background: #000080; /* Hauptfarbe: Navy Blue */
-    color: white;
+    background: #000080; 
+    color: #ffffff;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-/* Hover-Farbe analog zu den anderen Buttons (helleres Blau) */
 #toggleImagesBtn:hover {
     background-color: #0000cd; 
 }
 
-/* Klick-Animation (Button wird leicht kleiner beim Draufdrücken) */
-#toggleImagesBtn:active {
-    transform: scale(0.98); 
-}
-
-/* Galerie Container */
+/* Standardmäßig unsichtbarer Galerie-Container */
 .hidden-gallery {
     display: none; 
     justify-content: center; 
@@ -510,6 +480,7 @@ dialog h1 {
     margin-bottom: 50px; 
 }
 
+/* Aktivierung der Galerie via JavaScript-Klassenzuweisung */
 .hidden-gallery.show {
     display: flex;
 }
@@ -521,8 +492,7 @@ dialog h1 {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-
-
+/* Spezial-Button-Typ ohne Eigendesign für flexible Inline-Icon-Platzierung */
 .btnType {
     background-color: transparent;
     border: none;
@@ -533,5 +503,4 @@ dialog h1 {
     vertical-align: middle;
     padding: 0;
     margin-left: 10px;
-    
 }
