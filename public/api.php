@@ -5,12 +5,14 @@ require_once __DIR__ . '/../Backend/bootstrap.php';
 use Picqer\Barcode\Types\TypeEan13;
 use Picqer\Barcode\Renderers\PngRenderer;
 
+// CORS- und Cache-Header für die API-Antworten.
 header('Access-Control-Allow-Origin: *'); 
 header('Access-Control-Allow-Methods: GET, POST, DELETE, PUT, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
+// Einheitliche JSON-Antworten mit Statuscode.
 function jsonResponse(array $payload, int $statusCode = 200): void
 {
     header('Content-Type: application/json; charset=utf-8');
@@ -19,6 +21,7 @@ function jsonResponse(array $payload, int $statusCode = 200): void
     exit;
 }
 
+// Liest Daten aus Query, Form-Body und JSON-Body zusammen ein.
 function requestData(): array
 {
     $rawInput = file_get_contents('php://input');
@@ -36,6 +39,7 @@ try {
     
     $method = $_SERVER['REQUEST_METHOD'];
     if ($method === 'OPTIONS') {
+        // Preflight-Anfragen direkt beantworten.
         http_response_code(204);
         exit;
     }
@@ -48,6 +52,7 @@ try {
 
     switch ($resource) {
         case 'barcode':
+            // Barcode erzeugen oder als PNG rendern.
             if ($method == 'GET') {
          
                 $hasCode = isset($data['code']) && trim((string)$data['code']) !== '';
@@ -79,6 +84,7 @@ try {
             break;
 
         case 'werkzeuge':
+            // Werkzeuge verwalten: lesen, anlegen, ändern, löschen.
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllWerkzeuge()]);
             }
@@ -147,6 +153,7 @@ try {
             break;
             
         case 'werkzeug_typen':
+            // Werkzeugtypen verwalten.
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllWerkzeugeTypen()]);
             }
@@ -201,6 +208,7 @@ try {
             break;
 
         case 'status':
+            // Statuswerte verwalten.
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllStatus()]);
             }
@@ -256,6 +264,7 @@ try {
 
         case 'abteilung':
         case 'abteilungen':
+            // Abteilungen verwalten; beide Routen sind erlaubt.
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllAbteilungen()]);
             }
@@ -310,6 +319,7 @@ try {
             break;
 
         case 'mitarbeiter':
+            // Mitarbeiterdaten verwalten.
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllMitarbeiter()]);
             }
@@ -378,6 +388,7 @@ try {
             break;
 
         case 'ausleihen':
+            // Werkzeug ausleihen.
             if ($method == 'POST') {
                 $barcode = trim((string)($data['barcode'] ?? ''));
                 $mitarbeiter_id = (int)($data['mitarbeiter_id'] ?? 0);
@@ -403,6 +414,7 @@ try {
             break;
 
         case 'abgeben':
+            // Werkzeug zurückgeben.
             if ($method == 'POST') {
                 $barcode = trim((string)($data['barcode'] ?? ''));
                 $zustand = trim((string)($data['zustand'] ?? 'OK'));
@@ -427,6 +439,7 @@ try {
             break;
 
         case 'ausgeliehen':
+            // Aktuell ausgeliehene Werkzeuge abrufen.
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAllAusgelieheneSachen()]);
             }
@@ -435,6 +448,7 @@ try {
             break;
 
         case 'ausgeliehen_historie':
+            // Historie aller Ausleihen abrufen.
             if ($method === 'GET') {
                 jsonResponse(['success' => true, 'data' => $dbHandler->getAusgeliehenHistorie()]);
             }
@@ -443,6 +457,7 @@ try {
             break;
 
         case 'verlängern':
+            // Laufende Ausleihe verlängern.
             if ($method === 'PUT' || $method === 'POST') {
                 $ausleihId = (int)($data['ausleih_id'] ?? 0);
                 $zusatzTage = (int)($data['zusatz_tage'] ?? 0);
